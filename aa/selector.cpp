@@ -1,19 +1,23 @@
 #include "selector.hpp"
 #include "aapot_resources.hpp"
-#include <vector>
-#include <iterator>
-#include <iostream>
+#include "lua_cmds.hpp"
+#include<vector>
+#include<iterator>
+#include<iostream>
 #include<boost/algorithm/string.hpp>
 
 selector::a_map selector::algorithms_map = selector::create_algorithms_map();
 
 /**
-* @desc Parses the AAPOT.xml to 
+* @desc Read the input configuration file in lua
 */
 selector::selector(std::string filename)
 {
 	this->filename = filename;
-	this->aapot_xml = aapot_resources::read_xml_file(filename);
+	this->inputs = aapot_resources::read_lua(filename);
+	init_lua(this);
+	load_lua_lib((char*) this->filename));
+	close_lua();
 }
 
 /**

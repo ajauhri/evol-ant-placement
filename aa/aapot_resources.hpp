@@ -16,7 +16,7 @@ namespace aapot_resources
 	/**
 	* Reading an ASCII file into C++ std::string
 	*/
-	std::string read_xml_file(const std::string path);
+	std::string read_lua(const std::string path);
 
 	/**
 	* Get the node having initialization parameters for the algorithm node

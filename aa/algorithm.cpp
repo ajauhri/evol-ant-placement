@@ -94,7 +94,7 @@ void algorithm::setup_ancillary_nodes()
 
 /**
 * @desc 1. Cleaning of old runs from FS
-*		2. Seed for pseudo-random number generator
+*       2. Seed for pseudo-random number generator
 */
 void algorithm::setup_run_context()
 {

@@ -21,28 +21,26 @@ int main(int argc, char* argv[])
 {	
 	try 
 	{
-		std::string aapot_file;
-		std::string config_file;
+		std::string lua_file;
 		
 		prg_opts::options_description desc("\nUsage");
 		desc.add_options()
 			("help,h", "view valid options")
-			("aapot,A", prg_opts::value<string>(&aapot_file), "AAPOT-xml file name")
-			("config,C", prg_opts::value<string>(&config_file), "Config-xml file name");
+			("input,i", prg_opts::value<string>(&lua_file), "Input file");
 		
 		prg_opts::variables_map vm;
 		prg_opts::store(prg_opts::parse_command_line(argc, argv, desc), vm);
 		prg_opts::notify(vm);
 
-		if (vm.count("help") || !vm.count("aapot") || !vm.count("config") )
+		if (vm.count("help") || !vm.count("input") )
 		{
 				std::cout << desc << "\n";
 				return 0;
 		}
 		
-		if (!std::ifstream(aapot_file.c_str()) || !std::ifstream(config_file.c_str()))
+		if (!std::ifstream(lua_file.c_str()))
 		{
-			std::cout << "Can not open file input files" << "\n";
+			std::cout << "Can not open input file" << "\n";
 			return 0;
 		}
 
@@ -53,19 +51,19 @@ int main(int argc, char* argv[])
 		{
 		case GA:
 			std::cout<<"Testing GA"<<std::endl;
-			algo = new ga(aapot_file, config_file);
+			algo = new ga(lua_file);
 			break;
 		case SA:
 			std::cout<<"Testing SA"<<std::endl;
-			algo = new sa(aapot_file, config_file);
+			algo = new sa(lua_file);
 			break;
 		case HC:
 			std::cout<<"Testing HC"<<std::endl;
-			algo = new hc(aapot_file, config_file);
+			algo = new hc(lua_file);
 			break;
 		case ES:
 			std::cout<<"Testing ES"<<std::endl;
-			algo = new es(aapot_file, config_file);
+			algo = new es(lua_file);
 			break;
 		default:
 			std::cout<<"Not a valid algorithm"<<std::endl;	

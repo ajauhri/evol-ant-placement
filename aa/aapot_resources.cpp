@@ -7,7 +7,7 @@
 
 namespace aapot_resources
 {
-	std::string read_xml_file(const std::string path) 
+	std::string read_lua(const std::string path) 
 	{
 		std::string buffer;
 		try {
