@@ -1,18 +1,19 @@
-// AAPOT.cpp : Defines the entry point for the console application.
-//
+// main.cpp : Entry point for the console application.
 #include<iostream>
 #include<fstream>
 #include<time.h>
 #include<boost/program_options.hpp>
 #include<boost/filesystem.hpp>
-#include "selector.hpp"
+
+#include "eap_resources.hpp"
+#if 0
 #include "ga.hpp"
 #include "sa.hpp"
 #include "es.hpp"
 #include "hc.hpp"
 #include "algorithms.hpp"
 #include "algorithm.hpp"
-
+#endif
 
 namespace prg_opts = boost::program_options;
 
@@ -42,34 +43,34 @@ int main(int argc, char* argv[])
 			std::cout << "Can not open input file" << "\n";
 			return 0;
 		}
-		
-		selector *algo_config = new selector(lua_file);
+		init_lua();
+		load_lua_lib(lua_file.c_str());
 		algorithm *algo;
 
-		switch(algo_config->get_algorithm())
+		switch(eap::get_algorithm())
 		{
 		case GA:
 			std::cout<<"Testing GA"<<std::endl;
-			algo = new ga(lua_file);
+			//algo = new ga(lua_file);
 			break;
 		case SA:
 			std::cout<<"Testing SA"<<std::endl;
-			algo = new sa(lua_file);
+			//algo = new sa(lua_file);
 			break;
 		case HC:
 			std::cout<<"Testing HC"<<std::endl;
-			algo = new hc(lua_file);
+			//algo = new hc(lua_file);
 			break;
 		case ES:
 			std::cout<<"Testing ES"<<std::endl;
-			algo = new es(lua_file);
+			//algo = new es(lua_file);
 			break;
 		default:
 			std::cout<<"Not a valid algorithm"<<std::endl;	
 		}
 
 		/* load algorithm run parameters */
-		algo->setup_algo_params();
+		//algo->setup_algo_params();
 
 		/* load all possible antenna placements */
 		//algo->setup_ant_placements();

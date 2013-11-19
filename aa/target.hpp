@@ -1,3 +1,4 @@
+#if 0
 #ifndef TARGET_HPP_INCLUDED
 #define TARGET_HPP_INCLUDED
 #include<string>
@@ -11,4 +12,5 @@ public:
 	std::vector<float> db_gain;
 };
 typedef boost::shared_ptr<target> target_ptr;
+#endif
 #endif

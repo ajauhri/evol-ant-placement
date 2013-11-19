@@ -1,3 +1,4 @@
+#if 0
 #ifndef GA_HPP_INCLUDED
 #define GA_HPP_INCLUDED
 #include "selector.hpp"
@@ -24,4 +25,5 @@ public:
 	void run();
 	void select();
 };
+#endif
 #endif

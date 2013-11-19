@@ -1,3 +1,4 @@
+#if 0
 #ifndef ANT_CONFIG_HPP_INCLUDED
 #define ANT_CONFIG_HPP_INCLUDED
 #include "position.hpp"
@@ -15,4 +16,5 @@ public:
 	std::vector<target_ptr> targets;
 };
 typedef boost::shared_ptr<ant_config> ant_config_ptr;
+#endif
 #endif

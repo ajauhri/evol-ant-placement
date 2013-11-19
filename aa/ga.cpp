@@ -1,3 +1,4 @@
+#if 0
 #include<iostream>
 #include<vector>
 #include<boost/algorithm/string.hpp>
@@ -136,3 +137,4 @@ individual_ptr ga::tour()
 ga::~ga(void)
 {
 }
+#endif
