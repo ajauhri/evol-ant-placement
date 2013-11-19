@@ -2,10 +2,12 @@
 #include<iostream>
 #include<fstream>
 #include<time.h>
+#include<string>
 #include<boost/program_options.hpp>
 #include<boost/filesystem.hpp>
 
 #include "eap_resources.hpp"
+#include "lua_cmds.hpp"
 #if 0
 #include "ga.hpp"
 #include "sa.hpp"
@@ -26,7 +28,7 @@ int main(int argc, char* argv[])
 		prg_opts::options_description desc("\nUsage");
 		desc.add_options()
 			("help,h", "view valid options")
-			("input,i", prg_opts::value<string>(&lua_file), "Input file");
+			("input,i", prg_opts::value<std::string>(&lua_file), "Input file");
 		
 		prg_opts::variables_map vm;
 		prg_opts::store(prg_opts::parse_command_line(argc, argv, desc), vm);
@@ -43,9 +45,9 @@ int main(int argc, char* argv[])
 			std::cout << "Can not open input file" << "\n";
 			return 0;
 		}
-		init_lua();
-		load_lua_lib(lua_file.c_str());
-		algorithm *algo;
+		eap::init_lua();
+		eap::load_lua_lib(lua_file.c_str());
+		//algorithm *algo;
 
 		switch(eap::get_algorithm())
 		{
@@ -80,7 +82,7 @@ int main(int argc, char* argv[])
 
 		//algo->run();
 	}
-	catch (const exception &e)
+	catch (const std::exception &e)
 	{
 		std::cerr<<e.what() << "\n";
         return 1;

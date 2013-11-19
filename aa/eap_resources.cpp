@@ -1,4 +1,5 @@
 #include "eap_resources.hpp"
+#include "lua_cmds.hpp"
 #include<sstream>
 #include<string>
 #include<iomanip>
@@ -7,7 +8,7 @@
 
 namespace eap
 {
-	a_map algorithms_map = create_algorithms_map();
+	static a_map algorithms_map = create_algorithms_map();
 
 	float randf(float start, float end)
 	{
@@ -27,7 +28,7 @@ namespace eap
 	 * @desc Creates a static map of available algorithms
 	 * @return a map with a mapping of algorithm names to its ALGO_ID
 	 */
-	static a_map create_algorithms_map()
+	a_map create_algorithms_map()
 	{
 		a_map map;
 		map["GA"] = GA;

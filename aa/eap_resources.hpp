@@ -5,6 +5,8 @@
 #include<fstream>
 #include<streambuf>
 #include<string>
+#include<map>
+#include "algorithms.hpp"
 
 namespace eap
 {
@@ -43,9 +45,7 @@ namespace eap
 
 	typedef std::map<std::string, algorithms> a_map;
 
-	static a_map create_algorithms_map();
-
-	static a_map algorithms_map;
+	a_map create_algorithms_map();
 
 	int get_algorithm(void);
 }
