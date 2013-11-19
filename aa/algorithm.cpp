@@ -1,3 +1,4 @@
+#if 0
 #include<iostream>
 #include<exception>
 #include<random>
@@ -5,41 +6,19 @@
 #include<time.h>
 #include<boost/filesystem.hpp>
 #include "algorithm.hpp"
-#include "aapot_resources.hpp"
+#include "eap_resources.hpp"
 #include "position.hpp"
 #include "individual.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
 using namespace std;
-using namespace aapot_resources;
+using namespace eap_resources;
 
 namespace 
 {
-	char const *aapot_parameters_s = "AAPOT_Parameters";
-	char const *antenna_placements_s = "antenna_placements";
-	char const *antenna_s = "antenna";
-	char const *antenna_locator_s = "antenna_locator";
-	char const *vehicle_configuration_s = "vehicle_configuration";
-	char const *vehicle_model_s = "vehicle_model";
-	char const *ancillary_s = "ancillary";
-	char const *name_s = "name";
-	char const *ancillary_locator_s = "ancillary_locator";
-	char const *mount_object_s = "mount_object";
-	char const *mount_object_locator_s = "mount_object_locator";
-	char const *translation_s = "translation";
-	char const *rotation_s = "rotation";
-	char const *pattern_available_s = "pattern_available";
-	char const *positions_s = "positions";
-	char const *position_s = "position";
-	char const *antenna_targets_s = "antenna_targets";
-	char const *target_s = "target";
-	char const *freq_s = "freq";
-	char const *filename_s = "filename";
-
 	char const *algorithm_s = "algorithm";
-	char const *mutation_probability_s = "mutation_probability";
+	char const *mutation_s = "mutation";
 	char const *exp_weight_s = "exp_weight";
-	char const *seed_s = "seed";
 
 	char const *run_directory = "Runs";
 }
@@ -51,46 +30,8 @@ namespace
 algorithm::algorithm(std::string aapot_file, std::string config_file)
 {
 	this->aapot_file = aapot_file;
-	this->aapot_xml = aapot_resources::read_xml_file(aapot_file);
-	this->config_xml = aapot_resources::read_xml_file(config_file);
-	seek_algo_node();
 	setup_ancillary_nodes();
 }
-
-/**
-* @desc Traverses to position the read pointer to the algorithm parameter set in the stream buffer
-*/
-void algorithm::seek_algo_node() 
-{
-	this->aapot_doc.parse<parse_declaration_node | parse_no_data_nodes | parse_validate_closing_tags>(&this->aapot_xml[0]);
-	this->aapot_root = aapot_doc.first_node(aapot_parameters_s);
-	this->algo_node = aapot_resources::get_first_node(aapot_resources::get_first_node(this->aapot_root, algorithm_s));
-	this->ant_node = aapot_resources::get_first_node(aapot_resources::get_first_node(this->aapot_root, antenna_placements_s), antenna_s);	
-}
-
-/**
-* @desc Loads all ancillary node data
-*/
-void algorithm::setup_ancillary_nodes()
-{
-	config_doc.parse<parse_declaration_node | parse_no_data_nodes | parse_validate_closing_tags>(&this->config_xml[0]);
-	config_node = config_doc.first_node(vehicle_configuration_s);
-	vehicle_model = aapot_resources::get_first_node(config_node, vehicle_model_s)->value();
-	config_node = aapot_resources::get_first_node(config_node, ancillary_s);
-	while (config_node != NULL) 
-	{
-		ancillary_config_ptr config(new ancillary_config);
-		config->name = aapot_resources::get_first_node(config_node,name_s)->value();
-		config->ancilary_locator = aapot_resources::get_first_node(config_node, ancillary_locator_s)->value();
-		config->mount_object = aapot_resources::get_first_node(config_node, mount_object_s)->value();
-		config->mount_object_locator = aapot_resources::get_first_node(config_node, mount_object_locator_s)->value();
-		config->translation = aapot_resources::get_first_node(config_node, translation_s)->value();
-		config->rotation = aapot_resources::get_first_node(config_node, rotation_s)->value();
-		ancillary_configs.push_back(config);
-		config_node = config_node->next_sibling(ancillary_s);
-	}
-}
-
 
 /**
 * @desc 1. Cleaning of old runs from FS
@@ -113,8 +54,8 @@ void algorithm::setup_run_context()
 */
 void algorithm::setup_algo_params()
 {
-	this->mutation_probability = atof(aapot_resources::get_first_attribute(this->algo_node, mutation_probability_s)->value());
-	this->exp_weight = atof(aapot_resources::get_first_attribute(this->algo_node, exp_weight_s)->value());
+	this->mutation = lua::get_value(mutation_s);
+	this->exp_weight = lua::get_value(exp_weight_s);
 	this->auto_seed = aapot_resources::get_first_attribute(this->algo_node, seed_s, false) ? false : true;
 	if (!auto_seed)
 		this->seed = atoi(aapot_resources::get_first_attribute(this->algo_node, seed_s, false)->value());
@@ -452,7 +393,7 @@ void algorithm::simple_mutation(individual_ptr ind)
 {
 	for(unsigned i=0; i<ant_configs.size(); i++)
 	{
-		if(aapot_resources::randf(0, 1.0f) < mutation_probability)
+		if(aapot_resources::randf(0, 1.0f) < mutation)
 		{	
 			int rand = rand_integer(0, ant_configs[i]->positions.size());
 			ind->ant_configs[i]->positions.insert(ind->ant_configs[i]->positions.begin(), ant_configs[i]->positions.at(rand));
@@ -497,3 +438,4 @@ void algorithm::print_individual(individual_ptr ind)
 algorithm::~algorithm(void)
 {
 }
+#endif

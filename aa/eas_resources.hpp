@@ -1,27 +1,22 @@
-#ifndef AAPOT_RESOURCES_HPP_INCLUDED
-#define AAPOT_RESOURCES_HPP_INCLUDED
+#if 0
+#ifndef EAP_RESOURCES_HPP_INCLUDED
+#define EAP_RESOURCES_HPP_INCLUDED
 #include<iostream>
 #include<vector>
 #include<fstream>
 #include<streambuf>
 #include<string>
-#include "rapidxml/rapidxml.hpp"
 
-namespace aapot_resources 
+namespace eap_resources 
 {
-	using namespace rapidxml;
 	using namespace std;
 
 	//Go for forward declarations...http://stackoverflow.com/questions/2297567/where-should-include-be-put-in-c
+	
 	/**
 	* Reading an ASCII file into C++ std::string
 	*/
 	std::string read_lua(const std::string path);
-
-	/**
-	* Get the node having initialization parameters for the algorithm node
-	*/
-	xml_node<>* algo_node(xml_document<>, std::vector<char>);
 
 	/**
 	* convert string to bool
@@ -35,27 +30,27 @@ namespace aapot_resources
 
 	float randf(float, float);
 
-	struct AAPOTException : public std::exception 
+	struct EAPException : public std::exception 
 	{
 		std::string s;
-		AAPOTException(std::string name) : s(name) { } 
+		EAPException(std::string name) : s(name) { } 
 		char const* what() const throw() { return s.c_str(); }
-		~AAPOTException() throw() {}
+		~EAPException() throw() {}
 	};
 
-	struct XMLParseException : public AAPOTException
+	struct ParseException : public EAPException
 	{
-		XMLParseException(std::string msg) : AAPOTException("XML parse exception: " + msg) {}
+		ParseException(std::string msg) : EAPException("XML parse exception: " + msg) {}
 	};
 
-	struct FileCreationException : public AAPOTException
+	struct FileCreationException : public EAPException
 	{
-		FileCreationException(std::string msg) : AAPOTException("File creation exception: " + msg) {}
+		FileCreationException(std::string msg) : EAPException("File creation exception: " + msg) {}
 	};
 
-	struct InvalidStateException : public AAPOTException
+	struct InvalidStateException : public EAPException
 	{
-		InvalidStateException(std::string msg) : AAPOTException("Invalid state exception: " + msg) {}
+		InvalidStateException(std::string msg) : EAPException("Invalid state exception: " + msg) {}
 	};
 
 	const std::string generations_folder = "Generations";
@@ -63,4 +58,5 @@ namespace aapot_resources
 	const std::string iterations_folder = "Iterations";
 
 }
+#endif
 #endif

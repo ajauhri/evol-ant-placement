@@ -1,5 +1,5 @@
 #include "selector.hpp"
-#include "aapot_resources.hpp"
+#include "eap_resources.hpp"
 #include "lua_cmds.hpp"
 #include<vector>
 #include<iterator>
@@ -14,7 +14,6 @@ selector::a_map selector::algorithms_map = selector::create_algorithms_map();
 selector::selector(std::string filename)
 {
 	this->filename = filename;
-	this->inputs = aapot_resources::read_lua(filename);
 	init_lua(this);
 	load_lua_lib((char*) this->filename));
 	close_lua();

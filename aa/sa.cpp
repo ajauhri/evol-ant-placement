@@ -1,3 +1,4 @@
+#if 0
 #include "sa.hpp"
 #include "aapot_resources.hpp"
 #include<iostream>
@@ -47,3 +48,4 @@ void sa::run()
 sa::~sa(void)
 {
 }
+#endif

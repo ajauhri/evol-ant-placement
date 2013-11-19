@@ -5,9 +5,6 @@
 #include <vector>
 #include "algorithms.hpp"
 #include "ant_config.hpp"
-#include "rapidxml/rapidxml.hpp"
-
-using namespace rapidxml;
 
 class selector
 {

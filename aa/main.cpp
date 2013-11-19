@@ -15,7 +15,6 @@
 
 
 namespace prg_opts = boost::program_options;
-using namespace std;
 
 int main(int argc, char* argv[])
 {	
@@ -43,8 +42,8 @@ int main(int argc, char* argv[])
 			std::cout << "Can not open input file" << "\n";
 			return 0;
 		}
-
-		selector *algo_config = new selector(aapot_file);
+		
+		selector *algo_config = new selector(lua_file);
 		algorithm *algo;
 
 		switch(algo_config->get_algorithm())
@@ -73,12 +72,12 @@ int main(int argc, char* argv[])
 		algo->setup_algo_params();
 
 		/* load all possible antenna placements */
-		algo->setup_ant_placements();
+		//algo->setup_ant_placements();
 
 		/* load all antenna free space patterns */
-		algo->read_free_space_patterns();
+		//algo->read_free_space_patterns();
 
-		algo->run();
+		//algo->run();
 	}
 	catch (const exception &e)
 	{

@@ -1,3 +1,4 @@
+#if 0
 #ifndef HC_HPP_INCLUDED
 #define HC_HPP_INCLUDED
 #include "algorithm.hpp"
@@ -21,3 +22,4 @@ public:
 };
 #endif
 
+#endif

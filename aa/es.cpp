@@ -1,5 +1,6 @@
+#if 0
 #include "es.hpp"
-#include "aapot_resources.hpp"
+#include "eas_resources.hpp"
 #include <iostream>
 
 namespace 
@@ -43,3 +44,5 @@ void es::run()
 es::~es(void)
 {
 }
+
+#endif

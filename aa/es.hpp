@@ -1,3 +1,4 @@
+#if 0
 #ifndef ES_HPP_INCLUDED
 #define ES_HPP_INCLUDED
 #include "algorithm.hpp"
@@ -20,4 +21,5 @@ public:
 	void setup_algo_params();
 	void run();
 };
+#endif
 #endif

@@ -1,3 +1,4 @@
+#if 0
 #include<iostream>
 #include "hc.hpp"
 #include "aapot_resources.hpp"
@@ -44,3 +45,4 @@ void hc::run()
 hc::~hc(void)
 {
 }
+#endif

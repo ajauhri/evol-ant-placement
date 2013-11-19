@@ -1,11 +1,12 @@
-#include "aapot_resources.hpp"
+#if 0
+#include "eap_resources.hpp"
 #include<sstream>
 #include<string>
 #include<iomanip>
 #include<algorithm>
 #include<cctype>
 
-namespace aapot_resources
+namespace eap_resources
 {
 	std::string read_lua(const std::string path) 
 	{
@@ -28,15 +29,6 @@ namespace aapot_resources
 		return buffer;
 	}
 
-
-	xml_node<char>* get_first_node(xml_node<> *node, char const *name)
-	{
-		xml_node<> *ptr = node->first_node(name);
-		if (ptr == 0)
-			throw XMLParseException(std::string(name) + " node not found");
-		else 
-			return ptr;
-	}
 
 
 	xml_node<char>* get_first_node(xml_node<> *node)
@@ -73,3 +65,4 @@ namespace aapot_resources
 		return b;
 	}
 }
+#endif

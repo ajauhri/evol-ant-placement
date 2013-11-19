@@ -2,10 +2,8 @@
 #define GA_HPP_INCLUDED
 #include "selector.hpp"
 #include "algorithm.hpp"
-#include "rapidxml/rapidxml.hpp"
 #include "individual.hpp"
 #include<vector>	
-using namespace rapidxml;
 class ga : public algorithm
 {
 private:
@@ -14,7 +12,7 @@ private:
 	unsigned int generations;
 	unsigned int elitism;
 	unsigned int tournament_size;
-	float recombination_probability;
+	float recombination;
 	std::vector<individual_ptr> pop;
 	individual_ptr tour();
 

@@ -1,3 +1,4 @@
+#if 0
 #ifndef SA_HPP_INCLUDED
 #define SA_HPP_INCLUDED
 #include "algorithm.hpp"
@@ -21,4 +22,5 @@ public:
 	void setup_algo_params();
 	void run();
 };
+#endif
 #endif

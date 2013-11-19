@@ -317,6 +317,7 @@ static int stopRun(lua_State *L)
 static lua_State *L = NULL;
 
 void initLua()
+	ad
 {
     if (L)
     {

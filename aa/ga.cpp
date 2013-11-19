@@ -2,23 +2,22 @@
 #include<vector>
 #include<boost/algorithm/string.hpp>
 #include "ga.hpp"
-#include "aapot_resources.hpp"
+#include "eap_resources.hpp"
 #include<sstream>
 #include<boost/filesystem.hpp>
 
 namespace
 {
-	char const *population_size_s = "population_size";
+	char const *population_size_s = "pop";
 	char const *generations_s = "generations";
 	char const *tournament_size_s = "tournament_size";
 	char const *elitism_s = "elitism";
-	char const *recombination_probability_s = "recombination_probability";
+	char const *recombination_s = "recombination";
 }
 
 
 ga::ga(std::string aapot_file, std::string config_file) : super(aapot_file, config_file)
-{
-}
+{ }
 
 /**
 * @desc Loads parameters for simple genetic algorithm  
@@ -28,11 +27,11 @@ void ga::setup_algo_params()
 	try 
 	{
 		algorithm::setup_algo_params();
-		this->population_size = atoi(aapot_resources::get_first_attribute(this->algo_node, population_size_s)->value());
-		this->generations = atoi(aapot_resources::get_first_attribute(this->algo_node, generations_s)->value());
-		this->tournament_size = atoi(aapot_resources::get_first_attribute(this->algo_node,tournament_size_s)->value());
-		this->elitism = atoi(aapot_resources::get_first_attribute(this->algo_node, elitism_s)->value());
-		this->recombination_probability = atof(aapot_resources::get_first_attribute(this->algo_node, recombination_probability_s)->value());
+		this->population_size = lua::get_value(population_size_s);
+		this->generations = lua::get_value(generations_s);
+		this->tournament_size = lua::get_value(tournament_size_s);
+		this->elitism = lua::get_value(elitism_s);
+		this->recombination = lua::get_value(recombination_probability_s);
 		std::cout<<"Completed GA parameter setup"<<std::endl;
 	}
 	catch (const aapot_resources::XMLParseException &e)

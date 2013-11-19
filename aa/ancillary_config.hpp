@@ -1,3 +1,4 @@
+#if 0
 #ifndef ANCILLARY_CONFIG_HPP_INCLUDED
 #define ANCILLARY_CONFIG_HPP_INCLUDED
 #include "position.hpp"
@@ -16,4 +17,5 @@ public:
 	std::string rotation;
 };
 typedef boost::shared_ptr<ancillary_config> ancillary_config_ptr;
+#endif
 #endif

@@ -1,3 +1,4 @@
+#if 0
 #ifndef POSITION_HPP_INCLUDED
 #define POSITION_HPP_INCLUDED
 #include<string>
@@ -5,10 +6,10 @@
 class position
 {
 public:
-	std::string mount_object;
-	std::string mount_object_locator;
-	std::string translation;
-	std::string rotation;
+	float x;
+	float y;
+	float z;
 };
 typedef boost::shared_ptr<position> position_ptr;
+#endif
 #endif
