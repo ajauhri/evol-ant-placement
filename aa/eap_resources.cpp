@@ -40,6 +40,10 @@ namespace eap
 
 	int get_algorithm()
 	{
-		return algorithms_map[get_svalue("algorithm")]; 
+		std::map<std::string, algorithms>::iterator it = algorithms_map.find(get_svalue("algorithm"));
+		if(it != algorithms_map.end())
+			return algorithms_map[get_svalue("algorithm")];
+		else 
+			return -1;
 	}
 }
