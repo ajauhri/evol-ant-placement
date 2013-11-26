@@ -9,13 +9,13 @@
 #include "eap_resources.hpp"
 #include "lua_cmds.hpp"
 #if 0
-#include "ga.hpp"
 #include "sa.hpp"
 #include "es.hpp"
 #include "hc.hpp"
 #include "algorithms.hpp"
-#include "algorithm.hpp"
 #endif
+#include "ga.hpp"
+#include "algorithm.hpp"
 
 namespace prg_opts = boost::program_options;
 
@@ -47,13 +47,13 @@ int main(int argc, char* argv[])
 		}
 		eap::init_lua();
 		eap::load_lua_lib(lua_file.c_str());
-		//algorithm *algo;
+		algorithm *algo;
 
 		switch(eap::get_algorithm())
 		{
 		case GA:
 			std::cout<<"Testing GA"<<std::endl;
-			//algo = new ga(lua_file);
+			algo = new ga(lua_file);
 			break;
 		case SA:
 			std::cout<<"Testing SA"<<std::endl;
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 		}
 
 		/* load algorithm run parameters */
-		//algo->setup_algo_params();
+		algo->setup_algo_params();
 
 		/* load all possible antenna placements */
 		//algo->setup_ant_placements();
@@ -81,6 +81,7 @@ int main(int argc, char* argv[])
 		//algo->read_free_space_patterns();
 
 		//algo->run();
+		eap::close_lua();
 	}
 	catch (const std::exception &e)
 	{

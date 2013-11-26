@@ -1,4 +1,3 @@
-#if 0
 #include<iostream>
 #include<exception>
 #include<random>
@@ -9,17 +8,13 @@
 #include "eap_resources.hpp"
 #include "position.hpp"
 #include "individual.hpp"
-#include "rapidxml/rapidxml_print.hpp"
-
-using namespace std;
-using namespace eap_resources;
+#include "lua_cmds.hpp"
 
 namespace 
 {
 	char const *algorithm_s = "algorithm";
 	char const *mutation_s = "mutation";
 	char const *exp_weight_s = "exp_weight";
-
 	char const *run_directory = "Runs";
 }
 
@@ -27,12 +22,24 @@ namespace
 * @desc Loads the AAPOT configuration file into memory
 * @param aapot_filename AAPOT configuration file 
 */
-algorithm::algorithm(std::string aapot_file, std::string config_file)
+algorithm::algorithm(std::string aapot_file)
 {
 	this->aapot_file = aapot_file;
-	setup_ancillary_nodes();
+	//setup_ancillary_nodes();
 }
 
+void algorithm::setup_algo_params()
+{
+	this->mutation = eap::get_fvalue(mutation_s);
+	this->exp_weight = eap::get_fvalue(exp_weight_s);
+/*
+	this->auto_seed = aapot_resources::get_first_attribute(this->algo_node, seed_s, false) ? false : true;
+	if (!auto_seed)
+		this->seed = atoi(aapot_resources::get_first_attribute(this->algo_node, seed_s, false)->value());*/
+}
+
+
+#if 0
 /**
 * @desc 1. Cleaning of old runs from FS
 *       2. Seed for pseudo-random number generator
@@ -52,15 +59,6 @@ void algorithm::setup_run_context()
 * @desc Loads parameters common amongst all algorithms. 
 *		Overriden by each algorithm class to load other parameters specific to the algorithm.
 */
-void algorithm::setup_algo_params()
-{
-	this->mutation = lua::get_value(mutation_s);
-	this->exp_weight = lua::get_value(exp_weight_s);
-	this->auto_seed = aapot_resources::get_first_attribute(this->algo_node, seed_s, false) ? false : true;
-	if (!auto_seed)
-		this->seed = atoi(aapot_resources::get_first_attribute(this->algo_node, seed_s, false)->value());
-}
-
 /**
 * @desc Load all antenna placements 
 */
@@ -434,8 +432,7 @@ void algorithm::print_individual(individual_ptr ind)
 		std::cout<<"Position "<<ind->ant_configs.at(i)->positions.back()->mount_object<<" "<<ind->ant_configs.at(i)->positions.back()->mount_object_locator<<" "<<ind->ant_configs.at(i)->positions.back()->rotation<<" "<<ind->ant_configs.at(i)->positions.back()->translation<<std::endl;
 	}
 }
-
+#endif
 algorithm::~algorithm(void)
 {
 }
-#endif

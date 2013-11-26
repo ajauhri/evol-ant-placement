@@ -1,7 +1,5 @@
-#if 0
 #ifndef GA_HPP_INCLUDED
 #define GA_HPP_INCLUDED
-#include "selector.hpp"
 #include "algorithm.hpp"
 #include "individual.hpp"
 #include<vector>	
@@ -14,16 +12,15 @@ private:
 	unsigned int elitism;
 	unsigned int tournament_size;
 	float recombination;
-	std::vector<individual_ptr> pop;
-	individual_ptr tour();
+	//std::vector<individual_ptr> pop;
+	//individual_ptr tour();
 
 public:
-	ga(std::string, std::string);
+	ga(std::string);
 	~ga(void);
 
 	void setup_algo_params();
-	void run();
-	void select();
+	//void run();
+	//void select();
 };
-#endif
 #endif

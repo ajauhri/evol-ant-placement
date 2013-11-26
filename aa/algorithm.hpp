@@ -1,7 +1,5 @@
-#if 0
 #ifndef ALGORITHM_HPP_INCLUDED
 #define ALGORITHM_HPP_INCLUDED
-#include "rapidxml/rapidxml.hpp"
 #include "ant_config.hpp"
 #include "ancillary_config.hpp"
 #include "individual.hpp"
@@ -20,23 +18,24 @@ class algorithm
 		bool auto_seed;
 		unsigned long int seed;
 		float	exp_weight;
-		float mutation_probability;
+		float mutation;
 
 		std::string vehicle_model;
 
 		/* everything to do with lua file provided as input */
 		std::string aapot_file;
-		ant_config_ptr clone(ant_config_ptr);
+		//ant_config_ptr clone(ant_config_ptr);
 
 	public:
-		algorithm(std::string, std::string);
+		algorithm(std::string);
 		~algorithm(void);
 
-		virtual void seek_algo_node();
-		virtual void setup_ancillary_nodes();
-
-		virtual void setup_run_context();
 		virtual void setup_algo_params();
+
+		//virtual void seek_algo_node();
+		//virtual void setup_ancillary_nodes();
+#if 0
+		virtual void setup_run_context();
 		virtual void setup_ant_placements();
 		virtual void read_free_space_patterns();
 		virtual void run() = 0;
@@ -55,7 +54,7 @@ class algorithm
 		static int rand_integer(int, int);
 		float cal_totaldb(float, float);
 		void print_individual(individual_ptr);
+#endif
 };
 
-#endif
 #endif

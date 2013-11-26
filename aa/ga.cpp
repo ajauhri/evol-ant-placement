@@ -1,9 +1,9 @@
-#if 0
 #include<iostream>
 #include<vector>
 #include<boost/algorithm/string.hpp>
 #include "ga.hpp"
 #include "eap_resources.hpp"
+#include "lua_cmds.hpp"
 #include<sstream>
 #include<boost/filesystem.hpp>
 
@@ -17,7 +17,7 @@ namespace
 }
 
 
-ga::ga(std::string aapot_file, std::string config_file) : super(aapot_file, config_file)
+ga::ga(std::string aapot_file) : super(aapot_file)
 { }
 
 /**
@@ -28,19 +28,19 @@ void ga::setup_algo_params()
 	try 
 	{
 		algorithm::setup_algo_params();
-		this->population_size = lua::get_value(population_size_s);
-		this->generations = lua::get_value(generations_s);
-		this->tournament_size = lua::get_value(tournament_size_s);
-		this->elitism = lua::get_value(elitism_s);
-		this->recombination = lua::get_value(recombination_probability_s);
+		this->population_size = eap::get_fvalue(population_size_s);
+		this->generations = eap::get_fvalue(generations_s);
+		this->tournament_size = eap::get_fvalue(tournament_size_s);
+		this->elitism = eap::get_fvalue(elitism_s);
+		this->recombination = eap::get_fvalue(recombination_s);
 		std::cout<<"Completed GA parameter setup"<<std::endl;
 	}
-	catch (const aapot_resources::XMLParseException &e)
+	catch (const eap::ParseException &e)
 	{
 		std::cerr<<e.what()<<"\n";
 	}
 }
-
+#if 0
 /**
 * @desc Implements logic for GA runs
 */
@@ -133,8 +133,8 @@ individual_ptr ga::tour()
 	
 	return best;
 }
+#endif
 
 ga::~ga(void)
 {
 }
-#endif
