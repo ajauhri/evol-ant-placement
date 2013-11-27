@@ -9,12 +9,12 @@
 #include "eap_resources.hpp"
 #include "lua_cmds.hpp"
 #if 0
-#include "es.hpp"
-#include "hc.hpp"
 #include "algorithms.hpp"
 #endif
 #include "ga.hpp"
 #include "sa.hpp"
+#include "es.hpp"
+#include "hc.hpp"
 #include "algorithm.hpp"
 
 namespace prg_opts = boost::program_options;
@@ -62,11 +62,11 @@ int main(int argc, char* argv[])
 			break;
 		case HC:
 			std::cout<<"Testing HC"<<std::endl;
-			//algo = new hc(lua_file);
+			algo = new hc();
 			break;
 		case ES:
 			std::cout<<"Testing ES"<<std::endl;
-			//algo = new es(lua_file);
+			algo = new es();
 			break;
 		default:
 			std::cout<<"Not a valid algorithm"<<std::endl;	

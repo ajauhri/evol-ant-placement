@@ -1,6 +1,6 @@
-#if 0
 #include "es.hpp"
-#include "eas_resources.hpp"
+#include "eap_resources.hpp"
+#include "lua_cmds.hpp"
 #include <iostream>
 
 namespace 
@@ -10,7 +10,7 @@ namespace
 }
 
 
-es::es(std::string aapot_file, std::string config_file) : super(aapot_file, config_file)
+es::es() : super()
 {
 }
 
@@ -22,16 +22,17 @@ void es::setup_algo_params()
 	try
 	{
 		algorithm::setup_algo_params();
-		this->mu = atoi(aapot_resources::get_first_attribute(this->algo_node, mu_s)->value());
-		this->lambda = atoi(aapot_resources::get_first_attribute(this->algo_node, lambda_s)->value());
+		this->mu = eap::get_fvalue(mu_s); 
+		this->lambda = eap::get_fvalue(lambda_s); 
 		std::cout<<"Completed ES parameter setup"<<std::endl;
 	}
-	catch (const aapot_resources::XMLParseException &e)
+	catch (const eap::InvalidStateException &e)
 	{
 		std::cerr<<e.what()<<"\n";
 	}
 }
 
+#if 0
 /**
 * @desc Implements logic for ES runs
 */
@@ -41,8 +42,8 @@ void es::run()
 	
 }
 
+#endif
 es::~es(void)
 {
 }
 
-#endif

@@ -13,7 +13,7 @@ private:
 	unsigned int iterations_per_temperature_change;
 	float convergence_factor;
 public:
-	sa();
+	sa(void);
 	~sa(void);
 
 	void setup_algo_params();

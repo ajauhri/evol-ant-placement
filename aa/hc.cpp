@@ -1,7 +1,7 @@
-#if 0
 #include<iostream>
 #include "hc.hpp"
-#include "aapot_resources.hpp"
+#include "eap_resources.hpp"
+#include "lua_cmds.hpp"
 
 namespace 
 {
@@ -9,7 +9,7 @@ namespace
 	char const *convergence_factor_s = "convergence_factor_s";
 }
 
-hc::hc(std::string aapot_file, std::string config_file) : super(aapot_file, config_file)
+hc::hc() : super()
 {
 }
 
@@ -22,16 +22,17 @@ void hc::setup_algo_params()
 	try
 	{
 		algorithm::setup_algo_params();
-		this->iterations = atoi(aapot_resources::get_first_attribute(this->algo_node, iterations_s)->value());
-		this->convergence_factor = atof(aapot_resources::get_first_attribute(this->algo_node, convergence_factor_s)->value());
+		this->iterations = eap::get_fvalue(iterations_s);
+		this->convergence_factor = eap::get_fvalue(convergence_factor_s);
 		std::cout<<"Completed HC parameter setup"<<std::endl;
 	}
-	catch (const aapot_resources::XMLParseException &e)
+	catch (const eap::InvalidStateException &e)
 	{
 		std::cerr<<e.what()<<"\n";
 	}
 }
 
+#if 0
 /**
 * @desc Implements logic for HC runs
 */
@@ -41,8 +42,8 @@ void hc::run()
 	
 }
 
+#endif
 
 hc::~hc(void)
 {
 }
-#endif
