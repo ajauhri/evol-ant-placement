@@ -1,10 +1,7 @@
-#if 0
 #ifndef SA_HPP_INCLUDED
 #define SA_HPP_INCLUDED
 #include "algorithm.hpp"
-#include "rapidxml/rapidxml.hpp"
 	
-using namespace rapidxml;
 class sa :
 	public algorithm
 {
@@ -16,11 +13,10 @@ private:
 	unsigned int iterations_per_temperature_change;
 	float convergence_factor;
 public:
-	sa(std::string, std::string);
+	sa();
 	~sa(void);
 
 	void setup_algo_params();
-	void run();
+	//void run();
 };
-#endif
 #endif

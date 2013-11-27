@@ -17,7 +17,7 @@ namespace
 }
 
 
-ga::ga(std::string aapot_file) : super(aapot_file)
+ga::ga() : super()
 { }
 
 /**

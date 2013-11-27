@@ -22,9 +22,8 @@ namespace
  * @desc Loads the AAPOT configuration file into memory
  * @param aapot_filename AAPOT configuration file 
  */
-algorithm::algorithm(std::string aapot_file)
+algorithm::algorithm()
 {
-	this->aapot_file = aapot_file;
 	//setup_ancillary_nodes();
 }
 

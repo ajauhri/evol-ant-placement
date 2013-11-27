@@ -9,12 +9,12 @@
 #include "eap_resources.hpp"
 #include "lua_cmds.hpp"
 #if 0
-#include "sa.hpp"
 #include "es.hpp"
 #include "hc.hpp"
 #include "algorithms.hpp"
 #endif
 #include "ga.hpp"
+#include "sa.hpp"
 #include "algorithm.hpp"
 
 namespace prg_opts = boost::program_options;
@@ -49,15 +49,16 @@ int main(int argc, char* argv[])
 		eap::load_lua_lib(lua_file.c_str());
 		algorithm *algo;
 
+		eap::load_lua_lib(lua_file.c_str());
 		switch(eap::get_algorithm())
 		{
 		case GA:
 			std::cout<<"Testing GA"<<std::endl;
-			algo = new ga(lua_file);
+			algo = new ga();
 			break;
 		case SA:
 			std::cout<<"Testing SA"<<std::endl;
-			//algo = new sa(lua_file);
+			algo = new sa();
 			break;
 		case HC:
 			std::cout<<"Testing HC"<<std::endl;

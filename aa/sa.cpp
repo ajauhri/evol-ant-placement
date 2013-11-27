@@ -1,6 +1,6 @@
-#if 0
 #include "sa.hpp"
-#include "aapot_resources.hpp"
+#include "eap_resources.hpp"
+#include "lua_cmds.hpp"
 #include<iostream>
 
 namespace
@@ -12,7 +12,7 @@ namespace
 	char const *convergence_factor_s = "convergence_factor";
 }
 
-sa::sa(std::string aapot_file, std::string config_file) : super(aapot_file, config_file)
+sa::sa() : super()
 {}
 
 /**
@@ -23,19 +23,20 @@ void sa::setup_algo_params()
 	try
 	{
 		algorithm::setup_algo_params();
-		this->iterations = atoi(aapot_resources::get_first_attribute(this->algo_node, iterations_s)->value());
-		this->initial_temperature = atof(aapot_resources::get_first_attribute(this->algo_node, initial_temperature_s)->value());
-		this->temperature_factor = atof(aapot_resources::get_first_attribute(this->algo_node, temperature_factor_s)->value());
-		this->iterations_per_temperature_change = atoi(aapot_resources::get_first_attribute(this->algo_node, iterations_per_temperature_change_s)->value());
-		this->convergence_factor = atof(aapot_resources::get_first_attribute(this->algo_node, convergence_factor_s)->value());
+		this->iterations = eap::get_fvalue(iterations_s); 
+		this->initial_temperature = eap::get_fvalue(initial_temperature_s);
+		this->temperature_factor = eap::get_fvalue(temperature_factor_s); 
+		this->iterations_per_temperature_change = eap::get_fvalue(iterations_per_temperature_change_s); 
+		this->convergence_factor = eap::get_fvalue(convergence_factor_s); 
 		std::cout<<"Completed SA parameter setup"<<std::endl;
 	}
-	catch (const aapot_resources::XMLParseException &e)
+	catch (const eap::InvalidStateException &e)
 	{
 		std::cerr<<e.what()<<"\n";
 	}
 }
 
+#if 0
 /**
 * @desc Implements logic for SA runs
 */

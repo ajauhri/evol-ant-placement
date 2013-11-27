@@ -22,12 +22,10 @@ class algorithm
 
 		std::string vehicle_model;
 
-		/* everything to do with lua file provided as input */
-		std::string aapot_file;
 		//ant_config_ptr clone(ant_config_ptr);
 
 	public:
-		algorithm(std::string);
+		algorithm();
 		~algorithm(void);
 
 		virtual void setup_algo_params();

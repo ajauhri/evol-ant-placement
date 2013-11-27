@@ -16,7 +16,7 @@ private:
 	//individual_ptr tour();
 
 public:
-	ga(std::string);
+	ga();
 	~ga(void);
 
 	void setup_algo_params();
