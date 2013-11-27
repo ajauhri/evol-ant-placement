@@ -35,7 +35,7 @@ void ga::setup_algo_params()
 		this->recombination = eap::get_fvalue(recombination_s);
 		std::cout<<"Completed GA parameter setup"<<std::endl;
 	}
-	catch (const eap::ParseException &e)
+	catch (const eap::InvalidStateException &e)
 	{
 		std::cerr<<e.what()<<"\n";
 	}

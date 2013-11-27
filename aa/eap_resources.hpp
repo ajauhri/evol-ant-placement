@@ -26,7 +26,7 @@ namespace eap
 
 	struct ParseException : public EAPException
 	{
-		ParseException(std::string msg) : EAPException("XML parse exception: " + msg) {}
+		ParseException(std::string msg) : EAPException("Parse exception: " + msg) {}
 	};
 
 	struct FileCreationException : public EAPException

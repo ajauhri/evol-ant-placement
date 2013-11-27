@@ -19,9 +19,9 @@ namespace
 }
 
 /**
-* @desc Loads the AAPOT configuration file into memory
-* @param aapot_filename AAPOT configuration file 
-*/
+ * @desc Loads the AAPOT configuration file into memory
+ * @param aapot_filename AAPOT configuration file 
+ */
 algorithm::algorithm(std::string aapot_file)
 {
 	this->aapot_file = aapot_file;
@@ -30,38 +30,46 @@ algorithm::algorithm(std::string aapot_file)
 
 void algorithm::setup_algo_params()
 {
-	this->mutation = eap::get_fvalue(mutation_s);
-	this->exp_weight = eap::get_fvalue(exp_weight_s);
-/*
-	this->auto_seed = aapot_resources::get_first_attribute(this->algo_node, seed_s, false) ? false : true;
-	if (!auto_seed)
-		this->seed = atoi(aapot_resources::get_first_attribute(this->algo_node, seed_s, false)->value());*/
+	try
+	{
+		this->mutation = eap::get_fvalue(mutation_s);
+		this->exp_weight = eap::get_fvalue(exp_weight_s);
+		std::cout<<"Completed generic algo parameter setup"<<std::endl;
+	}
+	/*
+	   this->auto_seed = aapot_resources::get_first_attribute(this->algo_node, seed_s, false) ? false : true;
+	   if (!auto_seed)
+	   this->seed = atoi(aapot_resources::get_first_attribute(this->algo_node, seed_s, false)->value());*/
+	catch (const eap::InvalidStateException &e)
+	{
+		std::cerr<<e.what()<<"\n";
+	}
 }
 
 
 #if 0
 /**
-* @desc 1. Cleaning of old runs from FS
-*       2. Seed for pseudo-random number generator
-*/
+ * @desc 1. Cleaning of old runs from FS
+ *       2. Seed for pseudo-random number generator
+ */
 void algorithm::setup_run_context()
 {
 	if (this->auto_seed)
 		srand(time(NULL));
 	else
 		srand(this->seed);
-	
+
 	boost::filesystem::remove_all(run_directory);
 	boost::filesystem::create_directory(run_directory);
 }
 
 /**
-* @desc Loads parameters common amongst all algorithms. 
-*		Overriden by each algorithm class to load other parameters specific to the algorithm.
-*/
+ * @desc Loads parameters common amongst all algorithms. 
+ *		Overriden by each algorithm class to load other parameters specific to the algorithm.
+ */
 /**
-* @desc Load all antenna placements 
-*/
+ * @desc Load all antenna placements 
+ */
 void algorithm::setup_ant_placements()
 {
 	try
@@ -109,8 +117,8 @@ void algorithm::setup_ant_placements()
 }
 
 /**
-* @desc Reads all free space pattern files provided as <target> tags in AAPOT.xml 
-*/
+ * @desc Reads all free space pattern files provided as <target> tags in AAPOT.xml 
+ */
 void algorithm::read_free_space_patterns()
 {
 	for (unsigned i=0; i<ant_configs.size(); i++)
@@ -123,9 +131,9 @@ void algorithm::read_free_space_patterns()
 }
 
 /**
-* @desc Initializes an individual
-* @return Returns a pointer to the initialized individual
-*/
+ * @desc Initializes an individual
+ * @return Returns a pointer to the initialized individual
+ */
 individual_ptr algorithm::setup_individual()
 {
 	individual_ptr ind (new individual);
@@ -144,15 +152,15 @@ individual_ptr algorithm::setup_individual()
 }
 
 /**
-* @desc Checks if antenna postion overlaps within an individual
-* @return true or false
-*/ 
+ * @desc Checks if antenna postion overlaps within an individual
+ * @return true or false
+ */ 
 bool algorithm::overlaps_ant(individual_ptr ind, position_ptr p)
 {
 	for (unsigned p_i=0; p_i<ind->ant_configs.size(); p_i++)
 	{
 		if (!std::strcmp(p->mount_object.c_str(), ind->ant_configs[p_i]->positions[0]->mount_object.c_str()) &&
-			!std::strcmp(p->mount_object_locator.c_str(), ind->ant_configs[p_i]->positions[0]->mount_object_locator.c_str())) {
+				!std::strcmp(p->mount_object_locator.c_str(), ind->ant_configs[p_i]->positions[0]->mount_object_locator.c_str())) {
 			return true;
 		}
 	}
@@ -160,15 +168,15 @@ bool algorithm::overlaps_ant(individual_ptr ind, position_ptr p)
 }
 
 /**
-* @desc Checks if antenna position overlaps with any of the ancillary points 
-* @return true or false
-*/
+ * @desc Checks if antenna position overlaps with any of the ancillary points 
+ * @return true or false
+ */
 bool algorithm::overlaps_ancillary(position_ptr p)
 {
 	for (unsigned i=0; i<ancillary_configs.size(); i++)
 	{
 		if (!std::strcmp(p->mount_object.c_str(), ancillary_configs[i]->mount_object.c_str()) &&
-			!std::strcmp(p->mount_object_locator.c_str(), ancillary_configs[i]->mount_object_locator.c_str())) {
+				!std::strcmp(p->mount_object_locator.c_str(), ancillary_configs[i]->mount_object_locator.c_str())) {
 			return true;
 		}
 	}
@@ -178,10 +186,10 @@ bool algorithm::overlaps_ancillary(position_ptr p)
 
 
 /**
-* @desc Serializes an individual into a file readable by simulator
-* @param ind Individual (an individual represents the config file)
-* @param file_path 
-*/
+ * @desc Serializes an individual into a file readable by simulator
+ * @param ind Individual (an individual represents the config file)
+ * @param file_path 
+ */
 void algorithm::write_to_file(individual_ptr ind, std::string file_path)
 {
 	/* generating the XML hierarchy */
@@ -218,12 +226,12 @@ void algorithm::write_to_file(individual_ptr ind, std::string file_path)
 			xml_node<>* ancillary_locator_node = doc.allocate_node(node_element, ancillary_locator_s);
 			ancillary_locator_node->value(ancillary_configs[i_ancillary]->ancilary_locator.c_str());
 			ancillary_node->append_node(ancillary_locator_node);
-	
+
 			/* mount object node */
 			xml_node<>* mount_object_node = doc.allocate_node(node_element, mount_object_s);
 			mount_object_node->value(ancillary_configs[i_ancillary]->mount_object.c_str());
 			ancillary_node->append_node(mount_object_node);
-			
+
 			/* mount object locator node */
 			xml_node<>* mount_object_locator_node = doc.allocate_node(node_element, mount_object_locator_s);
 			mount_object_locator_node->value(ancillary_configs[i_ancillary]->mount_object_locator.c_str());
@@ -240,7 +248,7 @@ void algorithm::write_to_file(individual_ptr ind, std::string file_path)
 			ancillary_node->append_node(rotation_node);
 		}
 
-	
+
 		for (unsigned i_ant=0; i_ant<ant_configs.size(); i_ant++) 
 		{
 			/* antenna node */
@@ -288,17 +296,17 @@ void algorithm::write_to_file(individual_ptr ind, std::string file_path)
 	std::string xml_as_string;
 	/* flag print_no_indenting removes whitespaces */
 	print(std::back_inserter(xml_as_string), doc, print_no_indenting);
-	
+
 	std::ofstream os (file_path, std::ios::trunc);
-	
+
 	xml_as_string.erase(std::remove(xml_as_string.begin(), xml_as_string.end(), '\t'), xml_as_string.end());
 	os << xml_as_string;
 	os.close();
 }
 
 /**
-* @desc Run the simulation & poll it completes
-*/
+ * @desc Run the simulation & poll it completes
+ */
 void algorithm::run_simulation()
 {
 	//TODO this should run all files present under a certain location
@@ -306,29 +314,29 @@ void algorithm::run_simulation()
 }
 
 /**
-* @desc Evaluate the fitness for a given configuration id
-* @param config_id Configuration ID
-*/
+ * @desc Evaluate the fitness for a given configuration id
+ * @param config_id Configuration ID
+ */
 void algorithm::evaluate_ant_config(target& ant_target)
 {
 	//Read the results and store the fitness
 	char buffer[300];
 	FILE* fp = fopen(ant_target.filename.c_str(), "r");
-    if (fp != NULL)
-        {
-			float theta, phi, gain_theta, gain_phi, phase_theta, phase_phi;        
-            do
-            {
-				while ((fgets(buffer, 300, fp) != NULL) && strncmp(buffer, "end_<parameters>", 16));	// find the start of the radiation data
-                while (fgets(buffer, 300, fp) != NULL)
-                {
-                    if (sscanf(buffer, "%f %f %f %f %f %f", &theta, &phi, &gain_theta, &gain_phi, &phase_theta, &phase_phi) != 6) break;
-					ant_target.db_gain.push_back(cal_totaldb(gain_theta, gain_phi));
-                }
-            }
-            while (!feof(fp));
-            fclose(fp);
-        }
+	if (fp != NULL)
+	{
+		float theta, phi, gain_theta, gain_phi, phase_theta, phase_phi;        
+		do
+		{
+			while ((fgets(buffer, 300, fp) != NULL) && strncmp(buffer, "end_<parameters>", 16));	// find the start of the radiation data
+			while (fgets(buffer, 300, fp) != NULL)
+			{
+				if (sscanf(buffer, "%f %f %f %f %f %f", &theta, &phi, &gain_theta, &gain_phi, &phase_theta, &phase_phi) != 6) break;
+				ant_target.db_gain.push_back(cal_totaldb(gain_theta, gain_phi));
+			}
+		}
+		while (!feof(fp));
+		fclose(fp);
+	}
 	else 
 	{
 		std::cerr<<"Target file not found: "<<ant_target.filename<<std::endl;
@@ -337,9 +345,9 @@ void algorithm::evaluate_ant_config(target& ant_target)
 }
 
 /**
-* @desc Clones an antenna configuration. The clone is shallow as positions are not copied.
-* @param config The config to be cloned
-*/ 
+ * @desc Clones an antenna configuration. The clone is shallow as positions are not copied.
+ * @param config The config to be cloned
+ */ 
 ant_config_ptr algorithm::clone(ant_config_ptr config)
 {
 	ant_config_ptr clone_config (new ant_config);
@@ -349,11 +357,11 @@ ant_config_ptr algorithm::clone(ant_config_ptr config)
 }
 
 /**
-* @desc Exchange of genotypes between two individuals
-* @param ind_1 First individual
-* @param ind_2 Second indivdual
-* @return Vector of genetically bred individuals
-*/
+ * @desc Exchange of genotypes between two individuals
+ * @param ind_1 First individual
+ * @param ind_2 Second indivdual
+ * @return Vector of genetically bred individuals
+ */
 std::vector<individual_ptr> algorithm::breed(individual_ptr ind_1, individual_ptr ind_2)
 {
 	std::vector<individual_ptr> children;
@@ -370,23 +378,23 @@ std::vector<individual_ptr> algorithm::breed(individual_ptr ind_1, individual_pt
 		children[0]->ant_configs[i]->positions.push_back(ind_1->ant_configs[i]->positions.back());
 		children[1]->ant_configs[i]->positions.push_back(ind_2->ant_configs[i]->positions.back());
 	}
-	
+
 	for (unsigned i = xover; i < ant_configs.size(); i++)
-    {
-		
+	{
+
 		children[0]->ant_configs.push_back(clone(ind_2->ant_configs[i]));
 		children[1]->ant_configs.push_back(clone(ind_1->ant_configs[i]));
 		children[0]->ant_configs[i]->positions.push_back(ind_2->ant_configs[i]->positions.back());
 		children[1]->ant_configs[i]->positions.push_back(ind_1->ant_configs[i]->positions.back());
-    }
-	
+	}
+
 	return children;
 }
 
 /**
-* @desc Simple mutation of individual based on the mutation probability
-* @param ind The individual to be mutated
-*/
+ * @desc Simple mutation of individual based on the mutation probability
+ * @param ind The individual to be mutated
+ */
 void algorithm::simple_mutation(individual_ptr ind)
 {
 	for(unsigned i=0; i<ant_configs.size(); i++)
@@ -400,21 +408,21 @@ void algorithm::simple_mutation(individual_ptr ind)
 }
 
 /**
-* @desc Generates a random integer between [min, max)
-* @param min Lower limit
-* @param max Upper bound
-*/
+ * @desc Generates a random integer between [min, max)
+ * @param min Lower limit
+ * @param max Upper bound
+ */
 int algorithm::rand_integer(int min_value, int max_value)
 {
-    return (int) rand() % max_value;
+	return (int) rand() % max_value;
 }
 
 /**
-* @desc Computes total gain 
-* @param gain_theta in dBi
-* @param gain_phi in dBi
-* @return total gain in dBi
-*/
+ * @desc Computes total gain 
+ * @param gain_theta in dBi
+ * @param gain_phi in dBi
+ * @return total gain in dBi
+ */
 float algorithm::cal_totaldb(float gain_theta, float gain_phi)
 {
 	float tot_linear_gain = pow(10, gain_theta/10) + pow(10, gain_phi/10);
@@ -422,8 +430,8 @@ float algorithm::cal_totaldb(float gain_theta, float gain_phi)
 }
 
 /**
-* @desc For debugging...
-*/
+ * @desc For debugging...
+ */
 void algorithm::print_individual(individual_ptr ind)
 {
 	for (unsigned i=0; i<ind->ant_configs.size(); i++)
