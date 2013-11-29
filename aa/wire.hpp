@@ -5,8 +5,8 @@
 class wire
 {	
     public:
-        position a;
-        position b;
+        position_ptr a;
+        position_ptr b;
         int segments;
         float diameter;
 };

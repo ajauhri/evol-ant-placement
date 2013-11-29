@@ -27,7 +27,7 @@ class algorithm
         algorithm(std::string);
         ~algorithm(void);
 
-        std::vector<ant_config_ptr> ant_configs;
+        std::vector<ant_config_ptr> ant_configs; //stores the platform and all wires
         ant_config_ptr platform;
 
         virtual void setup_algo_params();

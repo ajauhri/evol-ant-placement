@@ -5,6 +5,9 @@
 #include<string>
 #include<vector>
 #include<boost/shared_ptr.hpp>
+
+/* ant_config used to store possible positions of different antennas and aslo the platform. The platform will not have any positions */
+
 class ant_config
 {
 	public:

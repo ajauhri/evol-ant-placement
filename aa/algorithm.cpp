@@ -4,11 +4,14 @@
 #include<math.h>
 #include<time.h>
 #include<boost/filesystem.hpp>
-#include "algorithm.hpp"
-#include "eap_resources.hpp"
-#include "position.hpp"
-#include "individual.hpp"
-#include "lua_cmds.hpp"
+#include<sstream>
+
+#include<algorithm.hpp>
+#include<eap_resources.hpp>
+#include<position.hpp>
+#include<individual.hpp>
+#include<lua_cmds.hpp>
+#include<wire.hpp>
 
 namespace 
 {
@@ -86,8 +89,42 @@ void algorithm::setup_ant_placements()
 void algorithm::load_wires()
 {
     // first load platform wires
+    try 
+    {
+        std::ifstream t(platform->name);
+        std::string line;
+        float ax, ay, az, bx, by, bz, dia;
+        int seg, m;
+        char keyword[3];
 
+        while (std::getline(t, line))
+        {
+            if (line[0] == 'G' && line[1] == 'C')
+            {
+                std::istringstream iss(line);
+                if (!(iss >> keyword >> m >> seg >> ax >> ay >> az >> bx >> by >> bz >> dia)) 
+                {
+                    throw eap::ParseException("Platform lua file corrupted");
+                }
+                wire_ptr w(new wire); 
+                position_ptr a(new position);
+                position_ptr b(new position);
+                a->x = ax; a->y = ay; a->z = az;
+                b->x = bx; b->y = by; b->z = bz;
+                w->a = a;
+                w->b = b;
+                w->segments = seg;
+                w->diameter = dia;
+                eap::algo->ant_configs[0]->wires.push_back(w);
+            }
+        } 
 
+    }
+    catch(const eap::ParseException &e)
+    {
+        std::cerr<<e.what()<<"\n";
+        exit(0);
+    }
 }
 
 /**
