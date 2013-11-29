@@ -5,6 +5,7 @@ CFLAGS = -c -Wall -std=c++11
 LDFLAGS = -g -L/usr/lib/x86_64-linux-gnu
 LIBS = -lboost_program_options -lboost_system -lboost_filesystem -llua5.2
 OBJS = $(patsubst %.cpp,obj/%.o,$(wildcard *.cpp))
+INCLUDES = $(wildcard *.hpp)
 
 
 all : $(PROJ)
@@ -12,7 +13,7 @@ all : $(PROJ)
 $(PROJ) : $(OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@ $(LIBS)
 
-obj/%.o: %.cpp
+obj/%.o: %.cpp ${includes}
 	$(CC) $(CFLAGS) $< -o $@
 
 clean: 

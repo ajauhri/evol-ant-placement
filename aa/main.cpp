@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 		eap::algo->setup_ant_placements();
 
 		/* load all antenna free space patterns */
-		//algo->read_free_space_patterns();
+		eap::algo->setup_free_space_patterns();
 
 		//algo->run();
 		eap::close_lua();

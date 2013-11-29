@@ -79,22 +79,23 @@ void algorithm::setup_ant_placements()
 		exit(0);
 	}
 }
-#if 0
 
 /**
- * @desc Reads all free space pattern files provided as <target> tags in AAPOT.xml 
+ * @desc Setup all free space pattern files  
  */
-void algorithm::read_free_space_patterns()
+void algorithm::setup_free_space_patterns()
 {
+	/*
 	for (unsigned i=0; i<ant_configs.size(); i++)
 	{
 		for (unsigned j=0; j<ant_configs[i]->targets.size(); j++) {
 			evaluate_ant_config(*ant_configs[i]->targets[j]);
 		}
-	}
+	}*/
 	std::cout<<"Completed reading free space patterns\n";
 }
 
+#if 0
 /**
  * @desc Initializes an individual
  * @return Returns a pointer to the initialized individual

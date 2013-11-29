@@ -51,7 +51,6 @@ namespace eap
 	int get_algorithm(void);
 
 	extern std::unique_ptr<algorithm> algo;
-
 }
 
 #endif
