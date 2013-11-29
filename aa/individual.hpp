@@ -1,4 +1,3 @@
-#if 0
 #ifndef INDIVIDUAL_HPP_INCLUDED
 #define INDIVIDUAL_HPP_INCLUDED
 #include "ant_config.hpp"
@@ -12,5 +11,4 @@ public:
 	individual() { fitness=0.0f;} 
 };
 typedef boost::shared_ptr<individual> individual_ptr;
-#endif
 #endif

@@ -17,7 +17,7 @@ namespace
 }
 
 
-ga::ga() : super()
+ga::ga(std::string lua_file) : super(lua_file)
 { }
 
 /**

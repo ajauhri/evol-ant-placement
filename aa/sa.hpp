@@ -13,7 +13,7 @@ private:
 	unsigned int iterations_per_temperature_change;
 	float convergence_factor;
 public:
-	sa(void);
+	sa(std::string);
 	~sa(void);
 
 	void setup_algo_params();

@@ -8,9 +8,6 @@
 
 #include "eap_resources.hpp"
 #include "lua_cmds.hpp"
-#if 0
-#include "algorithms.hpp"
-#endif
 #include "ga.hpp"
 #include "sa.hpp"
 #include "es.hpp"
@@ -19,8 +16,10 @@
 
 namespace prg_opts = boost::program_options;
 
+std::unique_ptr<algorithm> eap::algo = NULL;
+
 int main(int argc, char* argv[])
-{	
+{
 	try 
 	{
 		std::string lua_file;
@@ -45,38 +44,37 @@ int main(int argc, char* argv[])
 			std::cout << "Can not open input file" << "\n";
 			return 0;
 		}
+
 		eap::init_lua();
 		eap::load_lua_lib(lua_file.c_str());
-		algorithm *algo;
 
-		eap::load_lua_lib(lua_file.c_str());
 		switch(eap::get_algorithm())
 		{
 		case GA:
 			std::cout<<"Testing GA"<<std::endl;
-			algo = new ga();
+			eap::algo.reset(new ga(lua_file));
 			break;
 		case SA:
 			std::cout<<"Testing SA"<<std::endl;
-			algo = new sa();
+			eap::algo.reset(new sa(lua_file));
 			break;
 		case HC:
 			std::cout<<"Testing HC"<<std::endl;
-			algo = new hc();
+			eap::algo.reset(new hc(lua_file));
 			break;
 		case ES:
 			std::cout<<"Testing ES"<<std::endl;
-			algo = new es();
+			eap::algo.reset(new es(lua_file));
 			break;
 		default:
 			std::cout<<"Not a valid algorithm"<<std::endl;	
 		}
 
 		/* load algorithm run parameters */
-		algo->setup_algo_params();
+		eap::algo->setup_algo_params();
 
 		/* load all possible antenna placements */
-		//algo->setup_ant_placements();
+		eap::algo->setup_ant_placements();
 
 		/* load all antenna free space patterns */
 		//algo->read_free_space_patterns();
@@ -87,9 +85,7 @@ int main(int argc, char* argv[])
 	catch (const std::exception &e)
 	{
 		std::cerr<<e.what() << "\n";
-        return 1;
 	}
-
 	return 0;
 }
 

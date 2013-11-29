@@ -22,8 +22,9 @@ namespace
  * @desc Loads the AAPOT configuration file into memory
  * @param aapot_filename AAPOT configuration file 
  */
-algorithm::algorithm()
+algorithm::algorithm(std::string lua_file)
 {
+	this->lua_file = lua_file;
 	//setup_ancillary_nodes();
 }
 
@@ -61,11 +62,7 @@ void algorithm::setup_run_context()
 	boost::filesystem::remove_all(run_directory);
 	boost::filesystem::create_directory(run_directory);
 }
-
-/**
- * @desc Loads parameters common amongst all algorithms. 
- *		Overriden by each algorithm class to load other parameters specific to the algorithm.
- */
+#endif
 /**
  * @desc Load all antenna placements 
  */
@@ -73,47 +70,16 @@ void algorithm::setup_ant_placements()
 {
 	try
 	{
-		while (ant_node != NULL)
-		{
-			ant_config_ptr config (new ant_config);
-			config->name = ant_node->first_attribute(name_s)->value();
-			config->pattern_available = aapot_resources::to_bool(aapot_resources::get_first_attribute(ant_node, pattern_available_s)->value());
-			config->antenna_locator = aapot_resources::get_first_node(ant_node, antenna_locator_s)->value();
-
-			/* antenna_targets */
-			xml_node<> *target_node = aapot_resources::get_first_node(aapot_resources::get_first_node(ant_node, antenna_targets_s), target_s);
-			while (target_node != NULL)
-			{
-				target_ptr ant_target (new target);
-				ant_target->freq = atof(aapot_resources::get_first_node(target_node, freq_s)->value()); 
-				ant_target->filename = aapot_resources::get_first_node(target_node, filename_s)->value();
-				config->targets.push_back(ant_target);
-				target_node = target_node->next_sibling();
-			}
-
-			/* antenna_positions */
-			xml_node<> *position_node = aapot_resources::get_first_node(aapot_resources::get_first_node(ant_node, positions_s), position_s);
-			while (position_node != NULL) 
-			{
-				position_ptr ant_pos (new position);
-				ant_pos->mount_object = aapot_resources::get_first_node(position_node, mount_object_s)->value();
-				ant_pos->mount_object_locator = aapot_resources::get_first_node(position_node, mount_object_locator_s)->value();
-				ant_pos->translation = aapot_resources::get_first_node(position_node,translation_s)->value();
-				ant_pos->rotation = aapot_resources::get_first_node(position_node, rotation_s)->value();
-				config->positions.push_back(ant_pos);
-				position_node = position_node->next_sibling();
-			}
-			ant_configs.push_back(config);
-			ant_node = ant_node->next_sibling();
-		}
+		eap::load_lua_lib(this->lua_file.c_str());
 		std::cout<<"Completed loading antenna placements\n";
 	}
-	catch (const aapot_resources::XMLParseException &e)
+	catch (const eap::InvalidStateException &e)
 	{
 		std::cerr<<e.what()<<"\n";
 		exit(0);
 	}
 }
+#if 0
 
 /**
  * @desc Reads all free space pattern files provided as <target> tags in AAPOT.xml 

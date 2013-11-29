@@ -12,7 +12,7 @@ namespace
 	char const *convergence_factor_s = "convergence_factor";
 }
 
-sa::sa() : super()
+sa::sa(std::string lua_file) : super(lua_file)
 {}
 
 /**

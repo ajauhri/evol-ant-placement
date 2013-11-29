@@ -10,7 +10,7 @@ namespace
 }
 
 
-es::es() : super()
+es::es(std::string lua_file) : super(lua_file)
 {
 }
 

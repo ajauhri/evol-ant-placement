@@ -6,6 +6,7 @@
 #include<streambuf>
 #include<string>
 #include<map>
+#include "algorithm.hpp"
 #include "algorithms.hpp"
 
 namespace eap
@@ -48,5 +49,10 @@ namespace eap
 	a_map create_algorithms_map();
 
 	int get_algorithm(void);
+
+	extern std::unique_ptr<algorithm> algo;
+
 }
+
 #endif
+

@@ -12,7 +12,7 @@ class es :
 		unsigned int generations;
 
 	public:
-		es(void);
+		es(std::string);
 		~es(void);
 
 		void setup_algo_params();

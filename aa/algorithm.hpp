@@ -19,22 +19,23 @@ class algorithm
 		unsigned long int seed;
 		float	exp_weight;
 		float mutation;
-
-		std::string vehicle_model;
+		std::string lua_file;
 
 		//ant_config_ptr clone(ant_config_ptr);
 
 	public:
-		algorithm();
+		algorithm(std::string);
 		~algorithm(void);
 
+		std::vector<ant_config_ptr> ant_configs;
+
 		virtual void setup_algo_params();
+		virtual void setup_ant_placements();
 
 		//virtual void seek_algo_node();
 		//virtual void setup_ancillary_nodes();
 #if 0
 		virtual void setup_run_context();
-		virtual void setup_ant_placements();
 		virtual void read_free_space_patterns();
 		virtual void run() = 0;
 		void run_simulation();	

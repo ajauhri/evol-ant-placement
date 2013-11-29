@@ -11,7 +11,7 @@ private:
 	int iterations;
 
 public:
-	hc(void);
+	hc(std::string);
 	~hc(void);
 
 	void setup_algo_params();
