@@ -20,73 +20,73 @@ std::unique_ptr<algorithm> eap::algo = NULL;
 
 int main(int argc, char* argv[])
 {
-	try 
-	{
-		std::string lua_file;
-		
-		prg_opts::options_description desc("\nUsage");
-		desc.add_options()
-			("help,h", "view valid options")
-			("input,i", prg_opts::value<std::string>(&lua_file), "Input file");
-		
-		prg_opts::variables_map vm;
-		prg_opts::store(prg_opts::parse_command_line(argc, argv, desc), vm);
-		prg_opts::notify(vm);
+    try 
+    {
+        std::string lua_file;
 
-		if (vm.count("help") || !vm.count("input") )
-		{
-				std::cout << desc << "\n";
-				return 0;
-		}
-		
-		if (!std::ifstream(lua_file.c_str()))
-		{
-			std::cout << "Can not open input file" << "\n";
-			return 0;
-		}
+        prg_opts::options_description desc("\nUsage");
+        desc.add_options()
+            ("help,h", "view valid options")
+            ("input,i", prg_opts::value<std::string>(&lua_file), "Input file");
 
-		eap::init_lua();
-		eap::load_lua_lib(lua_file.c_str());
+        prg_opts::variables_map vm;
+        prg_opts::store(prg_opts::parse_command_line(argc, argv, desc), vm);
+        prg_opts::notify(vm);
 
-		switch(eap::get_algorithm())
-		{
-		case GA:
-			std::cout<<"Testing GA"<<std::endl;
-			eap::algo.reset(new ga(lua_file));
-			break;
-		case SA:
-			std::cout<<"Testing SA"<<std::endl;
-			eap::algo.reset(new sa(lua_file));
-			break;
-		case HC:
-			std::cout<<"Testing HC"<<std::endl;
-			eap::algo.reset(new hc(lua_file));
-			break;
-		case ES:
-			std::cout<<"Testing ES"<<std::endl;
-			eap::algo.reset(new es(lua_file));
-			break;
-		default:
-			std::cout<<"Not a valid algorithm"<<std::endl;	
-		}
+        if (vm.count("help") || !vm.count("input") )
+        {
+            std::cout << desc << "\n";
+            return 0;
+        }
 
-		/* load algorithm run parameters */
-		eap::algo->setup_algo_params();
+        if (!std::ifstream(lua_file.c_str()))
+        {
+            std::cout << "Can not open input file" << "\n";
+            return 0;
+        }
 
-		/* load all possible antenna placements */
-		eap::algo->setup_ant_placements();
+        eap::init_lua();
+        eap::load_lua_lib(lua_file.c_str());
 
-		/* load all antenna free space patterns */
-		eap::algo->setup_free_space_patterns();
+        switch(eap::get_algorithm())
+        {
+            case GA:
+                std::cout<<"Testing GA"<<std::endl;
+                eap::algo.reset(new ga(lua_file));
+                break;
+            case SA:
+                std::cout<<"Testing SA"<<std::endl;
+                eap::algo.reset(new sa(lua_file));
+                break;
+            case HC:
+                std::cout<<"Testing HC"<<std::endl;
+                eap::algo.reset(new hc(lua_file));
+                break;
+            case ES:
+                std::cout<<"Testing ES"<<std::endl;
+                eap::algo.reset(new es(lua_file));
+                break;
+            default:
+                std::cout<<"Not a valid algorithm"<<std::endl;	
+        }
 
-		//algo->run();
-		eap::close_lua();
-	}
-	catch (const std::exception &e)
-	{
-		std::cerr<<e.what() << "\n";
-	}
-	return 0;
+        /* load algorithm run parameters */
+        eap::algo->setup_algo_params();
+
+        /* load all possible antenna placements */
+        eap::algo->setup_ant_placements();
+
+        /* load all antenna free space patterns */
+        eap::algo->setup_free_space_patterns();
+
+        //algo->run();
+        eap::close_lua();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr<<e.what() << "\n";
+    }
+    return 0;
 }
 
 
