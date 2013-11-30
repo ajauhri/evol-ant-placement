@@ -19,6 +19,7 @@ namespace
     char const *mutation_s = "mutation";
     char const *exp_weight_s = "exp_weight";
     char const *run_directory = "Runs";
+    const std::string WIRE_NEC = "GW %5d%5d%7f%7f%7f%7f%7f%7f%7f\n";
 }
 
 /**
@@ -133,9 +134,9 @@ std::vector<wire_ptr> algorithm::load_wire(const std::string& nec_file, const st
                 std::cout<<"GW "<<wires.back()->a->x<<" "<<wires.back()->a->y<<"\n";
             }
         } 
-       std::cout<<"Completed loading wires for "<<nec_file<<"\n";
-       infile.close();
-       return wires;
+        std::cout<<"Completed loading wires for "<<nec_file<<"\n";
+        infile.close();
+        return wires;
     }
     catch(const eap::ParseException &e)
     {
@@ -145,18 +146,42 @@ std::vector<wire_ptr> algorithm::load_wire(const std::string& nec_file, const st
 }
 
 /**
- * @desc Setup all free space pattern files  
+ * @desc Setup all free space nec files using the platform file and antenna file
  */
 void algorithm::setup_free_space_patterns()
 {
-    /*
-       for (unsigned i=0; i<ant_configs.size(); i++)
-       {
-       for (unsigned j=0; j<ant_configs[i]->targets.size(); j++) {
-       evaluate_ant_config(*ant_configs[i]->targets[j]);
-       }
-       }*/
+    std::string plat_str_wires = new string[this->platform->wires.size()];
+    int plat_wire_id = 1;
+    boost::format formatter(WIRE_NEC);
+    for (wire_ptr w : this->platform->wires)
+    {
+        str_wires[plat_wire_id - 1] = str(formatter % plat_wire_id++ % w->segments % w->a->x % w->a->y % w->a->z % w->b->x % w->b->y & w->b->z % w->diameter);
+    }
+    
+    int ant_id = 0;
+    for (ant_config_ptr ant : this->ant_configs)
+    {
+        std::ofstream outfile("ANT%d.nec" % ant_id);
+        for (int i = 0; i<this->platform->wires.size(); i++)
+        {
+            outfile << str_wires[i];
+        }
+
+        for (int i=0; i<ant->wires.size(); i++)
+        {
+            outfile
+        }
+
+        
+    }
     std::cout<<"Completed reading free space patterns\n";
+}
+
+void create_nec(const std::string& name, int offset_index)
+{
+    std::ofstream outfile(name);
+   
+
 }
 
 #if 0
