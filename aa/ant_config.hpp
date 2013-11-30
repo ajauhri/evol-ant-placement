@@ -11,7 +11,7 @@
 class ant_config
 {
 	public:
-		std::string name; //name of nec file of antenna
+		std::string nec_file; //name of nec file of antenna
 		std::vector<position_ptr> positions; //positions provided on a platform by the user
 		std::vector<wire_ptr> wires; //wires as provided in the nec file 
 };

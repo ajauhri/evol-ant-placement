@@ -84,27 +84,41 @@ void algorithm::setup_ant_placements()
 }
 
 /**
- * @desc Load all wires in the nec file
+ * @desc Load all wires in the nec file into the algorithm
  */
 void algorithm::load_wires()
 {
     // first load platform wires
+    this->platform->wires = load_wire(this->platform->nec_file, "platform file corrupted");
+
+    // then load all antenna wires
+    for (ant_config_ptr ant : this->ant_configs)
+    {
+        ant->wires = load_wire(ant->nec_file, ant->nec_file + "file corrupted");
+    }
+}
+
+std::vector<wire_ptr> algorithm::load_wire(const std::string& nec_file, const std::string& err_msg)
+{
     try 
     {
-        std::ifstream t(platform->name);
+        std::vector<wire_ptr> wires;
+        std::ifstream infile(nec_file);
         std::string line;
         float ax, ay, az, bx, by, bz, dia;
         int seg, m;
         char keyword[3];
 
-        while (std::getline(t, line))
+        if (!infile) throw eap::InvalidStateException(nec_file + " not found");
+
+        while (std::getline(infile, line))
         {
-            if (line[0] == 'G' && line[1] == 'C')
+            if (line[0] == 'G' && line[1] == 'W')
             {
                 std::istringstream iss(line);
                 if (!(iss >> keyword >> m >> seg >> ax >> ay >> az >> bx >> by >> bz >> dia)) 
                 {
-                    throw eap::ParseException("Platform lua file corrupted");
+                    throw eap::ParseException(err_msg);
                 }
                 wire_ptr w(new wire); 
                 position_ptr a(new position);
@@ -115,10 +129,12 @@ void algorithm::load_wires()
                 w->b = b;
                 w->segments = seg;
                 w->diameter = dia;
-                eap::algo->ant_configs[0]->wires.push_back(w);
+                wires.push_back(w);
+                std::cout<<"GW "<<wires.back()->a->x<<" "<<wires.back()->a->y<<"\n";
             }
         } 
-
+       std::cout<<"Completed loading wires for "<<nec_file<<"\n";
+       return wires;
     }
     catch(const eap::ParseException &e)
     {

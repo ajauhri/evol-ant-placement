@@ -12,6 +12,7 @@
 class algorithm
 {
     private:	
+        std::vector<wire_ptr> load_wire(const std::string&, const std::string&); //called from load_wires, silly?
 
     protected:
         /* common data members for all algorithms */
@@ -27,7 +28,7 @@ class algorithm
         algorithm(std::string);
         ~algorithm(void);
 
-        std::vector<ant_config_ptr> ant_configs; //stores the platform and all wires
+        std::vector<ant_config_ptr> ant_configs; //stores antennas positions and all wires mentioned in the nec file
         ant_config_ptr platform;
 
         virtual void setup_algo_params();

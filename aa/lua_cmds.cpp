@@ -23,9 +23,9 @@ namespace eap
 		{
 			const char *platform_file = lua_tostring (L, 1);
 			ant_config_ptr platform(new ant_config);
-			platform->name.assign(platform_file);
+			platform->nec_file.assign(platform_file);
 			algo->platform = platform;
-			std::cout << "load platform: "<< algo->platform->name <<std::endl;
+			//std::cout << "load platform: "<< algo->platform->nec_file <<std::endl;
 		}
 		return 0;
 	}
@@ -36,9 +36,9 @@ namespace eap
 		{
 			const char *ant_file = lua_tostring (L, 1);
 			ant_config_ptr config(new ant_config);
-			config->name.assign(ant_file);
+			config->nec_file.assign(ant_file);
 			algo->ant_configs.push_back(config);
-			std::cout << "load antenna: " << algo->ant_configs.back()->name << std::endl;
+			//std::cout << "load antenna: " << algo->ant_configs.back()->nec_file << std::endl;
 		}
 		return 0;
 	}
@@ -51,7 +51,7 @@ namespace eap
 			ant_pos->x = lua_tonumber (L, 1);
 			ant_pos->y = lua_tonumber (L, 2);
 			ant_pos->z = lua_tonumber (L, 3);
-			std::cout<<"x="<<ant_pos->x<<"y="<<ant_pos->y<<"z="<<ant_pos->z<<"\n";
+			//std::cout<<"x="<<ant_pos->x<<"y="<<ant_pos->y<<"z="<<ant_pos->z<<"\n";
 			algo->ant_configs.back()->positions.push_back(ant_pos);
 		}
 		return 0;

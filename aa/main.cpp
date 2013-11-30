@@ -76,6 +76,9 @@ int main(int argc, char* argv[])
         /* load all possible antenna placements */
         eap::algo->setup_ant_placements();
 
+        /* load all wires from nec files */
+        eap::algo->load_wires();
+
         /* load all antenna free space patterns */
         eap::algo->setup_free_space_patterns();
 
