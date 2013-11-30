@@ -134,6 +134,7 @@ std::vector<wire_ptr> algorithm::load_wire(const std::string& nec_file, const st
             }
         } 
        std::cout<<"Completed loading wires for "<<nec_file<<"\n";
+       infile.close();
        return wires;
     }
     catch(const eap::ParseException &e)
@@ -472,4 +473,6 @@ void algorithm::print_individual(individual_ptr ind)
 #endif
 algorithm::~algorithm(void)
 {
+    ant_configs.clear();
+    ant_configs.shrink_to_fit();
 }

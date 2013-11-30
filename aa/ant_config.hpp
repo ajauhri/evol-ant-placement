@@ -14,6 +14,15 @@ class ant_config
 		std::string nec_file; //name of nec file of antenna
 		std::vector<position_ptr> positions; //positions provided on a platform by the user
 		std::vector<wire_ptr> wires; //wires as provided in the nec file 
+
+        ~ant_config(void)
+        {
+            positions.clear();
+            positions.shrink_to_fit();
+
+            wires.clear();
+            wires.shrink_to_fit();
+        }
 };
 typedef boost::shared_ptr<ant_config> ant_config_ptr;
 #endif

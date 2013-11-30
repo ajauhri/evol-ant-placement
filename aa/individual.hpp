@@ -9,6 +9,12 @@ public:
 	float fitness; /*average over all runs*/
 	std::vector<ant_config_ptr> ant_configs;
 	individual() { fitness=0.0f;} 
+
+    ~individual(void)
+    {
+        ant_configs.clear();
+        ant_configs.shrink_to_fit();
+    }
 };
 typedef boost::shared_ptr<individual> individual_ptr;
 #endif
