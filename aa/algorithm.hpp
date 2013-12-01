@@ -12,7 +12,8 @@
 class algorithm
 {
     private:	
-        std::vector<wire_ptr> load_wire(const std::string&, const std::string&); //called from load_wires, silly?
+        std::vector<wire_ptr> load_wires(const std::string&, const std::string&); //called from load_wires, silly?
+        void create_nec_strs();
 
     protected:
         /* common data members for all algorithms */
@@ -21,8 +22,18 @@ class algorithm
         float	exp_weight;
         float mutation;
         std::string lua_file;
+        std::vector<std::string> plat_str_nec;
 
         //ant_config_ptr clone(ant_config_ptr);
+        unsigned int min_theta = 0;
+        float step_theta = 46;
+        float incr_theta = 4;
+        float min_phi = 0;
+        float step_phi = 90;
+        float incr_phi = 4;
+        float min_freq = 100;
+        unsigned int step_freq = 1;
+        float incr_freq = 10;
 
     public:
         algorithm(std::string);
@@ -33,8 +44,8 @@ class algorithm
 
         virtual void setup_algo_params();
         virtual void setup_ant_placements();
-        virtual void setup_free_space_patterns();
-        virtual void load_wires();
+        virtual void write_free_space_patterns();
+        virtual void load_nec_files();
 
         //virtual void seek_algo_node();
 #if 0

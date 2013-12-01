@@ -6,13 +6,13 @@
 #include<boost/program_options.hpp>
 #include<boost/filesystem.hpp>
 
-#include "eap_resources.hpp"
-#include "lua_cmds.hpp"
-#include "ga.hpp"
-#include "sa.hpp"
-#include "es.hpp"
-#include "hc.hpp"
-#include "algorithm.hpp"
+#include<eap_resources.hpp>
+#include<lua_cmds.hpp>
+#include<ga.hpp>
+#include<sa.hpp>
+#include<es.hpp>
+#include<hc.hpp>
+#include<algorithm.hpp>
 
 namespace prg_opts = boost::program_options;
 
@@ -77,10 +77,10 @@ int main(int argc, char* argv[])
         eap::algo->setup_ant_placements();
 
         /* load all wires from nec files */
-        eap::algo->load_wires();
+        eap::algo->load_nec_files();
 
         /* load all antenna free space patterns */
-        eap::algo->setup_free_space_patterns();
+        eap::algo->write_free_space_patterns();
 
         //algo->run();
         eap::close_lua();

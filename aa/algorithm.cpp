@@ -4,7 +4,9 @@
 #include<math.h>
 #include<time.h>
 #include<boost/filesystem.hpp>
+#include<boost/format.hpp>
 #include<sstream>
+#include<string>
 
 #include<algorithm.hpp>
 #include<eap_resources.hpp>
@@ -19,7 +21,7 @@ namespace
     char const *mutation_s = "mutation";
     char const *exp_weight_s = "exp_weight";
     char const *run_directory = "Runs";
-    const std::string WIRE_NEC = "GW %5d%5d%7f%7f%7f%7f%7f%7f%7f\n";
+    const std::string WIRE_NEC = "GW\t%5d\t%5d\t%.7f\t%.7f\t%.7f\t%.7f\t%.7f\t%.7f\t%.7f\n";
 }
 
 /**
@@ -87,19 +89,31 @@ void algorithm::setup_ant_placements()
 /**
  * @desc Load all wires in the nec file into the algorithm
  */
-void algorithm::load_wires()
+void algorithm::load_nec_files()
 {
     // first load platform wires
-    this->platform->wires = load_wire(this->platform->nec_file, "platform file corrupted");
+    this->platform->wires = load_wires(this->platform->nec_file, "platform file corrupted");
 
     // then load all antenna wires
     for (ant_config_ptr ant : this->ant_configs)
     {
-        ant->wires = load_wire(ant->nec_file, ant->nec_file + "file corrupted");
+        ant->wires = load_wires(ant->nec_file, ant->nec_file + "file corrupted");
+    }
+
+    create_nec_strs();
+}
+
+void algorithm::create_nec_strs()
+{
+    int plat_wire_id = 1;
+    boost::format formatter(WIRE_NEC);
+    for (wire_ptr w : this->platform->wires)
+    {
+        this->platform->nec_wires.push_back(str(formatter % plat_wire_id++ % w->segments % w->a->x % w->a->y % w->a->z % w->b->x % w->b->y % w->b->z % w->diameter));
     }
 }
 
-std::vector<wire_ptr> algorithm::load_wire(const std::string& nec_file, const std::string& err_msg)
+std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const std::string& err_msg)
 {
     try 
     {
@@ -131,7 +145,6 @@ std::vector<wire_ptr> algorithm::load_wire(const std::string& nec_file, const st
                 w->segments = seg;
                 w->diameter = dia;
                 wires.push_back(w);
-                std::cout<<"GW "<<wires.back()->a->x<<" "<<wires.back()->a->y<<"\n";
             }
         } 
         std::cout<<"Completed loading wires for "<<nec_file<<"\n";
@@ -148,40 +161,47 @@ std::vector<wire_ptr> algorithm::load_wire(const std::string& nec_file, const st
 /**
  * @desc Setup all free space nec files using the platform file and antenna file
  */
-void algorithm::setup_free_space_patterns()
+void algorithm::write_free_space_patterns()
 {
-    std::string plat_str_wires = new string[this->platform->wires.size()];
-    int plat_wire_id = 1;
-    boost::format formatter(WIRE_NEC);
-    for (wire_ptr w : this->platform->wires)
-    {
-        str_wires[plat_wire_id - 1] = str(formatter % plat_wire_id++ % w->segments % w->a->x % w->a->y % w->a->z % w->b->x % w->b->y & w->b->z % w->diameter);
-    }
-    
+
     int ant_id = 0;
+    boost::format formatter(WIRE_NEC);
     for (ant_config_ptr ant : this->ant_configs)
     {
-        std::ofstream outfile("ANT%d.nec" % ant_id);
-        for (int i = 0; i<this->platform->wires.size(); i++)
+        char buffer[100];
+        sprintf(buffer, "free%03d.nec", ant_id++);
+        boost::filesystem::remove(buffer);
+        std::ofstream outfile(buffer);
+        for (unsigned int i = 0; i<this->platform->nec_wires.size(); i++)
         {
-            outfile << str_wires[i];
+            outfile << platform->nec_wires[i];
         }
 
-        for (int i=0; i<ant->wires.size(); i++)
+        int wc = this->platform->nec_wires.size() + 1;
+        int excitation_id = wc;
+
+        for (wire_ptr w : ant->wires)
         {
-            outfile
+            outfile << str(formatter % wc++ % w->segments 
+                    % (w->a->x + ant->positions[0]->x)
+                    % (w->a->y + ant->positions[0]->y)
+                    % (w->a->z + ant->positions[0]->z)
+                    % (w->b->x + ant->positions[0]->x)
+                    % (w->b->y + ant->positions[0]->y)
+                    % (w->b->z + ant->positions[0]->z)
+                    % w->diameter);
         }
 
-        
+        outfile << "GS\t0\t0\t1\n";
+        outfile << "GE\t0\t-1\t0\n";
+        outfile << "GN\t-1\n";
+        outfile << str(boost::format("FR\t0\t%5d\t0\t0\t%.5f\t%.5f\n") % step_freq % min_freq % incr_freq);
+        outfile << str(boost::format("EX\t0\t%5d\t1\t0\t%.5f\t%.5f\n") % excitation_id % 1.0f % 0.0f);
+        outfile << str(boost::format("RP\t0\t%5d\t%5d\t1000\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\n") % step_theta % step_phi % min_theta % min_phi % incr_theta % incr_phi % 0.0f);
+        outfile << "EN";
+        outfile.close();
     }
-    std::cout<<"Completed reading free space patterns\n";
-}
-
-void create_nec(const std::string& name, int offset_index)
-{
-    std::ofstream outfile(name);
-   
-
+    std::cout<<"Completed writing free space nec files\n";
 }
 
 #if 0
