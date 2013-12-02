@@ -21,7 +21,7 @@ namespace
     char const *mutation_s = "mutation";
     char const *exp_weight_s = "exp_weight";
     char const *run_directory = "Runs";
-    const std::string WIRE_NEC = "GW\t%5d\t%5d\t%.7f\t%.7f\t%.7f\t%.7f\t%.7f\t%.7f\t%.7f\n";
+    const std::string WIRE_NEC = "GW %3d%5d%10f%10f%10f%10f%10f%10f%10f\n";
 }
 
 /**
@@ -192,12 +192,13 @@ void algorithm::write_free_space_patterns()
                     % w->diameter);
         }
 
-        outfile << "GS\t0\t0\t1\n";
-        outfile << "GE\t0\t-1\t0\n";
-        outfile << "GN\t-1\n";
-        outfile << str(boost::format("FR\t0\t%5d\t0\t0\t%.5f\t%.5f\n") % step_freq % min_freq % incr_freq);
-        outfile << str(boost::format("EX\t0\t%5d\t1\t0\t%.5f\t%.5f\n") % excitation_id % 1.0f % 0.0f);
-        outfile << str(boost::format("RP\t0\t%5d\t%5d\t1000\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\n") % step_theta % step_phi % min_theta % min_phi % incr_theta % incr_phi % 0.0f);
+        //the formatting is just BS
+        outfile << "GS   0    0         1\n";
+        outfile << "GE   0   -1         0\n";
+        outfile << "GN  -1\n";
+        outfile << str(boost::format("FR   0%5d    0    0%10.5f%10.5f\n") % step_freq % min_freq % incr_freq);
+        outfile << str(boost::format("EX   0%5d    1    0%10.5f%10.5f\n") % excitation_id % 1.0f % 0.0f);
+        outfile << str(boost::format("RP   0%5d%5d 1000%10.5f%10.5f%10.5f%10.5f%10.5f\n") % step_theta % step_phi % min_theta % min_phi % incr_theta % incr_phi % 0.0f);
         outfile << "EN";
         outfile.close();
     }
