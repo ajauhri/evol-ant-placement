@@ -82,8 +82,13 @@ int main(int argc, char* argv[])
         /*clean up previous output files */
         eap::algo->setup_run_context();
 
-        /* load all antenna free space patterns */
-        eap::algo->write_free_space_patterns();
+        /* create antenna free space patterns */
+        eap::algo->write_freespace();
+
+        /* run free space pattern files */
+
+        /* read free space pattern results */
+        eap::algo->read_freespace();
 
         //algo->run();
         eap::close_lua();

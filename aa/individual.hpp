@@ -1,13 +1,17 @@
 #ifndef INDIVIDUAL_HPP_INCLUDED
 #define INDIVIDUAL_HPP_INCLUDED
-#include "ant_config.hpp"
+#include<ant_config.hpp>
+#include<evaluation.hpp>
 #include<string>
 #include<vector>
 #include<boost/shared_ptr.hpp>
 class individual {
 public:
 	float fitness; /*average over all runs*/
+    std::string nec_file;
 	std::vector<ant_config_ptr> ant_configs;
+    evaluation_ptr eval;
+
 	individual() { fitness=0.0f;} 
 
     ~individual(void)

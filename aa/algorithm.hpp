@@ -3,9 +3,9 @@
 #include<ant_config.hpp>
 #include<ancillary_config.hpp>
 #include<individual.hpp>
+#include<evaluation.hpp>
 #include<string>
 #include<vector>
-
 /**
  * Base class for all implementations of stochastic algorithms
  */
@@ -35,6 +35,8 @@ class algorithm
         unsigned int step_freq = 1;
         float incr_freq = 10;
 
+        int num_polar(void);
+
     public:
         algorithm(std::string);
         ~algorithm(void);
@@ -42,11 +44,17 @@ class algorithm
         std::vector<ant_config_ptr> ant_configs; //stores antennas positions and all wires mentioned in the nec file
         ant_config_ptr platform;
 
+
+        std::vector<individual_ptr> free_inds; //free space indivuals to compare against
+
         virtual void setup_run_context();
         virtual void setup_algo_params();
         virtual void setup_ant_placements();
-        virtual void write_free_space_patterns();
+        virtual void write_freespace();
         virtual void load_nec_files();
+        virtual void run_freespace();
+        virtual void read_freespace();
+        virtual unsigned int read_nou(const std::string, const evaluation_ptr &);
 
         //virtual void seek_algo_node();
 #if 0

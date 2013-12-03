@@ -1,12 +1,13 @@
-#ifndef EVAUATION_HPP_INCLUDED
+#ifndef EVALUATION_HPP_INCLUDED
 #define EVALUATION_HPP_INCLUDED
 #include<boost/shared_ptr.hpp>
 #include<vector>
-#include<radiation.hpp>
+#include<pattern.hpp>
 class evaluation
 {
     public:
-        evaluation(void);
+        evaluation(void)
+        { }
         ~evaluation(void)
         {
             radiation.clear();
@@ -17,4 +18,5 @@ class evaluation
         float max_db;
         float min_db;
 };
+typedef boost::shared_ptr<evaluation> evaluation_ptr;
 #endif

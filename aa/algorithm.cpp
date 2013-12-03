@@ -7,11 +7,10 @@
 #include<boost/format.hpp>
 #include<sstream>
 #include<string>
-
+#include<stdlib.h>
 #include<algorithm.hpp>
 #include<eap_resources.hpp>
 #include<position.hpp>
-#include<individual.hpp>
 #include<lua_cmds.hpp>
 #include<wire.hpp>
 
@@ -22,7 +21,7 @@ namespace
     char const *exp_weight_s = "exp_weight";
 
     char const *run_directory = "runs/";
-    char const *freespace_directory = "free/";
+    const std::string freespace_directory = "free/";
     char const *input_directory = "input/";
 
     const std::string WIRE_NEC = "GW %3d%5d%10f%10f%10f%10f%10f%10f%10f\n";
@@ -106,6 +105,7 @@ void algorithm::load_nec_files()
         ant->wires = load_wires(ant->nec_file, ant->nec_file + "file corrupted");
     }
 
+    //since the nec files for GW card require a special format and have to be written multiple times for the platform, might as well do it once and keep in memory
     create_nec_strs();
 }
 
@@ -157,7 +157,7 @@ std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const s
         infile.close();
         return wires;
     }
-    catch(const eap::ParseException &e)
+    catch(const eap::InvalidStateException &e)
     {
         std::cerr<<e.what()<<"\n";
         exit(0);
@@ -167,7 +167,7 @@ std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const s
 /**
  * @desc Setup all free space nec files using the platform file and antenna file
  */
-void algorithm::write_free_space_patterns()
+void algorithm::write_freespace()
 {
 
     int ant_id = 0;
@@ -176,7 +176,7 @@ void algorithm::write_free_space_patterns()
     {
         char buffer[100];
         // concatenate using sprintf (http://stackoverflow.com/questions/2674312/how-to-append-strings-using-sprintf) 
-        sprintf(buffer, "%s", freespace_directory);
+        sprintf(buffer, "%s", freespace_directory.c_str());
         sprintf(buffer+strlen(buffer), "ant%03d.nec", ant_id++);
         boost::filesystem::remove(buffer);
         std::ofstream outfile(buffer);
@@ -186,6 +186,7 @@ void algorithm::write_free_space_patterns()
         }
 
         int wc = this->platform->nec_wires.size() + 1;
+        //need to cout here and check if theser are deallocated at the end of each generation
         int excitation_id = wc;
 
         for (wire_ptr w : ant->wires)
@@ -213,49 +214,82 @@ void algorithm::write_free_space_patterns()
     std::cout<<"Completed writing free space nec files\n";
 }
 
-unsigned int read_nec_results(const char* results_file,
-        evaluation& results,
-        antenna& ant)
+void algorithm::read_freespace()
 {
-    unsigned int read = 0;
-    char *buffer = new char[301];
-    if (results_file != NULL)
+    for (unsigned int i=0; i<ant_configs.size(); i++)
     {
-        FILE* fp = fopen(results_file, "r");
-        if (fp != NULL)
-        {
-            float	theta, phi, vertdb, horizdb, totaldb;
-            unsigned int jj = 0;
-            do
-            {
-                unsigned int count = 0;
-                pattern *rad = new pattern(ant.num_polar(), ant.params.min_freq + jj *  ant.params.incr_freq);
-                while ((fgets(buffer, 300, fp) != NULL) && strncmp(buffer, " DEGREES", 8));	// find the start of the radiation data
-                while (fgets(buffer, 300, fp) != NULL)
-                {
-                    if (sscanf(buffer, "%f %f %f %f %f", &theta, &phi, &vertdb, &horizdb, &totaldb) != 5) break;
-                    rad->db_gain[count++] = totaldb;
-                    if (totaldb > results.max_db) results.max_db = totaldb;
-                    if (totaldb < results.min_db) results.min_db = totaldb;
-                }
-                if (count > 0)
-                {
-                    assert(ant.num_polar() == count);
-                    rad->db_count = count;
-                    results.radiation.push_back(rad);
-                    read += count;
-                    jj++;
-                }
-            }
-            while (!feof(fp));
-            fclose(fp);
-        }
+        char path[100];
+        sprintf(path, "%s", freespace_directory.c_str());
+        sprintf(path + strlen(path), "ant%03d.out", i);
+        individual_ptr ind(new individual);
+        evaluation_ptr eval(new evaluation);
+        ind->eval = eval;
+        read_nou(std::string(path, path+1), ind->eval);
     }
-    delete[] buffer;
-    return read;
 }
 
+void algorithm::run_freespace()
+{
+    boost::format formatter("./nec2++.exe -i " + freespace_directory + "ant%03d.out");
+    for (unsigned int i=0; i<ant_configs.size(); i++)
+    {
+        std::string f = str(formatter % i);
+        std::cout<<f;
+        int ret = system(f.c_str());
 
+    }
+}
+
+unsigned int algorithm::read_nou(const std::string results_file,
+                              const evaluation_ptr &eval)
+{
+
+        std::cout<<results_file<<"\n";
+    try
+    {
+        std::ifstream infile(results_file);
+        std::string line;
+        unsigned int read = 0;
+        float theta, phi, vertdb, horizdb, totaldb;
+
+        if (!infile) throw eap::InvalidStateException(results_file + " not found");
+
+        do
+        {
+            pattern_ptr pat(new pattern);
+            while (std::getline(infile, line) && strncmp(line.c_str(), " DEGREES", 8));
+            while (std::getline(infile, line))
+            {
+                std::istringstream iss(line);
+                if (!(iss >> theta >> phi >> vertdb >> horizdb >> totaldb)) break;
+                pat->db_gain.push_back(totaldb);
+                if (totaldb > eval->max_db)
+                    eval->max_db = totaldb;
+                if (totaldb < eval->min_db) 
+                    eval->min_db = totaldb;
+            }
+            if (pat->db_gain.size() > 0)
+            {
+                if (this->num_polar() == pat->db_gain.size()) throw eap::InvalidStateException("Problem with reading nec results for " + results_file);
+                eval->radiation.push_back(pat);
+                read += pat->db_gain.size();
+            }
+        }
+        while (std::getline(infile, line));
+        infile.close();
+        return read;
+    }
+    catch (const eap::InvalidStateException &e)
+    {
+        std::cerr<<e.what()<<"\n";
+        exit(0);
+    }
+}
+
+inline int algorithm::num_polar(void)
+{
+    return step_theta * step_phi;
+}
 
 #if 0
 /**
@@ -302,37 +336,6 @@ void algorithm::run_simulation()
 {
     //TODO this should run all files present under a certain location
 
-}
-
-/**
- * @desc Evaluate the fitness for a given configuration id
- * @param config_id Configuration ID
- */
-void algorithm::evaluate_ant_config(target& ant_target)
-{
-    //Read the results and store the fitness
-    char buffer[300];
-    FILE* fp = fopen(ant_target.filename.c_str(), "r");
-    if (fp != NULL)
-    {
-        float theta, phi, gain_theta, gain_phi, phase_theta, phase_phi;        
-        do
-        {
-            while ((fgets(buffer, 300, fp) != NULL) && strncmp(buffer, "end_<parameters>", 16));	// find the start of the radiation data
-            while (fgets(buffer, 300, fp) != NULL)
-            {
-                if (sscanf(buffer, "%f %f %f %f %f %f", &theta, &phi, &gain_theta, &gain_phi, &phase_theta, &phase_phi) != 6) break;
-                ant_target.db_gain.push_back(cal_totaldb(gain_theta, gain_phi));
-            }
-        }
-        while (!feof(fp));
-        fclose(fp);
-    }
-    else 
-    {
-        std::cerr<<"Target file not found: "<<ant_target.filename<<std::endl;
-        exit(0);
-    }
 }
 
 /**
@@ -419,19 +422,8 @@ float algorithm::cal_totaldb(float gain_theta, float gain_phi)
     float tot_linear_gain = pow(10, gain_theta/10) + pow(10, gain_phi/10);
     return 10 * log10(tot_linear_gain);
 }
-
-/**
- * @desc For debugging...
- */
-void algorithm::print_individual(individual_ptr ind)
-{
-    for (unsigned i=0; i<ind->ant_configs.size(); i++)
-    {
-        std::cout<<"Ant configs "<<ind->ant_configs.at(i)->antenna_locator<<" "<<ind->ant_configs.at(i)->name<<std::endl;
-        std::cout<<"Position "<<ind->ant_configs.at(i)->positions.back()->mount_object<<" "<<ind->ant_configs.at(i)->positions.back()->mount_object_locator<<" "<<ind->ant_configs.at(i)->positions.back()->rotation<<" "<<ind->ant_configs.at(i)->positions.back()->translation<<std::endl;
-    }
-}
 #endif
+
 algorithm::~algorithm(void)
 {
     ant_configs.clear();
