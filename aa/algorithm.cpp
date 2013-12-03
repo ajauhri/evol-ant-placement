@@ -20,11 +20,11 @@ namespace
     char const *algorithm_s = "algorithm";
     char const *mutation_s = "mutation";
     char const *exp_weight_s = "exp_weight";
-    
+
     char const *run_directory = "runs/";
     char const *freespace_directory = "free/";
     char const *input_directory = "input/";
-   
+
     const std::string WIRE_NEC = "GW %3d%5d%10f%10f%10f%10f%10f%10f%10f\n";
 }
 
@@ -213,6 +213,50 @@ void algorithm::write_free_space_patterns()
     std::cout<<"Completed writing free space nec files\n";
 }
 
+unsigned int read_nec_results(const char* results_file,
+        evaluation& results,
+        antenna& ant)
+{
+    unsigned int read = 0;
+    char *buffer = new char[301];
+    if (results_file != NULL)
+    {
+        FILE* fp = fopen(results_file, "r");
+        if (fp != NULL)
+        {
+            float	theta, phi, vertdb, horizdb, totaldb;
+            unsigned int jj = 0;
+            do
+            {
+                unsigned int count = 0;
+                pattern *rad = new pattern(ant.num_polar(), ant.params.min_freq + jj *  ant.params.incr_freq);
+                while ((fgets(buffer, 300, fp) != NULL) && strncmp(buffer, " DEGREES", 8));	// find the start of the radiation data
+                while (fgets(buffer, 300, fp) != NULL)
+                {
+                    if (sscanf(buffer, "%f %f %f %f %f", &theta, &phi, &vertdb, &horizdb, &totaldb) != 5) break;
+                    rad->db_gain[count++] = totaldb;
+                    if (totaldb > results.max_db) results.max_db = totaldb;
+                    if (totaldb < results.min_db) results.min_db = totaldb;
+                }
+                if (count > 0)
+                {
+                    assert(ant.num_polar() == count);
+                    rad->db_count = count;
+                    results.radiation.push_back(rad);
+                    read += count;
+                    jj++;
+                }
+            }
+            while (!feof(fp));
+            fclose(fp);
+        }
+    }
+    delete[] buffer;
+    return read;
+}
+
+
+
 #if 0
 /**
  * @desc Initializes an individual
@@ -249,143 +293,6 @@ bool algorithm::overlaps_ant(individual_ptr ind, position_ptr p)
         }
     }
     return false;
-}
-
-/**
- * @desc Checks if antenna position overlaps with any of the ancillary points 
- * @return true or false
- */
-bool algorithm::overlaps_ancillary(position_ptr p)
-{
-    for (unsigned i=0; i<ancillary_configs.size(); i++)
-    {
-        if (!std::strcmp(p->mount_object.c_str(), ancillary_configs[i]->mount_object.c_str()) &&
-                !std::strcmp(p->mount_object_locator.c_str(), ancillary_configs[i]->mount_object_locator.c_str())) {
-            return true;
-        }
-    }
-    return false;
-}
-
-
-
-/**
- * @desc Serializes an individual into a file readable by simulator
- * @param ind Individual (an individual represents the config file)
- * @param file_path 
- */
-void algorithm::write_to_file(individual_ptr ind, std::string file_path)
-{
-    /* generating the XML hierarchy */
-    xml_document<> doc;
-
-    try 
-    {
-        xml_node<>* decl = doc.allocate_node(node_declaration);
-        decl->append_attribute(doc.allocate_attribute("version", "1.0"));
-        decl->append_attribute(doc.allocate_attribute("encoding", "utf-8"));
-        doc.append_node(decl);
-
-        /* root node */
-        xml_node<>* root = doc.allocate_node(node_element, vehicle_configuration_s);
-        doc.append_node(root);
-
-        /* vehicle name node */
-        xml_node<>* vehicle_node = doc.allocate_node(node_element, vehicle_model_s);
-        vehicle_node->value(vehicle_model.c_str());
-        root->append_node(vehicle_node);
-
-        for (unsigned i_ancillary=0; i_ancillary<ancillary_configs.size(); i_ancillary++)
-        {
-            /* ancillary node */
-            xml_node<>* ancillary_node = doc.allocate_node(node_element, ancillary_s);
-            root->append_node(ancillary_node);
-
-            /* name node */
-            xml_node<>* name_node = doc.allocate_node(node_element, name_s);
-            name_node->value(ancillary_configs[i_ancillary]->name.c_str());
-            ancillary_node->append_node(name_node);
-
-            /* ancillary locator node */
-            xml_node<>* ancillary_locator_node = doc.allocate_node(node_element, ancillary_locator_s);
-            ancillary_locator_node->value(ancillary_configs[i_ancillary]->ancilary_locator.c_str());
-            ancillary_node->append_node(ancillary_locator_node);
-
-            /* mount object node */
-            xml_node<>* mount_object_node = doc.allocate_node(node_element, mount_object_s);
-            mount_object_node->value(ancillary_configs[i_ancillary]->mount_object.c_str());
-            ancillary_node->append_node(mount_object_node);
-
-            /* mount object locator node */
-            xml_node<>* mount_object_locator_node = doc.allocate_node(node_element, mount_object_locator_s);
-            mount_object_locator_node->value(ancillary_configs[i_ancillary]->mount_object_locator.c_str());
-            ancillary_node->append_node(mount_object_locator_node);
-
-            /* translation node */
-            xml_node<>* translation_node = doc.allocate_node(node_element, translation_s);
-            translation_node->value(ancillary_configs[i_ancillary]->translation.c_str());
-            ancillary_node->append_node(translation_node);
-
-            /* rotation node */
-            xml_node<>* rotation_node = doc.allocate_node(node_element, rotation_s);
-            rotation_node->value(ancillary_configs[i_ancillary]->rotation.c_str());
-            ancillary_node->append_node(rotation_node);
-        }
-
-
-        for (unsigned i_ant=0; i_ant<ant_configs.size(); i_ant++) 
-        {
-            /* antenna node */
-            xml_node<>* ant_node = doc.allocate_node(node_element, antenna_s);
-            root->append_node(ant_node);
-
-            /* name node */
-            xml_node<>* name_node = doc.allocate_node(node_element, name_s);
-            name_node->value(ind->ant_configs[i_ant]->name.c_str());
-            ant_node->append_node(name_node);
-
-            /*antenna_locator node*/
-            xml_node<>* ant_loc_node = doc.allocate_node(node_element, antenna_locator_s);
-            ant_loc_node->value(ind->ant_configs[i_ant]->antenna_locator.c_str());
-            ant_node->append_node(ant_loc_node);
-
-            /*mount_object node*/
-            xml_node<>* m_obj_node = doc.allocate_node(node_element, mount_object_s);
-            m_obj_node->value(ind->ant_configs[i_ant]->positions.front()->mount_object.c_str());
-            ant_node->append_node(m_obj_node);
-
-            /*mount_object_locator node*/
-            xml_node<>* m_obj_loc_node = doc.allocate_node(node_element, mount_object_locator_s);
-            m_obj_loc_node->value(ind->ant_configs[i_ant]->positions.front()->mount_object_locator.c_str());
-            ant_node->append_node(m_obj_loc_node);
-
-            /*translation node*/
-            xml_node<>* trans_node = doc.allocate_node(node_element, translation_s);
-            trans_node->value(ind->ant_configs[i_ant]->positions.front()->translation.c_str());
-            ant_node->append_node(trans_node);
-
-            /*translation node*/
-            xml_node<>* rota_node = doc.allocate_node(node_element, rotation_s);
-            rota_node->value(ind->ant_configs[i_ant]->positions.front()->rotation.c_str());
-            ant_node->append_node(rota_node);
-        }
-    }
-    catch(const std::bad_alloc &ba)
-    {
-        std::cerr<<"Bad allocation exception at creating config.xml for an individual"<<ba.what()<<"\n";
-        exit(0);
-    }
-
-
-    std::string xml_as_string;
-    /* flag print_no_indenting removes whitespaces */
-    print(std::back_inserter(xml_as_string), doc, print_no_indenting);
-
-    std::ofstream os (file_path, std::ios::trunc);
-
-    xml_as_string.erase(std::remove(xml_as_string.begin(), xml_as_string.end(), '\t'), xml_as_string.end());
-    os << xml_as_string;
-    os.close();
 }
 
 /**
