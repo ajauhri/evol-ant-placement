@@ -42,6 +42,7 @@ class algorithm
         std::vector<ant_config_ptr> ant_configs; //stores antennas positions and all wires mentioned in the nec file
         ant_config_ptr platform;
 
+        virtual void setup_run_context();
         virtual void setup_algo_params();
         virtual void setup_ant_placements();
         virtual void write_free_space_patterns();
@@ -49,7 +50,6 @@ class algorithm
 
         //virtual void seek_algo_node();
 #if 0
-        virtual void setup_run_context();
         virtual void run() = 0;
         void run_simulation();	
 

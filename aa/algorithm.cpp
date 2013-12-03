@@ -20,7 +20,11 @@ namespace
     char const *algorithm_s = "algorithm";
     char const *mutation_s = "mutation";
     char const *exp_weight_s = "exp_weight";
-    char const *run_directory = "Runs";
+    
+    char const *run_directory = "runs/";
+    char const *freespace_directory = "free/";
+    char const *input_directory = "input/";
+   
     const std::string WIRE_NEC = "GW %3d%5d%10f%10f%10f%10f%10f%10f%10f\n";
 }
 
@@ -53,7 +57,6 @@ void algorithm::setup_algo_params()
 }
 
 
-#if 0
 /**
  * @desc 1. Cleaning of old runs from FS
  *       2. Seed for pseudo-random number generator
@@ -67,8 +70,11 @@ void algorithm::setup_run_context()
 
     boost::filesystem::remove_all(run_directory);
     boost::filesystem::create_directory(run_directory);
+
+    boost::filesystem::remove_all(freespace_directory);
+    boost::filesystem::create_directory(freespace_directory);
 }
-#endif
+
 /**
  * @desc Load all antenna placements 
  */
@@ -118,7 +124,7 @@ std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const s
     try 
     {
         std::vector<wire_ptr> wires;
-        std::ifstream infile(nec_file);
+        std::ifstream infile(input_directory + nec_file);
         std::string line;
         float ax, ay, az, bx, by, bz, dia;
         int seg, m;
@@ -169,7 +175,9 @@ void algorithm::write_free_space_patterns()
     for (ant_config_ptr ant : this->ant_configs)
     {
         char buffer[100];
-        sprintf(buffer, "free%03d.nec", ant_id++);
+        // concatenate using sprintf (http://stackoverflow.com/questions/2674312/how-to-append-strings-using-sprintf) 
+        sprintf(buffer, "%s", freespace_directory);
+        sprintf(buffer+strlen(buffer), "ant%03d.nec", ant_id++);
         boost::filesystem::remove(buffer);
         std::ofstream outfile(buffer);
         for (unsigned int i = 0; i<this->platform->nec_wires.size(); i++)

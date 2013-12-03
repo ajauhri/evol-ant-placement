@@ -79,6 +79,9 @@ int main(int argc, char* argv[])
         /* load all wires from nec files */
         eap::algo->load_nec_files();
 
+        /*clean up previous output files */
+        eap::algo->setup_run_context();
+
         /* load all antenna free space patterns */
         eap::algo->write_free_space_patterns();
 
