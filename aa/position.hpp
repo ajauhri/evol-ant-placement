@@ -5,6 +5,7 @@
 class position
 {
 public:
+    position(void);
 	float x;
 	float y;
 	float z;

@@ -43,7 +43,7 @@ void algorithm::setup_algo_params()
     {
         this->mutation = eap::get_fvalue(mutation_s);
         this->exp_weight = eap::get_fvalue(exp_weight_s);
-        std::cout<<"Completed generic algo parameter setup"<<std::endl;
+        std::cout<<"***completed generic algo parameter setup\n";
     }
     /*
        this->auto_seed = aapot_resources::get_first_attribute(this->algo_node, seed_s, false) ? false : true;
@@ -82,7 +82,7 @@ void algorithm::setup_ant_placements()
     try
     {
         eap::load_lua_lib(this->lua_file.c_str());
-        std::cout<<"Completed loading antenna placements\n";
+        std::cout<<"***completed loading antenna placements\n";
     }
     catch (const eap::InvalidStateException &e)
     {
@@ -153,7 +153,7 @@ std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const s
                 wires.push_back(w);
             }
         } 
-        std::cout<<"Completed loading wires for "<<nec_file<<"\n";
+        std::cout<<"***completed loading wires for "<<nec_file<<"\n";
         infile.close();
         return wires;
     }
@@ -211,40 +211,39 @@ void algorithm::write_freespace()
         outfile << "EN";
         outfile.close();
     }
-    std::cout<<"Completed writing free space nec files\n";
+    std::cout<<"***completed writing free space nec files\n";
+}
+
+
+void algorithm::run_freespace()
+{
+    boost::format formatter("./nec2++.exe -i " + freespace_directory + "ant%03d.nec");
+    for (unsigned int i=0; i<ant_configs.size(); i++)
+    {
+        std::string f = str(formatter % i);
+        std::cout<<f<<"\n";
+        system(f.c_str());
+    }
+    std::cout<<"***completed creating out files for free space patterns\n"; 
 }
 
 void algorithm::read_freespace()
 {
+    boost::format formatter(freespace_directory + "ant%03d.out");
     for (unsigned int i=0; i<ant_configs.size(); i++)
     {
-        char path[100];
-        sprintf(path, "%s", freespace_directory.c_str());
-        sprintf(path + strlen(path), "ant%03d.out", i);
         individual_ptr ind(new individual);
         evaluation_ptr eval(new evaluation);
         ind->eval = eval;
-        read_nou(std::string(path, path+1), ind->eval);
-    }
-}
-
-void algorithm::run_freespace()
-{
-    boost::format formatter("./nec2++.exe -i " + freespace_directory + "ant%03d.out");
-    for (unsigned int i=0; i<ant_configs.size(); i++)
-    {
-        std::string f = str(formatter % i);
-        std::cout<<f;
-        int ret = system(f.c_str());
-
+        read_nou(str(formatter % i), ind->eval);
     }
 }
 
 unsigned int algorithm::read_nou(const std::string results_file,
-                              const evaluation_ptr &eval)
+        const evaluation_ptr &eval)
 {
 
-        std::cout<<results_file<<"\n";
+    std::cout<<results_file<<"\n";
     try
     {
         std::ifstream infile(results_file);
@@ -253,16 +252,17 @@ unsigned int algorithm::read_nou(const std::string results_file,
         float theta, phi, vertdb, horizdb, totaldb;
 
         if (!infile) throw eap::InvalidStateException(results_file + " not found");
-
         do
         {
             pattern_ptr pat(new pattern);
             while (std::getline(infile, line) && strncmp(line.c_str(), " DEGREES", 8));
+            
             while (std::getline(infile, line))
             {
                 std::istringstream iss(line);
                 if (!(iss >> theta >> phi >> vertdb >> horizdb >> totaldb)) break;
-                pat->db_gain.push_back(totaldb);
+                    
+               pat->db_gain.push_back(totaldb);
                 if (totaldb > eval->max_db)
                     eval->max_db = totaldb;
                 if (totaldb < eval->min_db) 
@@ -270,12 +270,13 @@ unsigned int algorithm::read_nou(const std::string results_file,
             }
             if (pat->db_gain.size() > 0)
             {
-                if (this->num_polar() == pat->db_gain.size()) throw eap::InvalidStateException("Problem with reading nec results for " + results_file);
+                if (this->num_polar() != pat->db_gain.size()) throw eap::InvalidStateException("Problem with reading nec results for " + results_file);
+                std::cout<<pat->db_gain.size()<<"\n";
                 eval->radiation.push_back(pat);
                 read += pat->db_gain.size();
             }
         }
-        while (std::getline(infile, line));
+        while (std::getline(infile, line)); 
         infile.close();
         return read;
     }

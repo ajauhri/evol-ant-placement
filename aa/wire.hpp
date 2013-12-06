@@ -5,6 +5,9 @@
 class wire
 {	
     public:
+        wire(void);
+        ~wire(void);
+
         position_ptr a;
         position_ptr b;
         int segments;

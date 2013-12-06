@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
         eap::algo->write_freespace();
 
         /* run free space pattern files */
+        eap::algo->run_freespace();
 
         /* read free space pattern results */
         eap::algo->read_freespace();

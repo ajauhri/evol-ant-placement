@@ -6,13 +6,8 @@
 class evaluation
 {
     public:
-        evaluation(void)
-        { }
-        ~evaluation(void)
-        {
-            radiation.clear();
-            radiation.shrink_to_fit();
-        }
+        evaluation(void);
+        ~evaluation(void);
 
         std::vector<pattern_ptr> radiation;
         float max_db;

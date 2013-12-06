@@ -33,7 +33,7 @@ void ga::setup_algo_params()
 		this->tournament_size = eap::get_fvalue(tournament_size_s);
 		this->elitism = eap::get_fvalue(elitism_s);
 		this->recombination = eap::get_fvalue(recombination_s);
-		std::cout<<"Completed GA parameter setup"<<std::endl;
+		std::cout<<"***completed GA parameter setup\n";
 	}
 	catch (const eap::InvalidStateException &e)
 	{
