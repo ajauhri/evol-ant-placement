@@ -91,6 +91,7 @@ int main(int argc, char* argv[])
         /* read free space pattern results */
         eap::algo->read_freespace();
 
+        /* run the specific algorithm */
         //algo->run();
         eap::close_lua();
     }

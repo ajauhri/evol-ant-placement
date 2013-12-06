@@ -1,10 +1,11 @@
-#include "eap_resources.hpp"
-#include "lua_cmds.hpp"
+#include<eap_resources.hpp>
+#include<lua_cmds.hpp>
 #include<sstream>
 #include<string>
 #include<iomanip>
 #include<algorithm>
 #include<cctype>
+#include<random>
 
 namespace eap
 {
@@ -14,6 +15,19 @@ namespace eap
 	{
 		return (float) (((rand() % 10000) * (end - start))/10000.0 + start);
 	}
+
+
+    unsigned int rand(unsigned int a, unsigned int b)
+    {
+        std::uniform_int_distribution<> dis(a,b);
+        return dis(eap::gen);
+    }
+
+    unsigned int rand()
+    {
+        std::uniform_int_distribution<> dis;
+        return dis(eap::gen);
+    }
 
 	bool to_bool(std::string str) 
 	{

@@ -18,7 +18,6 @@ class algorithm
     protected:
         /* common data members for all algorithms */
         bool auto_seed;
-        unsigned long int seed;
         float	exp_weight;
         float mutation;
         std::string lua_file;
@@ -35,7 +34,7 @@ class algorithm
         unsigned int step_freq = 1;
         float incr_freq = 10;
 
-        int num_polar(void);
+        unsigned int num_polar(void);
 
     public:
         algorithm(std::string);

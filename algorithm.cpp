@@ -19,10 +19,8 @@ namespace
     char const *algorithm_s = "algorithm";
     char const *mutation_s = "mutation";
     char const *exp_weight_s = "exp_weight";
-
-    char const *run_directory = "runs/";
-    const std::string freespace_directory = "free/";
-    char const *input_directory = "input/";
+    char const *auto_seed_s  = "auto_seed";
+    char const *seed_s = "seed";
 
     const std::string WIRE_NEC = "GW %3d%5d%10f%10f%10f%10f%10f%10f%10f\n";
 }
@@ -37,14 +35,26 @@ algorithm::algorithm(std::string lua_file)
     //setup_ancillary_nodes();
 }
 
+std::mt19937 eap::gen;
+
 void algorithm::setup_algo_params()
 {
     try
     {
         this->mutation = eap::get_fvalue(mutation_s);
         this->exp_weight = eap::get_fvalue(exp_weight_s);
+        this->auto_seed = eap::get_fvalue(auto_seed_s);
+        if (this->auto_seed != 0.0f) 
+        {
+            eap::gen.seed(time(NULL) + getpid()); //getpid() - Binaries executed one after the other have PRNGs initialized differently
+        }
+        else
+           eap::gen.seed(eap::get_fvalue(seed_s));
+
         std::cout<<"***completed generic algo parameter setup\n";
     }
+
+
     /*
        this->auto_seed = aapot_resources::get_first_attribute(this->algo_node, seed_s, false) ? false : true;
        if (!auto_seed)
@@ -57,21 +67,16 @@ void algorithm::setup_algo_params()
 
 
 /**
- * @desc 1. Cleaning of old runs from FS
- *       2. Seed for pseudo-random number generator
+ * @desc Cleaning of old runs from FS
+ *       
  */
 void algorithm::setup_run_context()
 {
-    if (this->auto_seed)
-        srand(time(NULL));
-    else
-        srand(this->seed);
+    boost::filesystem::remove_all(eap::run_directory);
+    boost::filesystem::create_directory(eap::run_directory);
 
-    boost::filesystem::remove_all(run_directory);
-    boost::filesystem::create_directory(run_directory);
-
-    boost::filesystem::remove_all(freespace_directory);
-    boost::filesystem::create_directory(freespace_directory);
+    boost::filesystem::remove_all(eap::freespace_directory);
+    boost::filesystem::create_directory(eap::freespace_directory);
 }
 
 /**
@@ -124,7 +129,7 @@ std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const s
     try 
     {
         std::vector<wire_ptr> wires;
-        std::ifstream infile(input_directory + nec_file);
+        std::ifstream infile(eap::input_directory + nec_file);
         std::string line;
         float ax, ay, az, bx, by, bz, dia;
         int seg, m;
@@ -176,7 +181,7 @@ void algorithm::write_freespace()
     {
         char buffer[100];
         // concatenate using sprintf (http://stackoverflow.com/questions/2674312/how-to-append-strings-using-sprintf) 
-        sprintf(buffer, "%s", freespace_directory.c_str());
+        sprintf(buffer, "%s", eap::freespace_directory.c_str());
         sprintf(buffer+strlen(buffer), "ant%03d.nec", ant_id++);
         boost::filesystem::remove(buffer);
         std::ofstream outfile(buffer);
@@ -217,7 +222,7 @@ void algorithm::write_freespace()
 
 void algorithm::run_freespace()
 {
-    boost::format formatter("./nec2++.exe -i " + freespace_directory + "ant%03d.nec");
+    boost::format formatter("./nec2++.exe -i " + eap::freespace_directory + "ant%03d.nec");
     for (unsigned int i=0; i<ant_configs.size(); i++)
     {
         std::string f = str(formatter % i);
@@ -229,7 +234,7 @@ void algorithm::run_freespace()
 
 void algorithm::read_freespace()
 {
-    boost::format formatter(freespace_directory + "ant%03d.out");
+    boost::format formatter(eap::freespace_directory + "ant%03d.out");
     for (unsigned int i=0; i<ant_configs.size(); i++)
     {
         individual_ptr ind(new individual);
@@ -271,7 +276,6 @@ unsigned int algorithm::read_nou(const std::string results_file,
             if (pat->db_gain.size() > 0)
             {
                 if (this->num_polar() != pat->db_gain.size()) throw eap::InvalidStateException("Problem with reading nec results for " + results_file);
-                std::cout<<pat->db_gain.size()<<"\n";
                 eval->radiation.push_back(pat);
                 read += pat->db_gain.size();
             }
@@ -287,7 +291,7 @@ unsigned int algorithm::read_nou(const std::string results_file,
     }
 }
 
-inline int algorithm::num_polar(void)
+inline unsigned int algorithm::num_polar(void)
 {
     return step_theta * step_phi;
 }

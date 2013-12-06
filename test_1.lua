@@ -43,5 +43,7 @@ params = {
 	recombination = 0.2,
 	exp_weight = 2,
 	local_run = 0,
-	algorithm = "GA"
+	algorithm = "GA", 
+    auto_seed = 0,
+    seed = 30
 }

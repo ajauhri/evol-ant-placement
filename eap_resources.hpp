@@ -17,6 +17,9 @@ namespace eap
 
 	float randf(float, float);
 
+    unsigned int rand(void);
+    unsigned int rand(unsigned int, unsigned int);
+
 	struct EAPException : public std::exception 
 	{
 		std::string s;
@@ -41,8 +44,10 @@ namespace eap
 	};
 
 	const std::string generations_folder = "Generations";
-
 	const std::string iterations_folder = "Iterations";
+    const std::string run_directory = "runs/";
+    const std::string freespace_directory = "free/";
+    const std::string input_directory = "input/";
 
 	typedef std::map<std::string, algorithms> a_map;
 
@@ -51,6 +56,8 @@ namespace eap
 	int get_algorithm(void);
 
 	extern std::unique_ptr<algorithm> algo;
+
+    extern std::mt19937 gen;
 }
 
 #endif

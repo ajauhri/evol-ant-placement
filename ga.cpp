@@ -33,7 +33,7 @@ void ga::setup_algo_params()
 		this->tournament_size = eap::get_fvalue(tournament_size_s);
 		this->elitism = eap::get_fvalue(elitism_s);
 		this->recombination = eap::get_fvalue(recombination_s);
-		std::cout<<"***completed GA parameter setup\n";
+		std::cout<<"***completed GA parameter setup "<<eap::rand()<<"\n";
 	}
 	catch (const eap::InvalidStateException &e)
 	{
@@ -50,7 +50,7 @@ void ga::run()
 	char folder[100];
 
 	if (elitism > population_size)
-		throw aapot_resources::InvalidStateException("Elitism cannot be greater than population size");
+		throw eap::InvalidStateException("Elitism cannot be greater than population size");
 
 	sprintf(folder, "Runs/GEN%04d", 0);
 	boost::filesystem::create_directory(folder);
@@ -81,7 +81,6 @@ void ga::run()
 	}
 
 }
-
 /**
 * @desc Implements stochastic operators viz. recombination and mutation on the population
 */
