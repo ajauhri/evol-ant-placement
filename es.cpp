@@ -41,6 +41,10 @@ void es::run()
 	
 }
 
+void es::run_simulation(unsigned int id)
+{
+}
+
 es::~es(void)
 {
 }

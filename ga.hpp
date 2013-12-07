@@ -21,6 +21,7 @@ public:
 
 	void setup_algo_params();
 	void run();
+    void run_simulation(unsigned int);
 	//void select();
 };
 #endif

@@ -44,6 +44,9 @@ void sa::run()
 	algorithm::setup_run_context();
 }
 
+void sa::run_simulation(unsigned int id)
+{
+}
 
 sa::~sa(void)
 {

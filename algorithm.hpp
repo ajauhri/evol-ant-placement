@@ -58,10 +58,10 @@ class algorithm
         virtual void read_freespace();
         virtual unsigned int read_nou(const std::string, const evaluation_ptr &);
         virtual void run() = 0;
+        virtual void run_simulation(unsigned int) = 0;
 
         //virtual void seek_algo_node();
 #if 0
-        void run_simulation();	
 
         /* functions which work on an individual's data set */
         individual_ptr setup_individual();

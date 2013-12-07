@@ -41,6 +41,10 @@ void hc::run()
 	
 }
 
+void hc::run_simulation(unsigned int id)
+{
+}
+
 
 hc::~hc(void)
 {
