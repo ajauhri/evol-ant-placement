@@ -32,7 +32,6 @@ void hc::setup_algo_params()
 	}
 }
 
-#if 0
 /**
 * @desc Implements logic for HC runs
 */
@@ -42,7 +41,6 @@ void hc::run()
 	
 }
 
-#endif
 
 hc::~hc(void)
 {

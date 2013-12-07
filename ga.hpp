@@ -12,7 +12,7 @@ private:
 	unsigned int elitism;
 	unsigned int tournament_size;
 	float recombination;
-	//std::vector<individual_ptr> pop;
+	std::vector<individual_ptr> pop;
 	//individual_ptr tour();
 
 public:
@@ -20,7 +20,7 @@ public:
 	~ga(void);
 
 	void setup_algo_params();
-	//void run();
+	void run();
 	//void select();
 };
 #endif

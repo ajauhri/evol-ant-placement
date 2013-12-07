@@ -35,6 +35,9 @@ class algorithm
         float incr_freq = 10;
 
         unsigned int num_polar(void);
+        virtual void write_platform(std::ofstream&);
+        virtual void write_ant(std::ofstream&, ant_config_ptr&, unsigned int, unsigned int);
+        
 
     public:
         algorithm(std::string);
@@ -54,10 +57,10 @@ class algorithm
         virtual void run_freespace();
         virtual void read_freespace();
         virtual unsigned int read_nou(const std::string, const evaluation_ptr &);
+        virtual void run() = 0;
 
         //virtual void seek_algo_node();
 #if 0
-        virtual void run() = 0;
         void run_simulation();	
 
         /* functions which work on an individual's data set */

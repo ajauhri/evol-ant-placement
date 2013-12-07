@@ -36,7 +36,6 @@ void sa::setup_algo_params()
 	}
 }
 
-#if 0
 /**
 * @desc Implements logic for SA runs
 */
@@ -49,4 +48,3 @@ void sa::run()
 sa::~sa(void)
 {
 }
-#endif

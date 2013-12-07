@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
         eap::algo->read_freespace();
 
         /* run the specific algorithm */
-        //algo->run();
+        eap::algo->run();
         eap::close_lua();
     }
     catch (const std::exception &e)

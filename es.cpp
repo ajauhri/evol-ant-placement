@@ -32,7 +32,6 @@ void es::setup_algo_params()
 	}
 }
 
-#if 0
 /**
 * @desc Implements logic for ES runs
 */
@@ -42,7 +41,6 @@ void es::run()
 	
 }
 
-#endif
 es::~es(void)
 {
 }

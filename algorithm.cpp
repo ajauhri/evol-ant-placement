@@ -26,15 +26,14 @@ namespace
 }
 
 /**
- * @desc Loads the AAPOT configuration file into memory
- * @param aapot_filename AAPOT configuration file 
+ * @param lua_filename 
  */
 algorithm::algorithm(std::string lua_file)
 {
     this->lua_file = lua_file;
-    //setup_ancillary_nodes();
 }
 
+// extern declard in eap_resources.hpp
 std::mt19937 eap::gen;
 
 void algorithm::setup_algo_params()
@@ -45,20 +44,12 @@ void algorithm::setup_algo_params()
         this->exp_weight = eap::get_fvalue(exp_weight_s);
         this->auto_seed = eap::get_fvalue(auto_seed_s);
         if (this->auto_seed != 0.0f) 
-        {
             eap::gen.seed(time(NULL) + getpid()); //getpid() - Binaries executed one after the other have PRNGs initialized differently
-        }
         else
-           eap::gen.seed(eap::get_fvalue(seed_s));
+            eap::gen.seed(eap::get_fvalue(seed_s));
 
         std::cout<<"***completed generic algo parameter setup\n";
     }
-
-
-    /*
-       this->auto_seed = aapot_resources::get_first_attribute(this->algo_node, seed_s, false) ? false : true;
-       if (!auto_seed)
-       this->seed = atoi(aapot_resources::get_first_attribute(this->algo_node, seed_s, false)->value());*/
     catch (const eap::InvalidStateException &e)
     {
         std::cerr<<e.what()<<"\n";
@@ -75,8 +66,8 @@ void algorithm::setup_run_context()
     boost::filesystem::remove_all(eap::run_directory);
     boost::filesystem::create_directory(eap::run_directory);
 
-    boost::filesystem::remove_all(eap::freespace_directory);
-    boost::filesystem::create_directory(eap::freespace_directory);
+    //boost::filesystem::remove_all(eap::freespace_directory);
+    //boost::filesystem::create_directory(eap::freespace_directory);
 }
 
 /**
@@ -176,35 +167,21 @@ void algorithm::write_freespace()
 {
 
     int ant_id = 0;
-    boost::format formatter(WIRE_NEC);
     for (ant_config_ptr ant : this->ant_configs)
     {
         char buffer[100];
         // concatenate using sprintf (http://stackoverflow.com/questions/2674312/how-to-append-strings-using-sprintf) 
         sprintf(buffer, "%s", eap::freespace_directory.c_str());
         sprintf(buffer+strlen(buffer), "ant%03d.nec", ant_id++);
+
         boost::filesystem::remove(buffer);
+
         std::ofstream outfile(buffer);
-        for (unsigned int i = 0; i<this->platform->nec_wires.size(); i++)
-        {
-            outfile << platform->nec_wires[i];
-        }
-
-        int wc = this->platform->nec_wires.size() + 1;
+        write_platform(outfile);
+        write_ant(outfile, ant, 0, this->platform->nec_wires.size() + 1); //put at the first position, doesn't matter for free space
+        
         //need to cout here and check if theser are deallocated at the end of each generation
-        int excitation_id = wc;
-
-        for (wire_ptr w : ant->wires)
-        {
-            outfile << str(formatter % wc++ % w->segments 
-                    % (w->a->x + ant->positions[0]->x)
-                    % (w->a->y + ant->positions[0]->y)
-                    % (w->a->z + ant->positions[0]->z)
-                    % (w->b->x + ant->positions[0]->x)
-                    % (w->b->y + ant->positions[0]->y)
-                    % (w->b->z + ant->positions[0]->z)
-                    % w->diameter);
-        }
+        int excitation_id = this->platform->nec_wires.size() + 1;
 
         //the formatting is just BS
         outfile << "GS   0    0         1\n";
@@ -217,6 +194,28 @@ void algorithm::write_freespace()
         outfile.close();
     }
     std::cout<<"***completed writing free space nec files\n";
+}
+
+void algorithm::write_platform(std::ofstream& outfile)
+{
+    for (unsigned int i = 0; i<this->platform->nec_wires.size(); i++)
+        outfile << platform->nec_wires[i];
+}
+
+void algorithm::write_ant(std::ofstream& outfile, ant_config_ptr &ant, unsigned int position, unsigned int wire_ind)
+{
+    boost::format formatter(WIRE_NEC);
+    for (wire_ptr w : ant->wires)
+    {
+        outfile << str(formatter % wire_ind++ % w->segments 
+                % (w->a->x + ant->positions[position]->x)
+                % (w->a->y + ant->positions[position]->y)
+                % (w->a->z + ant->positions[position]->z)
+                % (w->b->x + ant->positions[position]->x)
+                % (w->b->y + ant->positions[position]->y)
+                % (w->b->z + ant->positions[position]->z)
+                % w->diameter);
+    }
 }
 
 
@@ -261,13 +260,13 @@ unsigned int algorithm::read_nou(const std::string results_file,
         {
             pattern_ptr pat(new pattern);
             while (std::getline(infile, line) && strncmp(line.c_str(), " DEGREES", 8));
-            
+
             while (std::getline(infile, line))
             {
                 std::istringstream iss(line);
                 if (!(iss >> theta >> phi >> vertdb >> horizdb >> totaldb)) break;
-                    
-               pat->db_gain.push_back(totaldb);
+
+                pat->db_gain.push_back(totaldb);
                 if (totaldb > eval->max_db)
                     eval->max_db = totaldb;
                 if (totaldb < eval->min_db) 

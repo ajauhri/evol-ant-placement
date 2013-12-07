@@ -1,11 +1,12 @@
 #include<iostream>
 #include<vector>
 #include<boost/algorithm/string.hpp>
-#include "ga.hpp"
-#include "eap_resources.hpp"
-#include "lua_cmds.hpp"
-#include<sstream>
+#include<boost/format.hpp>
 #include<boost/filesystem.hpp>
+#include<ga.hpp>
+#include<eap_resources.hpp>
+#include<lua_cmds.hpp>
+#include<sstream>
 
 namespace
 {
@@ -33,38 +34,40 @@ void ga::setup_algo_params()
 		this->tournament_size = eap::get_fvalue(tournament_size_s);
 		this->elitism = eap::get_fvalue(elitism_s);
 		this->recombination = eap::get_fvalue(recombination_s);
-		std::cout<<"***completed GA parameter setup "<<eap::rand()<<"\n";
+		std::cout<<"***completed GA parameter setup \n";
 	}
 	catch (const eap::InvalidStateException &e)
 	{
 		std::cerr<<e.what()<<"\n";
 	}
 }
-#if 0
+
 /**
 * @desc Implements logic for GA runs
 */
 void ga::run()
 {
 	algorithm::setup_run_context();
-	char folder[100];
 
 	if (elitism > population_size)
 		throw eap::InvalidStateException("Elitism cannot be greater than population size");
 
-	sprintf(folder, "Runs/GEN%04d", 0);
-	boost::filesystem::create_directory(folder);
-	
-	for (unsigned int config_id=0; config_id<this->population_size; config_id++)
+	boost::filesystem::create_directory(std::string(eap::run_directory+"gen0000"));
+   /* 
+	for (unsigned int ind_id=0; ind_id<this->population_size; ++ind_id)
 	{
-		char file_path[500];
+        boost::format formatter(eap::run_directory + "gen0000/ind%09da%2d.nec");
+        for (unsigned int ant_id=0; ant_id<this->ant_configs.size(); ++ant_id)
+        {
+
+
+
 		sprintf(file_path, "./%s/config%04d.xml", folder, config_id);
 		pop.push_back(setup_individual());
 		write_to_file(pop[config_id], file_path);
+        }
 	}
-
 	std::cout<<"Generation 0 created"<<std::endl;
-		
 	for (unsigned int generation=1; generation<this->generations; generation++)
 	{
 		run_simulation();
@@ -79,8 +82,11 @@ void ga::run()
 			write_to_file(pop.at(config_id), file_path);
 		}
 	}
+    */
 
 }
+
+#if 0
 /**
 * @desc Implements stochastic operators viz. recombination and mutation on the population
 */
