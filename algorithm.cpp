@@ -66,8 +66,8 @@ void algorithm::setup_run_context()
     boost::filesystem::remove_all(eap::run_directory);
     boost::filesystem::create_directory(eap::run_directory);
 
-    //boost::filesystem::remove_all(eap::freespace_directory);
-    //boost::filesystem::create_directory(eap::freespace_directory);
+    boost::filesystem::remove_all(eap::freespace_directory);
+    boost::filesystem::create_directory(eap::freespace_directory);
 }
 
 /**
@@ -165,17 +165,12 @@ std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const s
  */
 void algorithm::write_freespace()
 {
-
+    boost::format formatter(eap::freespace_directory + "ant%03d.nec");
     int ant_id = 0;
+
     for (ant_config_ptr ant : this->ant_configs)
     {
-        char buffer[100];
-        // concatenate using sprintf (http://stackoverflow.com/questions/2674312/how-to-append-strings-using-sprintf) 
-        sprintf(buffer, "%s", eap::freespace_directory.c_str());
-        sprintf(buffer+strlen(buffer), "ant%03d.nec", ant_id++);
-
-        boost::filesystem::remove(buffer);
-
+        std::string buffer = str(formatter % ant_id++);
         std::ofstream outfile(buffer);
         write_platform(outfile);
         write_ant(outfile, ant, 0, this->platform->nec_wires.size() + 1); //put at the first position, doesn't matter for free space

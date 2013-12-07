@@ -47,8 +47,6 @@ void ga::setup_algo_params()
  */
 void ga::run()
 {
-    algorithm::setup_run_context();
-
     if (elitism > population_size)
         throw eap::InvalidStateException("Elitism cannot be greater than population size");
 

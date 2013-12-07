@@ -37,8 +37,6 @@ void hc::setup_algo_params()
 */
 void hc::run()
 {
-	algorithm::setup_run_context();
-	
 }
 
 void hc::run_simulation(unsigned int id)

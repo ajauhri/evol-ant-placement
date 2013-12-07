@@ -37,7 +37,6 @@ void es::setup_algo_params()
 */
 void es::run()
 {
-	algorithm::setup_run_context();
 	
 }
 
