@@ -182,16 +182,9 @@ void algorithm::write_freespace()
         
         //need to cout here and check if theser are deallocated at the end of each generation
         int excitation_id = this->platform->nec_wires.size() + 1;
+        write_excitation(outfile, excitation_id);
 
-        //the formatting is just BS
-        outfile << "GS   0    0         1\n";
-        outfile << "GE   0   -1         0\n";
-        outfile << "GN  -1\n";
-        outfile << str(boost::format("FR   0%5d    0    0%10.5f%10.5f\n") % step_freq % min_freq % incr_freq);
-        outfile << str(boost::format("EX   0%5d    1    0%10.5f%10.5f\n") % excitation_id % 1.0f % 0.0f);
-        outfile << str(boost::format("RP   0%5d%5d 1000%10.5f%10.5f%10.5f%10.5f%10.5f\n") % step_theta % step_phi % min_theta % min_phi % incr_theta % incr_phi % 0.0f);
-        outfile << "EN";
-        outfile.close();
+       outfile.close();
     }
     std::cout<<"***completed writing free space nec files\n";
 }
@@ -218,16 +211,24 @@ void algorithm::write_ant(std::ofstream& outfile, ant_config_ptr &ant, unsigned 
     }
 }
 
+void algorithm::write_excitation(std::ofstream& outfile, unsigned int id)
+{
+    //the formatting is just BS
+        outfile << "GS   0    0         1\n";
+        outfile << "GE   0   -1         0\n";
+        outfile << "GN  -1\n";
+        outfile << str(boost::format("FR   0%5d    0    0%10.5f%10.5f\n") % step_freq % min_freq % incr_freq);
+        outfile << str(boost::format("EX   0%5d    1    0%10.5f%10.5f\n") % id % 1.0f % 0.0f);
+        outfile << str(boost::format("RP   0%5d%5d 1000%10.5f%10.5f%10.5f%10.5f%10.5f\n") % step_theta % step_phi % min_theta % min_phi % incr_theta % incr_phi % 0.0f);
+        outfile << "EN";
+}
+
 
 void algorithm::run_freespace()
 {
     boost::format formatter("./nec2++.exe -i " + eap::freespace_directory + "ant%03d.nec");
     for (unsigned int i=0; i<ant_configs.size(); i++)
-    {
-        std::string f = str(formatter % i);
-        std::cout<<f<<"\n";
-        system(f.c_str());
-    }
+        system(str(formatter % i).c_str());
     std::cout<<"***completed creating out files for free space patterns\n"; 
 }
 

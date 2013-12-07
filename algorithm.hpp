@@ -37,6 +37,7 @@ class algorithm
         unsigned int num_polar(void);
         virtual void write_platform(std::ofstream&);
         virtual void write_ant(std::ofstream&, ant_config_ptr&, unsigned int, unsigned int);
+        virtual void write_excitation(std::ofstream&, unsigned int);
         
 
     public:

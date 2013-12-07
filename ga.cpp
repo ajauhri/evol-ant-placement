@@ -61,16 +61,21 @@ void ga::run()
             std::ofstream outfile(str(formatter % ind_id % j));
             write_platform(outfile);
             int count = this->platform->nec_wires.size();
+            int excitation_id;
             for (unsigned int k=0; k<this->ant_configs.size(); ++k)
             {
                 int position = eap::rand(0, (this->ant_configs[k]->positions.size() - 1) );
+                if (k==j)
+                    excitation_id = count+1;
                 write_ant(outfile, this->ant_configs[k], position, count+1);
                 count += this->ant_configs[k]->wires.size();
             }
+            write_excitation(outfile, excitation_id);
             outfile.close();
         }
     }
     std::cout<<"Generation 0 created"<<std::endl;
+    run_simulation(0);
     /*
     for (unsigned int generation=1; generation<this->generations; generation++)
     {
@@ -90,6 +95,8 @@ void ga::run()
 
 void ga::run_simulation(unsigned int id)
 {
+    boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 ./nec2++.exe -i {}");
+    system(str(formatter % id).c_str());
 }
 
 #if 0
