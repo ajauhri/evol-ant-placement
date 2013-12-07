@@ -17,7 +17,7 @@ private:
 
 public:
 	ga(std::string);
-	~ga(void);
+	virtual ~ga(void);
 
 	void setup_algo_params();
 	void run();

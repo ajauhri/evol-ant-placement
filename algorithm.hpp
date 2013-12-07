@@ -42,7 +42,7 @@ class algorithm
 
     public:
         algorithm(std::string);
-        ~algorithm(void);
+        virtual ~algorithm(void);
 
         std::vector<ant_config_ptr> ant_configs; //stores antennas positions and all wires mentioned in the nec file
         ant_config_ptr platform;

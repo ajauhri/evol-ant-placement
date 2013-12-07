@@ -56,15 +56,19 @@ void ga::run()
     for (unsigned int ind_id=0; ind_id<this->population_size; ++ind_id)
     {
         boost::format formatter(eap::run_directory + "gen0000/ind%09da%02d.nec");
+        individual_ptr ind(new individual);
+
         for (unsigned int j=0; j<this->ant_configs.size(); ++j)
         {
             std::ofstream outfile(str(formatter % ind_id % j));
+            ind->ant_id = j; //since this antenna is excited
             write_platform(outfile);
             int count = this->platform->nec_wires.size();
             int excitation_id;
             for (unsigned int k=0; k<this->ant_configs.size(); ++k)
             {
                 int position = eap::rand(0, (this->ant_configs[k]->positions.size() - 1) );
+                ind->positions.push_back(this->ant_configs[k]->positions[position]);
                 if (k==j)
                     excitation_id = count+1;
                 write_ant(outfile, this->ant_configs[k], position, count+1);
@@ -73,6 +77,7 @@ void ga::run()
             write_excitation(outfile, excitation_id);
             outfile.close();
         }
+        pop.push_back(ind);
     }
     std::cout<<"Generation 0 created"<<std::endl;
     run_simulation(0);
@@ -155,4 +160,6 @@ individual_ptr ga::tour()
 
 ga::~ga(void)
 {
+    pop.clear();
+    pop.shrink_to_fit();
 }

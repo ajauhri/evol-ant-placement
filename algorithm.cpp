@@ -179,12 +179,12 @@ void algorithm::write_freespace()
         std::ofstream outfile(buffer);
         write_platform(outfile);
         write_ant(outfile, ant, 0, this->platform->nec_wires.size() + 1); //put at the first position, doesn't matter for free space
-        
+
         //need to cout here and check if theser are deallocated at the end of each generation
         int excitation_id = this->platform->nec_wires.size() + 1;
         write_excitation(outfile, excitation_id);
 
-       outfile.close();
+        outfile.close();
     }
     std::cout<<"***completed writing free space nec files\n";
 }
@@ -214,13 +214,13 @@ void algorithm::write_ant(std::ofstream& outfile, ant_config_ptr &ant, unsigned 
 void algorithm::write_excitation(std::ofstream& outfile, unsigned int id)
 {
     //the formatting is just BS
-        outfile << "GS   0    0         1\n";
-        outfile << "GE   0   -1         0\n";
-        outfile << "GN  -1\n";
-        outfile << str(boost::format("FR   0%5d    0    0%10.5f%10.5f\n") % step_freq % min_freq % incr_freq);
-        outfile << str(boost::format("EX   0%5d    1    0%10.5f%10.5f\n") % id % 1.0f % 0.0f);
-        outfile << str(boost::format("RP   0%5d%5d 1000%10.5f%10.5f%10.5f%10.5f%10.5f\n") % step_theta % step_phi % min_theta % min_phi % incr_theta % incr_phi % 0.0f);
-        outfile << "EN";
+    outfile << "GS   0    0         1\n";
+    outfile << "GE   0   -1         0\n";
+    outfile << "GN  -1\n";
+    outfile << str(boost::format("FR   0%5d    0    0%10.5f%10.5f\n") % step_freq % min_freq % incr_freq);
+    outfile << str(boost::format("EX   0%5d    1    0%10.5f%10.5f\n") % id % 1.0f % 0.0f);
+    outfile << str(boost::format("RP   0%5d%5d 1000%10.5f%10.5f%10.5f%10.5f%10.5f\n") % step_theta % step_phi % min_theta % min_phi % incr_theta % incr_phi % 0.0f);
+    outfile << "EN";
 }
 
 
@@ -407,16 +407,6 @@ void algorithm::simple_mutation(individual_ptr ind)
 }
 
 /**
- * @desc Generates a random integer between [min, max)
- * @param min Lower limit
- * @param max Upper bound
- */
-int algorithm::rand_integer(int min_value, int max_value)
-{
-    return (int) rand() % max_value;
-}
-
-/**
  * @desc Computes total gain 
  * @param gain_theta in dBi
  * @param gain_phi in dBi
@@ -431,6 +421,7 @@ float algorithm::cal_totaldb(float gain_theta, float gain_phi)
 
 algorithm::~algorithm(void)
 {
+    std::cout<<"algo dest\n";
     ant_configs.clear();
     ant_configs.shrink_to_fit();
 }
