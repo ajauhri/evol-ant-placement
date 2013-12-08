@@ -39,6 +39,8 @@ class algorithm
         virtual void write_ant(std::ofstream&, ant_config_ptr&, unsigned int, unsigned int);
         virtual void write_excitation(std::ofstream&, unsigned int);
         virtual float compare(const evaluation_ptr &, const evaluation_ptr &);
+        std::vector<individual_ptr> breed(const individual_ptr&, const individual_ptr&);
+        void simple_mutation(individual_ptr&);
         
 
     public:
@@ -63,18 +65,10 @@ class algorithm
 #if 0
 
         /* functions which work on an individual's data set */
-        individual_ptr setup_individual();
-        void write_to_file(individual_ptr, std::string);
-        void evaluate_ant_config(target&);
         bool overlaps_ant(individual_ptr, position_ptr);
 
         /* stochastic operators */
-        std::vector<individual_ptr> breed(individual_ptr, individual_ptr);
-        void simple_mutation(individual_ptr);
 
-        static int rand_integer(int, int);
-        float cal_totaldb(float, float);
-        void print_individual(individual_ptr);
 #endif
 };
 

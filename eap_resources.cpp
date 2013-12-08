@@ -11,9 +11,10 @@ namespace eap
 {
 	static a_map algorithms_map = create_algorithms_map();
 
-	float randf(float start, float end)
+	double rand01()
 	{
-		return (float) (((rand() % 10000) * (end - start))/10000.0 + start);
+        std::uniform_real_distribution<double> u01;
+		return u01(eap::gen); 
 	}
 
 

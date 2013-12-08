@@ -105,6 +105,7 @@ void ga::run()
             std::sort(pop.begin(), pop.end(), eap::fitness_sort);
             std::cout<<"best "<<pop[0]->fitness<<"\n";
 
+
             /*
                select();
                sprintf(folder, "Runs/GEN%04d", generation);
@@ -132,7 +133,6 @@ void ga::run_simulation(unsigned int id)
     system(str(formatter % id).c_str());
 }
 
-#if 0
 /**
  * @desc Implements stochastic operators viz. recombination and mutation on the population
  */
@@ -147,16 +147,16 @@ void ga::select()
     for (unsigned int i = elitism; i < population_size; i+=2)
     {
         //TODO: Check whether tour() should be performed even without recombination. 
-        individual_ptr parent_1 = tour();
-        individual_ptr parent_2 = tour();
+        individual_ptr parent1 = tour();
+        individual_ptr parent2 = tour();
 
-        if (aapot_resources::randf(0, 1.0) < recombination_probability)
+        if (eap::rand01() < recombination)
         {
-            std::vector<individual_ptr> ind_vector = algorithm::breed(parent_1, parent_2);
-            new_pop.push_back(ind_vector[0]);
-            new_pop.push_back(ind_vector[1]);
-            algorithm::simple_mutation(ind_vector[0]);
-            algorithm::simple_mutation(ind_vector[1]);
+            std::vector<individual_ptr> children = breed(parent1, parent2);
+            new_pop.push_back(children[0]);
+            new_pop.push_back(children[1]);
+            simple_mutation(children[0]);
+            simple_mutation(children[1]);
         }
         else
         {
@@ -166,7 +166,6 @@ void ga::select()
     }
     pop = new_pop;
 }
-#endif
 
 /**
  * @desc Tours the population and selects the best fit indivudal 

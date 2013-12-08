@@ -385,6 +385,58 @@ float algorithm::compare(const evaluation_ptr &first,
 }
 
 
+/**
+ * @desc Exchange of genotypes between two individuals
+ * @param ind1, ind2 - two individuals
+ * @return Vector of genetically bred individuals
+ */
+std::vector<individual_ptr> algorithm::breed(const individual_ptr &ind1, const individual_ptr &ind2)
+{
+    try
+    {
+    std::vector<individual_ptr> children;
+    individual_ptr child1 (new individual);
+    individual_ptr child2 (new individual);
+    children.push_back(child1);
+    children.push_back(child2);
+
+    unsigned int xover = eap::rand(0, ant_configs.size()-1);
+    for (unsigned i = 0; i < xover; i++)
+    {	
+        children[0]->positions.push_back(ind1->positions[i]);
+        children[1]->positions.push_back(ind2->positions[i]);
+    }
+
+    for (unsigned i = xover; i < ant_configs.size(); i++)
+    {
+        children[0]->positions.push_back(ind2->positions[i]);
+        children[1]->positions.push_back(ind1->positions[i]);
+    }
+    return children;
+    }
+    catch (...)
+    {
+         throw;
+    }
+}
+
+/**
+ * @desc Simple mutation of individual based on the mutation probability
+ * @param ind The individual to be mutated
+ */
+void algorithm::simple_mutation(individual_ptr &ind)
+{
+    for(unsigned i=0; i<ant_configs.size(); i++)
+    {
+        if(eap::rand01() < mutation)
+        {	
+            int pos = rand(0, ant_configs[i]->positions.size()-1);
+            ind->positions.insert(ind->positions.begin(), ant_configs[i]->positions.at(pos));
+        }
+    }
+}
+
+
 
 inline unsigned int algorithm::num_polar(void)
 {
@@ -392,26 +444,6 @@ inline unsigned int algorithm::num_polar(void)
 }
 
 #if 0
-/**
- * @desc Initializes an individual
- * @return Returns a pointer to the initialized individual
- */
-individual_ptr algorithm::setup_individual()
-{
-    individual_ptr ind (new individual);
-    for (unsigned i_ant=0; i_ant<ant_configs.size(); i_ant++)
-    {
-        /* load all ant_configs into an individual */
-        ant_config_ptr ant_config (clone(ant_configs.at(i_ant)));
-        int rand = rand_integer(0, ant_configs.at(i_ant)->positions.size());
-        while (overlaps_ant(ind, ant_configs.at(i_ant)->positions[rand]) || overlaps_ancillary(ant_configs.at(i_ant)->positions[rand]))
-            rand = rand_integer(0, ant_configs.at(i_ant)->positions.size());
-        ant_config->positions.push_back(ant_configs.at(i_ant)->positions.at(rand));
-        ind->ant_configs.push_back(ant_config);	
-    }
-    //print_individual(ind);
-    return ind;
-}
 
 /**
  * @desc Checks if antenna postion overlaps within an individual
@@ -427,78 +459,6 @@ bool algorithm::overlaps_ant(individual_ptr ind, position_ptr p)
         }
     }
     return false;
-}
-
-/**
- * @desc Run the simulation & poll it completes
- */
-void algorithm::run_simulation()
-{
-    //TODO this should run all files present under a certain location
-
-}
-
-/**
- * @desc Clones an antenna configuration. The clone is shallow as positions are not copied.
- * @param config The config to be cloned
- */ 
-ant_config_ptr algorithm::clone(ant_config_ptr config)
-{
-    ant_config_ptr clone_config (new ant_config);
-    clone_config->name = std::string(config->name);
-    clone_config->antenna_locator = std::string(config->antenna_locator);
-    return clone_config;
-}
-
-/**
- * @desc Exchange of genotypes between two individuals
- * @param ind_1 First individual
- * @param ind_2 Second indivdual
- * @return Vector of genetically bred individuals
- */
-std::vector<individual_ptr> algorithm::breed(individual_ptr ind_1, individual_ptr ind_2)
-{
-    std::vector<individual_ptr> children;
-    individual_ptr child_1 (new individual);
-    individual_ptr child_2 (new individual);
-    children.push_back(child_1);
-    children.push_back(child_2);
-
-    unsigned xover = rand_integer(0, ant_configs.size());
-    for (unsigned i = 0; i < xover; i++)
-    {	
-        children[0]->ant_configs.push_back(clone(ind_1->ant_configs[i]));
-        children[1]->ant_configs.push_back(clone(ind_2->ant_configs[i]));
-        children[0]->ant_configs[i]->positions.push_back(ind_1->ant_configs[i]->positions.back());
-        children[1]->ant_configs[i]->positions.push_back(ind_2->ant_configs[i]->positions.back());
-    }
-
-    for (unsigned i = xover; i < ant_configs.size(); i++)
-    {
-
-        children[0]->ant_configs.push_back(clone(ind_2->ant_configs[i]));
-        children[1]->ant_configs.push_back(clone(ind_1->ant_configs[i]));
-        children[0]->ant_configs[i]->positions.push_back(ind_2->ant_configs[i]->positions.back());
-        children[1]->ant_configs[i]->positions.push_back(ind_1->ant_configs[i]->positions.back());
-    }
-
-    return children;
-}
-
-/**
- * @desc Simple mutation of individual based on the mutation probability
- * @param ind The individual to be mutated
- */
-void algorithm::simple_mutation(individual_ptr ind)
-{
-    for(unsigned i=0; i<ant_configs.size(); i++)
-    {
-        if(aapot_resources::randf(0, 1.0f) < mutation)
-        {	
-            int rand = rand_integer(0, ant_configs[i]->positions.size());
-            ind->ant_configs[i]->positions.insert(ind->ant_configs[i]->positions.begin(), ant_configs[i]->positions.at(rand));
-        }
-    }
 }
 
 /**

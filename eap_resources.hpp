@@ -16,7 +16,7 @@ namespace eap
 
 	bool to_bool(std::string);
 
-	float randf(float, float);
+	double rand01();
 
     unsigned int rand(void);
     unsigned int rand(unsigned int, unsigned int);

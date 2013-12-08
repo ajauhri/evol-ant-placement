@@ -23,6 +23,6 @@ public:
 	void run();
     void run_simulation(unsigned int);
     individual_ptr tour();
-	//void select();
+    void select();
 };
 #endif
