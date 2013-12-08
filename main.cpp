@@ -93,12 +93,12 @@ int main(int argc, char* argv[])
 
         /* run the specific algorithm */
         eap::algo->run();
-        eap::close_lua();
     }
     catch (const std::exception &e)
     {
         std::cerr<<e.what() << "\n";
     }
+    eap::close_lua();
     return 0;
 }
 

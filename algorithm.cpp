@@ -47,12 +47,11 @@ void algorithm::setup_algo_params()
             eap::gen.seed(time(NULL) + getpid()); //getpid() - Binaries executed one after the other have PRNGs initialized differently
         else
             eap::gen.seed(eap::get_fvalue(seed_s));
-
         std::cout<<"***completed generic algo parameter setup\n";
     }
-    catch (const eap::InvalidStateException &e)
-    {
-        std::cerr<<e.what()<<"\n";
+    catch (...)
+    { 
+        throw; 
     }
 }
 
@@ -63,11 +62,18 @@ void algorithm::setup_algo_params()
  */
 void algorithm::setup_run_context()
 {
-    boost::filesystem::remove_all(eap::run_directory);
-    boost::filesystem::create_directory(eap::run_directory);
+    try 
+    {
+        boost::filesystem::remove_all(eap::run_directory);
+        boost::filesystem::create_directory(eap::run_directory);
 
-    boost::filesystem::remove_all(eap::freespace_directory);
-    boost::filesystem::create_directory(eap::freespace_directory);
+        boost::filesystem::remove_all(eap::freespace_directory);
+        boost::filesystem::create_directory(eap::freespace_directory);
+    }
+    catch (...)
+    {
+        throw;
+    }
 }
 
 /**
@@ -80,10 +86,9 @@ void algorithm::setup_ant_placements()
         eap::load_lua_lib(this->lua_file.c_str());
         std::cout<<"***completed loading antenna placements\n";
     }
-    catch (const eap::InvalidStateException &e)
+    catch (...)
     {
-        std::cerr<<e.what()<<"\n";
-        exit(0);
+        throw;
     }
 }
 
@@ -92,40 +97,54 @@ void algorithm::setup_ant_placements()
  */
 void algorithm::load_nec_files()
 {
-    // first load platform wires
-    this->platform->wires = load_wires(this->platform->nec_file, "platform file corrupted");
-
-    // then load all antenna wires
-    for (ant_config_ptr ant : this->ant_configs)
+    try 
     {
-        ant->wires = load_wires(ant->nec_file, ant->nec_file + "file corrupted");
-    }
+        // first load platform wires
+        this->platform->wires = load_wires(this->platform->nec_file, "platform file corrupted");
 
-    //since the nec files for GW card require a special format and have to be written multiple times for the platform, might as well do it once and keep in memory
-    create_nec_strs();
+        // then load all antenna wires
+        for (ant_config_ptr ant : this->ant_configs)
+        {
+            ant->wires = load_wires(ant->nec_file, ant->nec_file + "file corrupted");
+        }
+
+        //since the nec files for GW card require a special format and have to be written multiple times for the platform, might as well do it once and keep in memory
+        create_nec_strs();
+    }
+    catch (...)
+    {
+        throw;
+    }
 }
 
 void algorithm::create_nec_strs()
 {
-    int plat_wire_id = 1;
-    boost::format formatter(WIRE_NEC);
-    for (wire_ptr w : this->platform->wires)
+    try
     {
-        this->platform->nec_wires.push_back(str(formatter % plat_wire_id++ % w->segments % w->a->x % w->a->y % w->a->z % w->b->x % w->b->y % w->b->z % w->diameter));
+
+        int plat_wire_id = 1;
+        boost::format formatter(WIRE_NEC);
+        for (wire_ptr w : this->platform->wires)
+        {
+            this->platform->nec_wires.push_back(str(formatter % plat_wire_id++ % w->segments % w->a->x % w->a->y % w->a->z % w->b->x % w->b->y % w->b->z % w->diameter));
+        }
+    }
+    catch (...)
+    {
+        throw;
     }
 }
 
 std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const std::string& err_msg)
 {
+    std::ifstream infile(eap::input_directory + nec_file);
+    std::vector<wire_ptr> wires;
+    std::string line;
+    float ax, ay, az, bx, by, bz, dia;
+    int seg, m;
+    char keyword[3];
     try 
     {
-        std::vector<wire_ptr> wires;
-        std::ifstream infile(eap::input_directory + nec_file);
-        std::string line;
-        float ax, ay, az, bx, by, bz, dia;
-        int seg, m;
-        char keyword[3];
-
         if (!infile) throw eap::InvalidStateException(nec_file + " not found");
 
         while (std::getline(infile, line))
@@ -151,13 +170,13 @@ std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const s
         } 
         std::cout<<"***completed loading wires for "<<nec_file<<"\n";
         infile.close();
-        return wires;
     }
-    catch(const eap::InvalidStateException &e)
-    {
-        std::cerr<<e.what()<<"\n";
-        exit(0);
+    catch(...)
+    { 
+        infile.close();
+        throw; 
     }
+    return wires;
 }
 
 /**
@@ -165,96 +184,146 @@ std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const s
  */
 void algorithm::write_freespace()
 {
-    boost::format formatter(eap::freespace_directory + "ant%03d.nec");
-    int ant_id = 0;
-
-    for (ant_config_ptr ant : this->ant_configs)
+    std::ofstream outfile;
+    try 
     {
-        std::string buffer = str(formatter % ant_id++);
-        std::ofstream outfile(buffer);
-        write_platform(outfile);
-        write_ant(outfile, ant, 0, this->platform->nec_wires.size() + 1); //put at the first position, doesn't matter for free space
+        boost::format formatter(eap::freespace_directory + "ant%03d.nec");
+        int ant_id = 0;
 
-        //need to cout here and check if theser are deallocated at the end of each generation
-        int excitation_id = this->platform->nec_wires.size() + 1;
-        write_excitation(outfile, excitation_id);
+        for (ant_config_ptr ant : this->ant_configs)
+        {
+            std::string buffer = str(formatter % ant_id++);
+            outfile.open(buffer);
+            write_platform(outfile);
+            write_ant(outfile, ant, 0, this->platform->nec_wires.size() + 1); //put at the first position, doesn't matter for free space
 
-        outfile.close();
+            //need to cout here and check if theser are deallocated at the end of each generation
+            int excitation_id = this->platform->nec_wires.size() + 1;
+            write_excitation(outfile, excitation_id);
+
+            outfile.close();
+        }
+        std::cout<<"***completed writing free space nec files\n";
     }
-    std::cout<<"***completed writing free space nec files\n";
+    catch (...)
+    {
+        outfile.close();
+        throw;
+    }
 }
 
 void algorithm::write_platform(std::ofstream& outfile)
 {
-    for (unsigned int i = 0; i<this->platform->nec_wires.size(); i++)
-        outfile << platform->nec_wires[i];
+    try 
+    {
+        if (!outfile) throw eap::InvalidStateException("Write file not defiend for putting platform wires");
+        for (unsigned int i = 0; i<this->platform->nec_wires.size(); i++)
+            outfile << platform->nec_wires[i];
+    }
+    catch (...)
+    {
+        throw;
+    }
 }
 
 void algorithm::write_ant(std::ofstream& outfile, ant_config_ptr &ant, unsigned int position, unsigned int wire_ind)
 {
-    boost::format formatter(WIRE_NEC);
-    for (wire_ptr w : ant->wires)
+    try
     {
-        outfile << str(formatter % wire_ind++ % w->segments 
-                % (w->a->x + ant->positions[position]->x)
-                % (w->a->y + ant->positions[position]->y)
-                % (w->a->z + ant->positions[position]->z)
-                % (w->b->x + ant->positions[position]->x)
-                % (w->b->y + ant->positions[position]->y)
-                % (w->b->z + ant->positions[position]->z)
-                % w->diameter);
+        if (!outfile || !ant || position < 0 || wire_ind < 0)
+            throw eap::InvalidStateException("write_ant called incorrectly");
+
+        boost::format formatter(WIRE_NEC);
+        for (wire_ptr w : ant->wires)
+        {
+            outfile << str(formatter % wire_ind++ % w->segments 
+                    % (w->a->x + ant->positions[position]->x)
+                    % (w->a->y + ant->positions[position]->y)
+                    % (w->a->z + ant->positions[position]->z)
+                    % (w->b->x + ant->positions[position]->x)
+                    % (w->b->y + ant->positions[position]->y)
+                    % (w->b->z + ant->positions[position]->z)
+                    % w->diameter);
+        }
+    }
+    catch (...)
+    {
+        throw;
     }
 }
 
 void algorithm::write_excitation(std::ofstream& outfile, unsigned int id)
 {
-    //the formatting is just BS
-    outfile << "GS   0    0         1\n";
-    outfile << "GE   0   -1         0\n";
-    outfile << "GN  -1\n";
-    outfile << str(boost::format("FR   0%5d    0    0%10.5f%10.5f\n") % step_freq % min_freq % incr_freq);
-    outfile << str(boost::format("EX   0%5d    1    0%10.5f%10.5f\n") % id % 1.0f % 0.0f);
-    outfile << str(boost::format("RP   0%5d%5d 1000%10.5f%10.5f%10.5f%10.5f%10.5f\n") % step_theta % step_phi % min_theta % min_phi % incr_theta % incr_phi % 0.0f);
-    outfile << "EN";
+    try 
+    {
+        if (!outfile || id < 0) throw eap::InvalidStateException("write_excitation called incorrectly");
+        //the formatting is just BS
+        outfile << "GS   0    0         1\n";
+        outfile << "GE   0   -1         0\n";
+        outfile << "GN  -1\n";
+        outfile << str(boost::format("FR   0%5d    0    0%10.5f%10.5f\n") % step_freq % min_freq % incr_freq);
+        outfile << str(boost::format("EX   0%5d    1    0%10.5f%10.5f\n") % id % 1.0f % 0.0f);
+        outfile << str(boost::format("RP   0%5d%5d 1000%10.5f%10.5f%10.5f%10.5f%10.5f\n") % step_theta % step_phi % min_theta % min_phi % incr_theta % incr_phi % 0.0f);
+        outfile << "EN";
+    }
+    catch (...)
+    {
+        throw;
+    } 
 }
 
 
 void algorithm::run_freespace()
 {
-    boost::format formatter("./nec2++.exe -i " + eap::freespace_directory + "ant%03d.nec");
-    for (unsigned int i=0; i<ant_configs.size(); i++)
-        system(str(formatter % i).c_str());
-    std::cout<<"***completed creating out files for free space patterns\n"; 
+    try 
+    {
+        boost::format formatter("./nec2++.exe -i " + eap::freespace_directory + "ant%03d.nec");
+        for (unsigned int i=0; i<ant_configs.size(); i++)
+            system(str(formatter % i).c_str());
+        std::cout<<"***completed creating out files for free space patterns\n"; 
+    }
+    catch(...)
+    { 
+        throw;
+    }
 }
 
 void algorithm::read_freespace()
 {
-    boost::format formatter(eap::freespace_directory + "ant%03d.out");
-    for (unsigned int i=0; i<ant_configs.size(); i++)
+    try
     {
-        individual_ptr ind(new individual);
-        evaluation_ptr eval(new evaluation);
-        ind->eval = eval;
-        read_nou(str(formatter % i), ind->eval);
+        boost::format formatter(eap::freespace_directory + "ant%03d.out");
+        for (unsigned int i=0; i<ant_configs.size(); i++)
+        {
+            individual_ptr ind(new individual);
+            evaluation_ptr eval(new evaluation);
+            ind->evals.push_back(eval);
+            read_nou(str(formatter % i), ind->evals.back());
+            free_inds.push_back(ind);
+        }
+    }
+    catch (...)
+    {
+        throw;
     }
 }
 
 unsigned int algorithm::read_nou(const std::string results_file,
         const evaluation_ptr &eval)
 {
-
-    std::cout<<results_file<<"\n";
+    std::ifstream infile;
     try
     {
-        std::ifstream infile(results_file);
+        infile.open(results_file);
         std::string line;
-        unsigned int read = 0;
+        unsigned int read = 0, j = 0;
         float theta, phi, vertdb, horizdb, totaldb;
 
         if (!infile) throw eap::InvalidStateException(results_file + " not found");
         do
         {
             pattern_ptr pat(new pattern);
+            pat->frequency = min_freq + j*incr_freq;
             while (std::getline(infile, line) && strncmp(line.c_str(), " DEGREES", 8));
 
             while (std::getline(infile, line))
@@ -273,6 +342,7 @@ unsigned int algorithm::read_nou(const std::string results_file,
                 if (this->num_polar() != pat->db_gain.size()) throw eap::InvalidStateException("Problem with reading nec results for " + results_file);
                 eval->radiation.push_back(pat);
                 read += pat->db_gain.size();
+                j++;
             }
         }
         while (std::getline(infile, line)); 
@@ -281,10 +351,38 @@ unsigned int algorithm::read_nou(const std::string results_file,
     }
     catch (const eap::InvalidStateException &e)
     {
-        std::cerr<<e.what()<<"\n";
-        exit(0);
+        infile.close();
+        throw;
     }
 }
+
+float algorithm::compare(const evaluation_ptr &first,
+        const evaluation_ptr &second)
+{
+    try 
+    {
+        float diff = 0.0f;
+        if (first->radiation.size() != second->radiation.size())
+            throw eap::InvalidStateException("something bad happened");
+        for (unsigned int i=0; i<first->radiation.size(); ++i)
+        {
+            pattern_ptr p1 = first->radiation[i];
+            pattern_ptr p2 = second->radiation[i];
+            //throw exception of db_counts don't match 
+            for (unsigned int j=0; j<num_polar(); ++j)
+            {
+                diff += powf(fabs(p1->db_gain[j] - p2->db_gain[j]), exp_weight);
+            }
+        }
+        return diff;
+    }
+    catch (...)
+    {
+        throw;
+    }
+}
+
+
 
 inline unsigned int algorithm::num_polar(void)
 {
@@ -416,7 +514,6 @@ float algorithm::cal_totaldb(float gain_theta, float gain_phi)
 
 algorithm::~algorithm(void)
 {
-    std::cout<<"algo dest\n";
     ant_configs.clear();
     ant_configs.shrink_to_fit();
 }

@@ -7,11 +7,10 @@
 #include<boost/shared_ptr.hpp>
 class individual {
 public:
-	float fitness; /*average over all runs*/
-    std::string nec_file;
+	float fitness;
+    std::vector<float> one_ant_on_fitness;
     std::vector<position_ptr> positions;
-    unsigned int ant_id;
-    evaluation_ptr eval;
+    std::vector<evaluation_ptr> evals;
 
 	individual(void);
 };

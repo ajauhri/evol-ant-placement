@@ -51,25 +51,29 @@ void ga::run()
         throw eap::InvalidStateException("Elitism cannot be greater than population size");
 
     boost::filesystem::create_directory(std::string(eap::run_directory+"gen0000"));
+
+    boost::format nec_input(eap::run_directory + "gen%04d/ind%09da%02d.nec");
+    boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
     for (unsigned int ind_id=0; ind_id<this->population_size; ++ind_id)
     {
-        boost::format formatter(eap::run_directory + "gen0000/ind%09da%02d.nec");
         individual_ptr ind(new individual);
+        std::vector<unsigned int> placements;
+        for (ant_config_ptr ant : this->ant_configs)
+            placements.push_back(eap::rand(0, ant->positions.size()-1));
 
         for (unsigned int j=0; j<this->ant_configs.size(); ++j)
         {
-            std::ofstream outfile(str(formatter % ind_id % j));
-            ind->ant_id = j; //since this antenna is excited
+            ind->positions.push_back(this->ant_configs[j]->positions[placements[j]]);
+            std::ofstream outfile(str(nec_input % 0 % ind_id % j));
             write_platform(outfile);
+
             int count = this->platform->nec_wires.size();
             int excitation_id;
             for (unsigned int k=0; k<this->ant_configs.size(); ++k)
             {
-                int position = eap::rand(0, (this->ant_configs[k]->positions.size() - 1) );
-                ind->positions.push_back(this->ant_configs[k]->positions[position]);
                 if (k==j)
                     excitation_id = count+1;
-                write_ant(outfile, this->ant_configs[k], position, count+1);
+                write_ant(outfile, this->ant_configs[k], placements[k], count+1);
                 count += this->ant_configs[k]->wires.size();
             }
             write_excitation(outfile, excitation_id);
@@ -77,28 +81,51 @@ void ga::run()
         }
         pop.push_back(ind);
     }
-    std::cout<<"Generation 0 created"<<std::endl;
-    run_simulation(0);
-    /*
-    for (unsigned int generation=1; generation<this->generations; generation++)
-    {
-        run_simulation();
-        select();
-        sprintf(folder, "Runs/GEN%04d", generation);
-        boost::filesystem::create_directory(folder);
+    std::cout<<"***generation 0 created\n";
 
-        for (unsigned int config_id=0; config_id<this->population_size; config_id++)
+    try 
+    { 
+        for (unsigned int gen=0; gen<1; ++gen)
         {
-            char file_path[500];
-            sprintf(file_path, "./%s/config%04d.xml", folder, config_id);
-            write_to_file(pop.at(config_id), file_path);
+            run_simulation(gen);
+            for (unsigned int i=0; i<this->pop.size(); ++i)
+            {
+                for (unsigned int j=0; j<this->ant_configs.size(); ++j)
+                {
+                    evaluation_ptr eval(new evaluation);
+                    pop[i]->evals.push_back(eval);
+                    unsigned int read = read_nou(str(nec_output % gen % i % j), eval);
+                    if (read != (num_polar() * step_freq))
+                        throw eap::InvalidStateException("Problem with output in " + str(nec_output % gen % i % j));
+                    pop[i]->one_ant_on_fitness.push_back(compare(free_inds[j]->evals[0], pop[i]->evals[j]));
+                    pop[i]->fitness += pop[i]->one_ant_on_fitness[j];
+                }
+                std::cout<<pop[i]->fitness<<"\n";
+            }
+
+            /*
+               select();
+               sprintf(folder, "Runs/GEN%04d", generation);
+               boost::filesystem::create_directory(folder);
+
+               for (unsigned int config_id=0; config_id<this->population_size; config_id++)
+               {
+               char file_path[500];
+               sprintf(file_path, "./%s/config%04d.xml", folder, config_id);
+               write_to_file(pop.at(config_id), file_path);
+               }*/
         }
-    }*/
+    }
+    catch (...)
+    {
+        throw;
+    }
 }
 
 void ga::run_simulation(unsigned int id)
 {
     boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 ./nec2++.exe -i {}");
+    std::cout<<"***running nec for id "<<id<<"\n";
     system(str(formatter % id).c_str());
 }
 

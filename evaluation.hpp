@@ -7,7 +7,6 @@ class evaluation
 {
     public:
         evaluation(void);
-        ~evaluation(void);
 
         std::vector<pattern_ptr> radiation;
         float max_db;

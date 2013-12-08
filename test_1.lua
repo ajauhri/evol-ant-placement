@@ -44,6 +44,6 @@ params = {
 	exp_weight = 2,
 	local_run = 0,
 	algorithm = "GA", 
-    auto_seed = 0,
+    auto_seed = 1,
     seed = 30
 }

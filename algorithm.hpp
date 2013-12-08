@@ -21,7 +21,7 @@ class algorithm
         float	exp_weight;
         float mutation;
         std::string lua_file;
-        std::vector<std::string> plat_str_nec;
+        std::vector<individual_ptr> free_inds;
 
         //ant_config_ptr clone(ant_config_ptr);
         unsigned int min_theta = 0;
@@ -38,6 +38,7 @@ class algorithm
         virtual void write_platform(std::ofstream&);
         virtual void write_ant(std::ofstream&, ant_config_ptr&, unsigned int, unsigned int);
         virtual void write_excitation(std::ofstream&, unsigned int);
+        virtual float compare(const evaluation_ptr &, const evaluation_ptr &);
         
 
     public:
@@ -46,9 +47,6 @@ class algorithm
 
         std::vector<ant_config_ptr> ant_configs; //stores antennas positions and all wires mentioned in the nec file
         ant_config_ptr platform;
-
-
-        std::vector<individual_ptr> free_inds; //free space indivuals to compare against
 
         virtual void setup_run_context();
         virtual void setup_algo_params();
