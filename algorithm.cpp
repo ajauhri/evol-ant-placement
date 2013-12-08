@@ -363,12 +363,13 @@ float algorithm::compare(const evaluation_ptr &first,
     {
         float diff = 0.0f;
         if (first->radiation.size() != second->radiation.size())
-            throw eap::InvalidStateException("something bad happened");
+            throw eap::InvalidStateException("evaluation::radiation vector sizes don't match");
         for (unsigned int i=0; i<first->radiation.size(); ++i)
         {
             pattern_ptr p1 = first->radiation[i];
             pattern_ptr p2 = second->radiation[i];
-            //throw exception of db_counts don't match 
+            //why do we need to check for matching frequency?
+            if (p1->frequency != p2->frequency) throw eap::InvalidStateException("frequencies don't match");
             for (unsigned int j=0; j<num_polar(); ++j)
             {
                 diff += powf(fabs(p1->db_gain[j] - p2->db_gain[j]), exp_weight);
