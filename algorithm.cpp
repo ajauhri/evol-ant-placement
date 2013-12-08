@@ -430,7 +430,7 @@ void algorithm::simple_mutation(individual_ptr &ind)
     {
         if(eap::rand01() < mutation)
         {	
-            int pos = rand(0, ant_configs[i]->positions.size()-1);
+            int pos = eap::rand(0, ant_configs[i]->positions.size()-1);
             ind->positions.insert(ind->positions.begin(), ant_configs[i]->positions.at(pos));
         }
     }

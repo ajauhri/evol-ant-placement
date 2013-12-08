@@ -160,8 +160,8 @@ void ga::select()
         }
         else
         {
-            new_pop.push_back(parent_1);
-            new_pop.push_back(parent_2);
+            new_pop.push_back(parent1);
+            new_pop.push_back(parent2);
         }
     }
     pop = new_pop;
