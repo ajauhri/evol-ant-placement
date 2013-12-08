@@ -60,4 +60,10 @@ namespace eap
 		else 
 			return -1;
 	}
+
+    int fitness_sort(const individual_ptr &ind1, const individual_ptr &ind2)
+    {
+        return ind1->fitness < ind2->fitness;
+    }
+
 }

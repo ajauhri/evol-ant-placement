@@ -6,8 +6,9 @@
 #include<streambuf>
 #include<string>
 #include<map>
-#include "algorithm.hpp"
-#include "algorithms.hpp"
+#include<algorithm.hpp>
+#include<algorithms.hpp>
+#include<individual.hpp>
 
 namespace eap
 {
@@ -54,6 +55,7 @@ namespace eap
 	a_map create_algorithms_map();
 
 	int get_algorithm(void);
+    int fitness_sort(const individual_ptr&, const individual_ptr&);
 
 	extern std::unique_ptr<algorithm> algo;
 

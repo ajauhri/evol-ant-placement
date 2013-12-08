@@ -3,6 +3,7 @@
 #include<random>
 #include<math.h>
 #include<time.h>
+#include<algorithm>
 #include<boost/filesystem.hpp>
 #include<boost/format.hpp>
 #include<sstream>

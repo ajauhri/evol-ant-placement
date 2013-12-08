@@ -102,6 +102,8 @@ void ga::run()
                 }
                 std::cout<<pop[i]->fitness<<"\n";
             }
+            std::sort(pop.begin(), pop.end(), eap::fitness_sort);
+            std::cout<<"best "<<pop[0]->fitness<<"\n";
 
             /*
                select();
@@ -122,6 +124,7 @@ void ga::run()
     }
 }
 
+
 void ga::run_simulation(unsigned int id)
 {
     boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 ./nec2++.exe -i {}");
@@ -139,8 +142,6 @@ void ga::select()
     for (unsigned int i=0; i<elitism; i++)
     {	
         new_pop.push_back(pop[i]);
-        for (unsigned j=0; j<ant_configs.size(); j++)
-            std::cout<<new_pop.at(i)->ant_configs.at(j)->positions.back()->mount_object<<std::endl;
     }
 
     for (unsigned int i = elitism; i < population_size; i+=2)
@@ -165,6 +166,7 @@ void ga::select()
     }
     pop = new_pop;
 }
+#endif
 
 /**
  * @desc Tours the population and selects the best fit indivudal 
@@ -174,14 +176,13 @@ individual_ptr ga::tour()
     individual_ptr best;
     for (unsigned int i = 0; i < tournament_size; i++)
     {
-        unsigned r_index = rand_integer(0, population_size);
+        unsigned r_index = eap::rand(0, population_size-1);
         if (!best || pop[r_index]->fitness < best->fitness) 
             best = pop[r_index];
     }
 
     return best;
 }
-#endif
 
 ga::~ga(void)
 {
