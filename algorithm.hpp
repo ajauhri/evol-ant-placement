@@ -36,11 +36,13 @@ class algorithm
 
         unsigned int num_polar(void);
         virtual void write_platform(std::ofstream&);
-        virtual void write_ant(std::ofstream&, ant_config_ptr&, unsigned int, unsigned int);
+        virtual void write_ant(std::ofstream&, ant_config_ptr&, position_ptr&, unsigned int);
         virtual void write_excitation(std::ofstream&, unsigned int);
+        virtual individual_ptr create_individual(std::string, std::vector<position_ptr> &);
         virtual float compare(const evaluation_ptr &, const evaluation_ptr &);
         std::vector<individual_ptr> breed(const individual_ptr&, const individual_ptr&);
         void simple_mutation(individual_ptr&);
+
         
 
     public:

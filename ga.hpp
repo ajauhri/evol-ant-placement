@@ -13,7 +13,11 @@ private:
 	unsigned int tournament_size;
 	float recombination;
 	std::vector<individual_ptr> pop;
-	//individual_ptr tour();
+	individual_ptr tour();
+    void run_simulation(unsigned int);
+    void evaluate_gen(unsigned int);
+    void write_generation(unsigned int);
+    void select();
 
 public:
 	ga(std::string);
@@ -21,8 +25,5 @@ public:
 
 	void setup_algo_params();
 	void run();
-    void run_simulation(unsigned int);
-    individual_ptr tour();
-    void select();
 };
 #endif

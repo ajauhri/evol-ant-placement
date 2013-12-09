@@ -47,76 +47,85 @@ void ga::setup_algo_params()
  */
 void ga::run()
 {
-    if (elitism > population_size)
-        throw eap::InvalidStateException("Elitism cannot be greater than population size");
-
-    boost::filesystem::create_directory(std::string(eap::run_directory+"gen0000"));
-
-    boost::format nec_input(eap::run_directory + "gen%04d/ind%09da%02d.nec");
-    boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
-    for (unsigned int ind_id=0; ind_id<this->population_size; ++ind_id)
-    {
-        individual_ptr ind(new individual);
-        std::vector<unsigned int> placements;
-        for (ant_config_ptr ant : this->ant_configs)
-            placements.push_back(eap::rand(0, ant->positions.size()-1));
-
-        for (unsigned int j=0; j<this->ant_configs.size(); ++j)
-        {
-            ind->positions.push_back(this->ant_configs[j]->positions[placements[j]]);
-            std::ofstream outfile(str(nec_input % 0 % ind_id % j));
-            write_platform(outfile);
-
-            int count = this->platform->nec_wires.size();
-            int excitation_id;
-            for (unsigned int k=0; k<this->ant_configs.size(); ++k)
-            {
-                if (k==j)
-                    excitation_id = count+1;
-                write_ant(outfile, this->ant_configs[k], placements[k], count+1);
-                count += this->ant_configs[k]->wires.size();
-            }
-            write_excitation(outfile, excitation_id);
-            outfile.close();
-        }
-        pop.push_back(ind);
-    }
-    std::cout<<"***generation 0 created\n";
-
     try 
-    { 
-        for (unsigned int gen=0; gen<1; ++gen)
+    {
+        if (elitism > population_size)
+            throw eap::InvalidStateException("Elitism cannot be greater than population size");
+
+        boost::filesystem::create_directory(std::string(eap::run_directory+"gen0000"));
+
+        boost::format nec_input(eap::run_directory + "gen%04d/ind%09d");
+        for (unsigned int ind_id=0; ind_id<population_size; ++ind_id)
         {
-            run_simulation(gen);
-            for (unsigned int i=0; i<this->pop.size(); ++i)
+            individual_ptr ind(new individual);
+            std::vector<position_ptr> placements;
+            for (ant_config_ptr ant : ant_configs)
             {
-                for (unsigned int j=0; j<this->ant_configs.size(); ++j)
-                {
-                    evaluation_ptr eval(new evaluation);
-                    pop[i]->evals.push_back(eval);
-                    unsigned int read = read_nou(str(nec_output % gen % i % j), eval);
-                    if (read != (num_polar() * step_freq))
-                        throw eap::InvalidStateException("Problem with output in " + str(nec_output % gen % i % j));
-                    pop[i]->one_ant_on_fitness.push_back(compare(free_inds[j]->evals[0], pop[i]->evals[j]));
-                    pop[i]->fitness += pop[i]->one_ant_on_fitness[j];
-                }
-                std::cout<<pop[i]->fitness<<"\n";
+                int pos = eap::rand(0, ant->positions.size()-1);
+                placements.push_back(ant->positions[pos]);
             }
+            pop.push_back(create_individual(str(nec_input % 0 % ind_id)+"a%02d.nec", placements));
+        }
+        std::cout<<"***generation 0 created\n";
+        evaluate_gen(0);
+
+        for (unsigned int i=1; i<2; ++i)
+        {
             std::sort(pop.begin(), pop.end(), eap::fitness_sort);
             std::cout<<"best "<<pop[0]->fitness<<"\n";
+            select();
+            write_generation(i);
+            evaluate_gen(i);
+        }
+    }
+    catch (...)
+    {
+        throw;
+    }
+}
 
+void ga::write_generation(unsigned int gen)
+{
+    try
+    {
+        boost::format gen_dir(eap::run_directory+"gen%04d");
+        boost::format input_path(eap::run_directory + "gen%04d/ind%09d");
+        boost::filesystem::create_directory(str(gen_dir % gen));
 
-            /*
-               select();
-               sprintf(folder, "Runs/GEN%04d", generation);
-               boost::filesystem::create_directory(folder);
+        for (unsigned int ind_id=0; ind_id<population_size; ++ind_id)
+        {
+            std::cout<<pop.size()<<"\n";
+            pop[ind_id] = create_individual(str(input_path % gen % ind_id) + "a%02d.nec", pop[ind_id]->positions);
+        }
 
-               for (unsigned int config_id=0; config_id<this->population_size; config_id++)
-               {
-               char file_path[500];
-               sprintf(file_path, "./%s/config%04d.xml", folder, config_id);
-               write_to_file(pop.at(config_id), file_path);
-               }*/
+        if (pop.size() != population_size) throw eap::InvalidStateException("pop vector size " + std::to_string(pop.size()) + " and " + std::to_string(population_size) + " specified in lua");
+    }
+    catch (...)
+    {
+        throw;
+    }
+}
+
+void ga::evaluate_gen(unsigned int id)
+{
+    try
+    {
+        run_simulation(id);
+        boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
+        std::cout<<"pop vector size "<<pop.size()<<"\n";
+        for (unsigned int i=0; i<pop.size(); ++i)
+        {
+            for (unsigned int j=0; j<ant_configs.size(); ++j)
+            {
+                evaluation_ptr eval(new evaluation);
+                pop[i]->evals.push_back(eval);
+                unsigned int read = read_nou(str(nec_output % id % i % j), eval);
+                if (read != (num_polar() * step_freq))
+                    throw eap::InvalidStateException("Problem with output in " + str(nec_output % id % i % j));
+                pop[i]->one_ant_on_fitness.push_back(compare(free_inds[j]->evals[0], pop[i]->evals[j]));
+                pop[i]->fitness += pop[i]->one_ant_on_fitness[j];
+            }
+            std::cout<<pop[i]->fitness<<"\n";
         }
     }
     catch (...)
@@ -126,45 +135,64 @@ void ga::run()
 }
 
 
-void ga::run_simulation(unsigned int id)
-{
-    boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 ./nec2++.exe -i {}");
-    std::cout<<"***running nec for id "<<id<<"\n";
-    system(str(formatter % id).c_str());
-}
-
 /**
  * @desc Implements stochastic operators viz. recombination and mutation on the population
  */
 void ga::select()
 {
     std::vector<individual_ptr> new_pop;
-    for (unsigned int i=0; i<elitism; i++)
-    {	
-        new_pop.push_back(pop[i]);
-    }
-
-    for (unsigned int i = elitism; i < population_size; i+=2)
+    try
     {
-        //TODO: Check whether tour() should be performed even without recombination. 
-        individual_ptr parent1 = tour();
-        individual_ptr parent2 = tour();
 
-        if (eap::rand01() < recombination)
-        {
-            std::vector<individual_ptr> children = breed(parent1, parent2);
-            new_pop.push_back(children[0]);
-            new_pop.push_back(children[1]);
-            simple_mutation(children[0]);
-            simple_mutation(children[1]);
+        for (unsigned int i=0; i<elitism; i++)
+        {	
+            new_pop.push_back(pop[i]);
         }
-        else
+
+        for (unsigned int i = elitism; i < population_size; i+=2)
         {
-            new_pop.push_back(parent1);
-            new_pop.push_back(parent2);
+            individual_ptr parent1 = tour();
+            individual_ptr parent2 = tour();
+
+            if (eap::rand01() < recombination)
+            {
+                std::vector<individual_ptr> children = breed(parent1, parent2);
+                new_pop.push_back(children[0]);
+                new_pop.push_back(children[1]);
+            }
+            else
+            {
+                new_pop.push_back(parent1);
+                new_pop.push_back(parent2);
+            }
         }
+
+        // pick m individuals from population and mutate one bit of theirs
+
+        //simple_mutation(children[0]);
+        //simple_mutation(children[1]);
+        if (new_pop.size() != population_size) throw eap::InvalidStateException("population size don't match");
+        std::cout<<"***done with creating next generation\n";
+        pop.swap(new_pop);
     }
-    pop = new_pop;
+    catch (...)
+    {
+        throw;
+    }
+}
+
+void ga::run_simulation(unsigned int id)
+{
+    try
+    {
+        boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 ./nec2++.exe -i {}");
+        system(str(formatter % id).c_str());
+        std::cout<<"***completed simulation for generation "<<id<<"\n";
+    }
+    catch (...)
+    {
+        throw;
+    }
 }
 
 /**

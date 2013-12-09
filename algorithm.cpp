@@ -17,7 +17,6 @@
 
 namespace 
 {
-    char const *algorithm_s = "algorithm";
     char const *mutation_s = "mutation";
     char const *exp_weight_s = "exp_weight";
     char const *auto_seed_s  = "auto_seed";
@@ -196,7 +195,7 @@ void algorithm::write_freespace()
             std::string buffer = str(formatter % ant_id++);
             outfile.open(buffer);
             write_platform(outfile);
-            write_ant(outfile, ant, 0, this->platform->nec_wires.size() + 1); //put at the first position, doesn't matter for free space
+            write_ant(outfile, ant, ant->positions[0], this->platform->nec_wires.size() + 1); //put at the first position, doesn't matter for free space
 
             //need to cout here and check if theser are deallocated at the end of each generation
             int excitation_id = this->platform->nec_wires.size() + 1;
@@ -227,23 +226,23 @@ void algorithm::write_platform(std::ofstream& outfile)
     }
 }
 
-void algorithm::write_ant(std::ofstream& outfile, ant_config_ptr &ant, unsigned int position, unsigned int wire_ind)
+void algorithm::write_ant(std::ofstream& outfile, ant_config_ptr &ant, position_ptr &pos, unsigned int wire_ind)
 {
     try
     {
-        if (!outfile || !ant || position < 0 || wire_ind < 0)
+        if (!outfile || !ant || !pos || wire_ind < 0)
             throw eap::InvalidStateException("write_ant called incorrectly");
 
         boost::format formatter(WIRE_NEC);
         for (wire_ptr w : ant->wires)
         {
             outfile << str(formatter % wire_ind++ % w->segments 
-                    % (w->a->x + ant->positions[position]->x)
-                    % (w->a->y + ant->positions[position]->y)
-                    % (w->a->z + ant->positions[position]->z)
-                    % (w->b->x + ant->positions[position]->x)
-                    % (w->b->y + ant->positions[position]->y)
-                    % (w->b->z + ant->positions[position]->z)
+                    % (w->a->x + pos->x)
+                    % (w->a->y + pos->y)
+                    % (w->a->z + pos->z)
+                    % (w->b->x + pos->x)
+                    % (w->b->y + pos->y)
+                    % (w->b->z + pos->z)
                     % w->diameter);
         }
     }
@@ -384,6 +383,44 @@ float algorithm::compare(const evaluation_ptr &first,
     }
 }
 
+individual_ptr algorithm::create_individual(std::string path, std::vector<position_ptr> &placements)
+{
+    std::ofstream outfile;
+    try
+    {
+        boost::format formatter(path);
+        if (ant_configs.size() != placements.size())
+            throw eap::InvalidStateException("placements size should match #of antennas");
+
+        individual_ptr ind(new individual);
+        ind->positions = placements;
+
+        for (unsigned int j=0; j<ant_configs.size(); ++j)
+        {
+            outfile.open(str(formatter % j));
+            write_platform(outfile);
+
+            int count = platform->nec_wires.size();
+            int excitation_id;
+            for (unsigned int k=0; k<ant_configs.size(); ++k)
+            {
+                if (k==j)
+                    excitation_id = count+1;
+                write_ant(outfile, ant_configs[k], placements[k], count+1);
+                count += ant_configs[k]->wires.size();
+            }
+            write_excitation(outfile, excitation_id);
+            outfile.close();
+        }
+        return ind;
+    }
+    catch (...)
+    {
+        outfile.close();
+        throw;
+    }
+}
+
 
 /**
  * @desc Exchange of genotypes between two individuals
@@ -394,35 +431,35 @@ std::vector<individual_ptr> algorithm::breed(const individual_ptr &ind1, const i
 {
     try
     {
-    std::vector<individual_ptr> children;
-    individual_ptr child1 (new individual);
-    individual_ptr child2 (new individual);
-    children.push_back(child1);
-    children.push_back(child2);
+        std::vector<individual_ptr> children;
+        individual_ptr child1 (new individual);
+        individual_ptr child2 (new individual);
+        children.push_back(child1);
+        children.push_back(child2);
 
-    unsigned int xover = eap::rand(0, ant_configs.size()-1);
-    for (unsigned i = 0; i < xover; i++)
-    {	
-        children[0]->positions.push_back(ind1->positions[i]);
-        children[1]->positions.push_back(ind2->positions[i]);
-    }
+        unsigned int xover = eap::rand(0, ant_configs.size()-1);
+        for (unsigned i = 0; i < xover; i++)
+        {	
+            children[0]->positions.push_back(ind1->positions[i]);
+            children[1]->positions.push_back(ind2->positions[i]);
+        }
 
-    for (unsigned i = xover; i < ant_configs.size(); i++)
-    {
-        children[0]->positions.push_back(ind2->positions[i]);
-        children[1]->positions.push_back(ind1->positions[i]);
-    }
-    return children;
+        for (unsigned i = xover; i < ant_configs.size(); i++)
+        {
+            children[0]->positions.push_back(ind2->positions[i]);
+            children[1]->positions.push_back(ind1->positions[i]);
+        }
+        return children;
     }
     catch (...)
     {
-         throw;
+        throw;
     }
 }
 
 /**
  * @desc Simple mutation of individual based on the mutation probability
- * @param ind The individual to be mutated
+ * @param individual_ptr
  */
 void algorithm::simple_mutation(individual_ptr &ind)
 {
@@ -431,7 +468,7 @@ void algorithm::simple_mutation(individual_ptr &ind)
         if(eap::rand01() < mutation)
         {	
             int pos = eap::rand(0, ant_configs[i]->positions.size()-1);
-            ind->positions.insert(ind->positions.begin(), ant_configs[i]->positions.at(pos));
+            ind->positions.insert(ind->positions.begin()+i, ant_configs[i]->positions.at(pos));
         }
     }
 }
