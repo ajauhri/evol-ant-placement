@@ -51,19 +51,19 @@ int main(int argc, char* argv[])
         switch(eap::get_algorithm())
         {
             case GA:
-                std::cout<<"Testing GA"<<std::endl;
+                std::cout<<"Running GA..."<<std::endl;
                 eap::algo.reset(new ga(lua_file));
                 break;
             case SA:
-                std::cout<<"Testing SA"<<std::endl;
+                std::cout<<"Running SA..."<<std::endl;
                 eap::algo.reset(new sa(lua_file));
                 break;
             case HC:
-                std::cout<<"Testing HC"<<std::endl;
+                std::cout<<"Running HC..."<<std::endl;
                 eap::algo.reset(new hc(lua_file));
                 break;
             case ES:
-                std::cout<<"Testing ES"<<std::endl;
+                std::cout<<"Running ES..."<<std::endl;
                 eap::algo.reset(new es(lua_file));
                 break;
             default:
