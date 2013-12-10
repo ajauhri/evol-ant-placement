@@ -16,7 +16,7 @@ private:
 	individual_ptr tour();
     void run_simulation(unsigned int);
     void evaluate_gen(unsigned int);
-    void write_generation(unsigned int);
+    void create_generation(unsigned int);
     void select();
 
 public:

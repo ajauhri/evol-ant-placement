@@ -69,14 +69,16 @@ void ga::run()
         std::cout<<"***generation 0 created\n";
         evaluate_gen(0);
 
-        for (unsigned int i=1; i<2; ++i)
+        for (unsigned int i=1; i<generations; ++i)
         {
             std::sort(pop.begin(), pop.end(), eap::fitness_sort);
             std::cout<<"best "<<pop[0]->fitness<<"\n";
             select();
-            write_generation(i);
+            create_generation(i);
             evaluate_gen(i);
         }
+        std::sort(pop.begin(), pop.end(), eap::fitness_sort);
+        std::cout<<"best "<<pop[0]->fitness<<"\n";
     }
     catch (...)
     {
@@ -84,7 +86,7 @@ void ga::run()
     }
 }
 
-void ga::write_generation(unsigned int gen)
+void ga::create_generation(unsigned int gen)
 {
     try
     {
@@ -94,7 +96,6 @@ void ga::write_generation(unsigned int gen)
 
         for (unsigned int ind_id=0; ind_id<population_size; ++ind_id)
         {
-            std::cout<<pop.size()<<"\n";
             pop[ind_id] = create_individual(str(input_path % gen % ind_id) + "a%02d.nec", pop[ind_id]->positions);
         }
 
@@ -112,7 +113,6 @@ void ga::evaluate_gen(unsigned int id)
     {
         run_simulation(id);
         boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
-        std::cout<<"pop vector size "<<pop.size()<<"\n";
         for (unsigned int i=0; i<pop.size(); ++i)
         {
             for (unsigned int j=0; j<ant_configs.size(); ++j)
@@ -125,7 +125,6 @@ void ga::evaluate_gen(unsigned int id)
                 pop[i]->one_ant_on_fitness.push_back(compare(free_inds[j]->evals[0], pop[i]->evals[j]));
                 pop[i]->fitness += pop[i]->one_ant_on_fitness[j];
             }
-            std::cout<<pop[i]->fitness<<"\n";
         }
     }
     catch (...)
@@ -148,7 +147,8 @@ void ga::select()
         {	
             new_pop.push_back(pop[i]);
         }
-
+        
+        // pick individuals in pairs
         for (unsigned int i = elitism; i < population_size; i+=2)
         {
             individual_ptr parent1 = tour();
@@ -168,9 +168,12 @@ void ga::select()
         }
 
         // pick m individuals from population and mutate one bit of theirs
-
-        //simple_mutation(children[0]);
-        //simple_mutation(children[1]);
+        for (unsigned int i=0; i<(mutation*population_size); ++i)
+        {
+            int ind_id = eap::rand(0, population_size-1);
+            simple_mutation(new_pop[ind_id]);
+        }
+        
         if (new_pop.size() != population_size) throw eap::InvalidStateException("population size don't match");
         std::cout<<"***done with creating next generation\n";
         pop.swap(new_pop);
@@ -186,6 +189,7 @@ void ga::run_simulation(unsigned int id)
     try
     {
         boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 ./nec2++.exe -i {}");
+        std::cout<<"***running simulation for generation "<<id<<"\n";
         system(str(formatter % id).c_str());
         std::cout<<"***completed simulation for generation "<<id<<"\n";
     }

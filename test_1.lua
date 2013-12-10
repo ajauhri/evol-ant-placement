@@ -36,11 +36,11 @@ add_point(  0.000000,   0.406400,   0.000000)
 add_point( -0.203200,   0.304800,   0.000000)
 params = {
 	pop = 10,
-	generations = 5,
+	generations = 6,
 	elitism = 2,
 	tournament_size = 5,
 	mutation = 0.4,
-	recombination = 0.2,
+	recombination = 0.8,
 	exp_weight = 2,
 	local_run = 0,
 	algorithm = "GA", 

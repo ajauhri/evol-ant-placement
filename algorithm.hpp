@@ -43,8 +43,6 @@ class algorithm
         std::vector<individual_ptr> breed(const individual_ptr&, const individual_ptr&);
         void simple_mutation(individual_ptr&);
 
-        
-
     public:
         algorithm(std::string);
         virtual ~algorithm(void);

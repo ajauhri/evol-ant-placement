@@ -463,14 +463,10 @@ std::vector<individual_ptr> algorithm::breed(const individual_ptr &ind1, const i
  */
 void algorithm::simple_mutation(individual_ptr &ind)
 {
-    for(unsigned i=0; i<ant_configs.size(); i++)
-    {
-        if(eap::rand01() < mutation)
-        {	
-            int pos = eap::rand(0, ant_configs[i]->positions.size()-1);
-            ind->positions.insert(ind->positions.begin()+i, ant_configs[i]->positions.at(pos));
-        }
-    }
+    int bit = eap::rand(0, ant_configs.size() - 1);
+
+    int new_bit = eap::rand(0, ant_configs[bit]->positions.size()-1);
+    ind->positions[bit] = ant_configs[bit]->positions[new_bit];
 }
 
 
