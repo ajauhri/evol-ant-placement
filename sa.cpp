@@ -1,6 +1,6 @@
-#include "sa.hpp"
-#include "eap_resources.hpp"
-#include "lua_cmds.hpp"
+#include<sa.hpp>
+#include<eap_resources.hpp>
+#include<lua_cmds.hpp>
 #include<iostream>
 
 namespace
@@ -13,7 +13,8 @@ namespace
 }
 
 sa::sa(std::string lua_file) : super(lua_file)
-{}
+{
+}
 
 /**
 * @desc Loads parameters for the simulated annealing algorithm  

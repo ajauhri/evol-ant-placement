@@ -463,10 +463,17 @@ std::vector<individual_ptr> algorithm::breed(const individual_ptr &ind1, const i
  */
 void algorithm::simple_mutation(individual_ptr &ind)
 {
+    try
+    {
     int bit = eap::rand(0, ant_configs.size() - 1);
-
     int new_bit = eap::rand(0, ant_configs[bit]->positions.size()-1);
     ind->positions[bit] = ant_configs[bit]->positions[new_bit];
+    }
+    catch (...)
+    {
+        throw;
+    }
+
 }
 
 
@@ -476,36 +483,18 @@ inline unsigned int algorithm::num_polar(void)
     return step_theta * step_phi;
 }
 
-#if 0
-
 /**
- * @desc Checks if antenna postion overlaps within an individual
- * @return true or false
+ * @desc Checks whether new antenna position overlaps a vector of positions
  */ 
-bool algorithm::overlaps_ant(individual_ptr ind, position_ptr p)
+bool algorithm::overlap(std::vector<position_ptr> &existing, position_ptr &new_pos)
 {
-    for (unsigned p_i=0; p_i<ind->ant_configs.size(); p_i++)
+    for (position_ptr pos : existing)
     {
-        if (!std::strcmp(p->mount_object.c_str(), ind->ant_configs[p_i]->positions[0]->mount_object.c_str()) &&
-                !std::strcmp(p->mount_object_locator.c_str(), ind->ant_configs[p_i]->positions[0]->mount_object_locator.c_str())) {
+        if ((pos->x != new_pos->x) && (pos->y != new_pos->y) && (pos->z != new_pos->z)) 
             return true;
-        }
     }
     return false;
 }
-
-/**
- * @desc Computes total gain 
- * @param gain_theta in dBi
- * @param gain_phi in dBi
- * @return total gain in dBi
- */
-float algorithm::cal_totaldb(float gain_theta, float gain_phi)
-{
-    float tot_linear_gain = pow(10, gain_theta/10) + pow(10, gain_phi/10);
-    return 10 * log10(tot_linear_gain);
-}
-#endif
 
 algorithm::~algorithm(void)
 {

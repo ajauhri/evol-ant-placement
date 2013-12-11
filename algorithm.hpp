@@ -42,6 +42,7 @@ class algorithm
         virtual float compare(const evaluation_ptr &, const evaluation_ptr &);
         std::vector<individual_ptr> breed(const individual_ptr&, const individual_ptr&);
         void simple_mutation(individual_ptr&);
+        bool overlap(std::vector<position_ptr>&, position_ptr&);
 
     public:
         algorithm(std::string);

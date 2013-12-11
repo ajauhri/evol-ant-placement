@@ -50,6 +50,7 @@ namespace eap
 		map["SA"] = SA;
 		map["HC"] = HC;
 		map["ES"] = ES;
+        map["EX"] = EX;
 		return map;
 	}
 

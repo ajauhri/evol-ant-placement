@@ -8,11 +8,12 @@
 
 #include<eap_resources.hpp>
 #include<lua_cmds.hpp>
+#include<algorithm.hpp>
 #include<ga.hpp>
 #include<sa.hpp>
 #include<es.hpp>
 #include<hc.hpp>
-#include<algorithm.hpp>
+#include<exhaust.hpp>
 
 namespace prg_opts = boost::program_options;
 
@@ -51,20 +52,24 @@ int main(int argc, char* argv[])
         switch(eap::get_algorithm())
         {
             case GA:
-                std::cout<<"Running GA..."<<std::endl;
+                std::cout<<"Running GA...\n";
                 eap::algo.reset(new ga(lua_file));
                 break;
             case SA:
-                std::cout<<"Running SA..."<<std::endl;
+                std::cout<<"Running SA...\n";
                 eap::algo.reset(new sa(lua_file));
                 break;
             case HC:
-                std::cout<<"Running HC..."<<std::endl;
+                std::cout<<"Running HC...\n";
                 eap::algo.reset(new hc(lua_file));
                 break;
             case ES:
-                std::cout<<"Running ES..."<<std::endl;
+                std::cout<<"Running ES...\n";
                 eap::algo.reset(new es(lua_file));
+                break;
+            case EX:
+                std::cout<<"Running EX...\n";
+                eap::algo.reset(new exhaust(lua_file));
                 break;
             default:
                 std::cout<<"Not a valid algorithm"<<std::endl;	
@@ -96,6 +101,7 @@ int main(int argc, char* argv[])
     }
     catch (const std::exception &e)
     {
+        std::cout<<"wreewr\n";
         std::cerr<<e.what() << "\n";
     }
     eap::close_lua();

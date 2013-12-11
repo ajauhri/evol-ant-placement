@@ -18,7 +18,7 @@ namespace
 }
 
 
-ga::ga(std::string lua_file) : super(lua_file)
+ga::ga(std::string lua_file) : algorithm(lua_file)
 { }
 
 /**
@@ -36,9 +36,9 @@ void ga::setup_algo_params()
         this->recombination = eap::get_fvalue(recombination_s);
         std::cout<<"***completed GA parameter setup \n";
     }
-    catch (const eap::InvalidStateException &e)
+    catch (...)
     {
-        std::cerr<<e.what()<<"\n";
+        throw;
     }
 }
 
@@ -57,7 +57,6 @@ void ga::run()
         boost::format nec_input(eap::run_directory + "gen%04d/ind%09d");
         for (unsigned int ind_id=0; ind_id<population_size; ++ind_id)
         {
-            individual_ptr ind(new individual);
             std::vector<position_ptr> placements;
             for (ant_config_ptr ant : ant_configs)
             {
