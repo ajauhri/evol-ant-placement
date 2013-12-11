@@ -9,8 +9,7 @@ void exhaust::setup_algo_params()
 {
     try
     {
-        std::cout<<"here\n";
-    nec_input = boost::format(eap::run_directory + "ind%09d");
+        nec_input = boost::format(eap::run_directory + "ind%09d");
     }
     catch (...)
     {
@@ -49,7 +48,7 @@ void exhaust::evaluate()
                 evaluation_ptr eval(new evaluation);
                 pop[i]->evals.push_back(eval);
                 unsigned int read = read_nou(str(nec_output % i % j), eval);
-                if (read != (num_polar() & step_freq))
+                if (read != (num_polar() * step_freq))
                     throw eap::InvalidStateException("Problem with output in " + str(nec_output % i % j));
                 pop[i]->one_ant_on_fitness.push_back(compare(free_inds[j]->evals[0], pop[i]->evals[j]));
                 pop[i]->fitness += pop[i]->one_ant_on_fitness[j];

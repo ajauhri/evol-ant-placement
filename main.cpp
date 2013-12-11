@@ -101,7 +101,6 @@ int main(int argc, char* argv[])
     }
     catch (const std::exception &e)
     {
-        std::cout<<"wreewr\n";
         std::cerr<<e.what() << "\n";
     }
     eap::close_lua();
