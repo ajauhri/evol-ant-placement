@@ -1,12 +1,11 @@
 #ifndef SA_HPP_INCLUDED
 #define SA_HPP_INCLUDED
-#include "algorithm.hpp"
+#include<algorithm.hpp>
 	
 class sa :
 	public algorithm
 {
 private:
-	typedef algorithm super;
 	unsigned int iterations;
 	float initial_temperature;
 	float temperature_factor;

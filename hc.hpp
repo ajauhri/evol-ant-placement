@@ -6,7 +6,6 @@ class hc :
 	public algorithm
 {
 private:
-	typedef algorithm super;
 	float convergence_factor;
 	int iterations;
 

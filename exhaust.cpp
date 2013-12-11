@@ -17,8 +17,6 @@ void exhaust::setup_algo_params()
     }
 }
 
-
-
 void exhaust::run()
 {
     try
@@ -27,6 +25,8 @@ void exhaust::run()
         std::cout<<"***creating individuals\n";
         recur_placements(placements, 0);
         evaluate();
+        std::sort(pop.begin(), pop.end(), eap::fitness_sort);
+        std::cout<<"best "<<pop[0]->fitness<<"\n";
     }
     catch (...)
     {

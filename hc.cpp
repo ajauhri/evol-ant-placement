@@ -9,7 +9,7 @@ namespace
 	char const *convergence_factor_s = "convergence_factor_s";
 }
 
-hc::hc(std::string lua_file) : super(lua_file)
+hc::hc(std::string lua_file) : algorithm(lua_file)
 {
 }
 

@@ -1,6 +1,6 @@
-#include "es.hpp"
-#include "eap_resources.hpp"
-#include "lua_cmds.hpp"
+#include<es.hpp>
+#include<eap_resources.hpp>
+#include<lua_cmds.hpp>
 #include <iostream>
 
 namespace 
@@ -10,7 +10,7 @@ namespace
 }
 
 
-es::es(std::string lua_file) : super(lua_file)
+es::es(std::string lua_file) : algorithm(lua_file)
 {
 }
 
