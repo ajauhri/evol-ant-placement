@@ -10,11 +10,11 @@
 
 namespace
 {
-    char const *population_size_s = "pop";
-    char const *generations_s = "generations";
-    char const *tournament_size_s = "tournament_size";
-    char const *elitism_s = "elitism";
-    char const *recombination_s = "recombination";
+    const std::string c_population_size = "pop";
+    const std::string c_generations = "generations";
+    const std::string c_tournament_size = "tournament_size";
+    const std::string c_elitism = "elitism";
+    const std::string c_recombination = "recombination";
 }
 
 
@@ -29,11 +29,11 @@ void ga::setup_algo_params()
     try 
     {
         algorithm::setup_algo_params();
-        this->population_size = eap::get_fvalue(population_size_s);
-        this->generations = eap::get_fvalue(generations_s);
-        this->tournament_size = eap::get_fvalue(tournament_size_s);
-        this->elitism = eap::get_fvalue(elitism_s);
-        this->recombination = eap::get_fvalue(recombination_s);
+        m_population_size = eap::get_fvalue(c_population_size);
+        m_generations = eap::get_fvalue(c_generations);
+        m_tournament_size = eap::get_fvalue(c_tournament_size);
+        m_elitism = eap::get_fvalue(c_elitism);
+        m_recombination = eap::get_fvalue(c_recombination);
         std::cout<<"***completed GA parameter setup \n";
     }
     catch (...)
@@ -49,35 +49,35 @@ void ga::run()
 {
     try 
     {
-        if (elitism > population_size)
+        if (m_elitism > m_population_size)
             throw eap::InvalidStateException("Elitism cannot be greater than population size");
 
         boost::filesystem::create_directory(std::string(eap::run_directory+"gen0000"));
 
         boost::format nec_input(eap::run_directory + "gen%04d/ind%09d");
-        for (unsigned int ind_id=0; ind_id<population_size; ++ind_id)
+        for (unsigned int i_id=0; i_id<m_population_size; ++i_id)
         {
             std::vector<position_ptr> placements;
-            for (ant_config_ptr ant : ant_configs)
+            for (ant_config_ptr ant : m_ant_configs)
             {
-                int pos = eap::rand(0, ant->positions.size()-1);
-                placements.push_back(ant->positions[pos]);
+                int pos = eap::rand(0, ant->m_positions.size()-1);
+                placements.push_back(ant->m_positions[pos]);
             }
-            pop.push_back(create_individual(str(nec_input % 0 % ind_id)+"a%02d.nec", placements));
+            m_pop.push_back(create_individual(str(nec_input % 0 % i_id)+"a%02d.nec", placements));
         }
         std::cout<<"***generation 0 created\n";
         evaluate_gen(0);
 
-        for (unsigned int i=1; i<generations; ++i)
+        for (unsigned int i=1; i<m_generations; ++i)
         {
-            std::sort(pop.begin(), pop.end(), eap::fitness_sort);
-            std::cout<<"best "<<pop[0]->fitness<<"\n";
+            std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
+            std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
             select();
             create_generation(i);
             evaluate_gen(i);
         }
-        std::sort(pop.begin(), pop.end(), eap::fitness_sort);
-        std::cout<<"best "<<pop[0]->fitness<<"\n";
+        std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
+        std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
     }
     catch (...)
     {
@@ -93,12 +93,12 @@ void ga::create_generation(unsigned int gen)
         boost::format input_path(eap::run_directory + "gen%04d/ind%09d");
         boost::filesystem::create_directory(str(gen_dir % gen));
 
-        for (unsigned int ind_id=0; ind_id<population_size; ++ind_id)
+        for (unsigned int i_id=0; i_id<m_population_size; ++i_id)
         {
-            pop[ind_id] = create_individual(str(input_path % gen % ind_id) + "a%02d.nec", pop[ind_id]->positions);
+            m_pop[i_id] = create_individual(str(input_path % gen % i_id) + "a%02d.nec", m_pop[i_id]->m_positions);
         }
 
-        if (pop.size() != population_size) throw eap::InvalidStateException("pop vector size " + std::to_string(pop.size()) + " and " + std::to_string(population_size) + " specified in lua");
+        if (m_pop.size() != m_population_size) throw eap::InvalidStateException("pop vector size " + std::to_string(m_pop.size()) + " and " + std::to_string(m_population_size) + " specified in lua");
     }
     catch (...)
     {
@@ -112,17 +112,17 @@ void ga::evaluate_gen(unsigned int id)
     {
         run_simulation(id);
         boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
-        for (unsigned int i=0; i<pop.size(); ++i)
+        for (unsigned int i=0; i<m_pop.size(); ++i)
         {
-            for (unsigned int j=0; j<ant_configs.size(); ++j)
+            for (unsigned int j=0; j<m_ant_configs.size(); ++j)
             {
                 evaluation_ptr eval(new evaluation);
-                pop[i]->evals.push_back(eval);
+                m_pop[i]->m_evals.push_back(eval);
                 unsigned int read = read_nou(str(nec_output % id % i % j), eval);
-                if (read != (num_polar() * step_freq))
+                if (read != (num_polar() * m_step_freq))
                     throw eap::InvalidStateException("Problem with output in " + str(nec_output % id % i % j));
-                pop[i]->one_ant_on_fitness.push_back(compare(free_inds[j]->evals[0], pop[i]->evals[j]));
-                pop[i]->fitness += pop[i]->one_ant_on_fitness[j];
+                m_pop[i]->m_one_ant_on_fitness.push_back(compare(m_free_inds[j]->m_evals[0], m_pop[i]->m_evals[j]));
+                m_pop[i]->m_fitness += m_pop[i]->m_one_ant_on_fitness[j];
             }
         }
     }
@@ -141,19 +141,18 @@ void ga::select()
     std::vector<individual_ptr> new_pop;
     try
     {
-
-        for (unsigned int i=0; i<elitism; i++)
+        for (unsigned int i=0; i<m_elitism; i++)
         {	
-            new_pop.push_back(pop[i]);
+            new_pop.push_back(m_pop[i]);
         }
         
         // pick individuals in pairs
-        for (unsigned int i = elitism; i < population_size; i+=2)
+        for (unsigned int i = m_elitism; i < m_population_size; i+=2)
         {
             individual_ptr parent1 = tour();
             individual_ptr parent2 = tour();
 
-            if (eap::rand01() < recombination)
+            if (eap::rand01() < m_recombination)
             {
                 std::vector<individual_ptr> children = breed(parent1, parent2);
                 new_pop.push_back(children[0]);
@@ -167,15 +166,15 @@ void ga::select()
         }
 
         // pick m individuals from population and mutate one bit of theirs
-        for (unsigned int i=0; i<(mutation*population_size); ++i)
+        for (unsigned int i=0; i<(m_mutation*m_population_size); ++i)
         {
-            int ind_id = eap::rand(0, population_size-1);
+            int ind_id = eap::rand(0, m_population_size-1);
             simple_mutation(new_pop[ind_id]);
         }
         
-        if (new_pop.size() != population_size) throw eap::InvalidStateException("population size don't match");
+        if (new_pop.size() != m_population_size) throw eap::InvalidStateException("population size don't match");
         std::cout<<"***done with creating next generation\n";
-        pop.swap(new_pop);
+        m_pop.swap(new_pop);
     }
     catch (...)
     {
@@ -204,18 +203,17 @@ void ga::run_simulation(unsigned int id)
 individual_ptr ga::tour()
 {
     individual_ptr best;
-    for (unsigned int i = 0; i < tournament_size; i++)
+    for (unsigned int i = 0; i < m_tournament_size; i++)
     {
-        unsigned r_index = eap::rand(0, population_size-1);
-        if (!best || pop[r_index]->fitness < best->fitness) 
-            best = pop[r_index];
+        unsigned r_index = eap::rand(0, m_population_size-1);
+        if (!best || m_pop[r_index]->m_fitness < best->m_fitness) 
+            best = m_pop[r_index];
     }
-
     return best;
 }
 
 ga::~ga(void)
 {
-    pop.clear();
-    pop.shrink_to_fit();
+    m_pop.clear();
+    m_pop.shrink_to_fit();
 }

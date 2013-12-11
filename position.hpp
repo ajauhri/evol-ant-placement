@@ -6,9 +6,9 @@ class position
 {
 public:
     position(void);
-	float x;
-	float y;
-	float z;
+	float m_x;
+	float m_y;
+	float m_z;
 };
 typedef boost::shared_ptr<position> position_ptr;
 #endif

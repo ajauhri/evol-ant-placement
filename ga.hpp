@@ -6,12 +6,12 @@
 class ga : public algorithm
 {
 private:
-	unsigned int population_size;
-	unsigned int generations;
-	unsigned int elitism;
-	unsigned int tournament_size;
-	float recombination;
-    std::vector<individual_ptr> pop;
+	unsigned int m_population_size;
+	unsigned int m_generations;
+	unsigned int m_elitism;
+	unsigned int m_tournament_size;
+	float m_recombination;
+    std::vector<individual_ptr> m_pop;
 	
     individual_ptr tour();
     void run_simulation(unsigned int);

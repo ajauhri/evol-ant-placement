@@ -17,10 +17,10 @@
 
 namespace 
 {
-    char const *mutation_s = "mutation";
-    char const *exp_weight_s = "exp_weight";
-    char const *auto_seed_s  = "auto_seed";
-    char const *seed_s = "seed";
+    const std::string c_mutation = "mutation";
+    const std::string c_exp_weight = "exp_weight";
+    const std::string c_auto_seed  = "auto_seed";
+    const std::string c_seed = "seed";
 
     const std::string WIRE_NEC = "GW %3d%5d%10f%10f%10f%10f%10f%10f%10f\n";
 }
@@ -30,7 +30,7 @@ namespace
  */
 algorithm::algorithm(std::string lua_file)
 {
-    this->lua_file = lua_file;
+    m_lua_file = lua_file;
 }
 
 // extern declard in eap_resources.hpp
@@ -40,13 +40,13 @@ void algorithm::setup_algo_params()
 {
     try
     {
-        this->mutation = eap::get_fvalue(mutation_s);
-        this->exp_weight = eap::get_fvalue(exp_weight_s);
-        this->auto_seed = eap::get_fvalue(auto_seed_s);
-        if (this->auto_seed != 0.0f) 
+        m_mutation = eap::get_fvalue(c_mutation);
+        m_exp_weight = eap::get_fvalue(c_exp_weight);
+        m_auto_seed = eap::get_fvalue(c_auto_seed);
+        if (m_auto_seed != 0.0f) 
             eap::gen.seed(time(NULL) + getpid()); //getpid() - Binaries executed one after the other have PRNGs initialized differently
         else
-            eap::gen.seed(eap::get_fvalue(seed_s));
+            eap::gen.seed(eap::get_fvalue(c_seed));
         std::cout<<"***completed generic algo parameter setup\n";
     }
     catch (...)
@@ -83,7 +83,7 @@ void algorithm::setup_ant_placements()
 {
     try
     {
-        eap::load_lua_lib(this->lua_file.c_str());
+        eap::load_lua_lib(m_lua_file.c_str());
         std::cout<<"***completed loading antenna placements\n";
     }
     catch (...)
@@ -100,12 +100,12 @@ void algorithm::load_nec_files()
     try 
     {
         // first load platform wires
-        this->platform->wires = load_wires(this->platform->nec_file, "platform file corrupted");
+        m_platform->m_wires = load_wires(m_platform->m_nec_file, "platform file corrupted");
 
         // then load all antenna wires
-        for (ant_config_ptr ant : this->ant_configs)
+        for (ant_config_ptr ant : m_ant_configs)
         {
-            ant->wires = load_wires(ant->nec_file, ant->nec_file + "file corrupted");
+            ant->m_wires = load_wires(ant->m_nec_file, ant->m_nec_file + "file corrupted");
         }
 
         //since the nec files for GW card require a special format and have to be written multiple times for the platform, might as well do it once and keep in memory
@@ -124,9 +124,9 @@ void algorithm::create_nec_strs()
 
         int plat_wire_id = 1;
         boost::format formatter(WIRE_NEC);
-        for (wire_ptr w : this->platform->wires)
+        for (wire_ptr w : m_platform->m_wires)
         {
-            this->platform->nec_wires.push_back(str(formatter % plat_wire_id++ % w->segments % w->a->x % w->a->y % w->a->z % w->b->x % w->b->y % w->b->z % w->diameter));
+            m_platform->m_nec_wires.push_back(str(formatter % plat_wire_id++ % w->m_segments % w->mp_a->m_x % w->mp_a->m_y % w->mp_a->m_z % w->mp_b->m_x % w->mp_b->m_y % w->mp_b->m_z % w->m_diameter));
         }
     }
     catch (...)
@@ -159,12 +159,12 @@ std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const s
                 wire_ptr w(new wire); 
                 position_ptr a(new position);
                 position_ptr b(new position);
-                a->x = ax; a->y = ay; a->z = az;
-                b->x = bx; b->y = by; b->z = bz;
-                w->a = a;
-                w->b = b;
-                w->segments = seg;
-                w->diameter = dia;
+                a->m_x = ax; a->m_y = ay; a->m_z = az;
+                b->m_x = bx; b->m_y = by; b->m_z = bz;
+                w->mp_a = a;
+                w->mp_b = b;
+                w->m_segments = seg;
+                w->m_diameter = dia;
                 wires.push_back(w);
             }
         } 
@@ -190,15 +190,15 @@ void algorithm::write_freespace()
         boost::format formatter(eap::freespace_directory + "ant%03d.nec");
         int ant_id = 0;
 
-        for (ant_config_ptr ant : this->ant_configs)
+        for (ant_config_ptr ant : m_ant_configs)
         {
             std::string buffer = str(formatter % ant_id++);
             outfile.open(buffer);
             write_platform(outfile);
-            write_ant(outfile, ant, ant->positions[0], this->platform->nec_wires.size() + 1); //put at the first position, doesn't matter for free space
+            write_ant(outfile, ant, ant->m_positions[0], m_platform->m_nec_wires.size() + 1); //put at the first position, doesn't matter for free space
 
             //need to cout here and check if theser are deallocated at the end of each generation
-            int excitation_id = this->platform->nec_wires.size() + 1;
+            int excitation_id = m_platform->m_nec_wires.size() + 1;
             write_excitation(outfile, excitation_id);
 
             outfile.close();
@@ -217,8 +217,8 @@ void algorithm::write_platform(std::ofstream& outfile)
     try 
     {
         if (!outfile) throw eap::InvalidStateException("Write file not defiend for putting platform wires");
-        for (unsigned int i = 0; i<this->platform->nec_wires.size(); i++)
-            outfile << platform->nec_wires[i];
+        for (unsigned int i_wire = 0; i_wire<m_platform->m_nec_wires.size(); ++i_wire)
+            outfile << m_platform->m_nec_wires[i_wire];
     }
     catch (...)
     {
@@ -234,16 +234,16 @@ void algorithm::write_ant(std::ofstream& outfile, ant_config_ptr &ant, position_
             throw eap::InvalidStateException("write_ant called incorrectly");
 
         boost::format formatter(WIRE_NEC);
-        for (wire_ptr w : ant->wires)
+        for (wire_ptr pi_w : ant->m_wires)
         {
-            outfile << str(formatter % wire_ind++ % w->segments 
-                    % (w->a->x + pos->x)
-                    % (w->a->y + pos->y)
-                    % (w->a->z + pos->z)
-                    % (w->b->x + pos->x)
-                    % (w->b->y + pos->y)
-                    % (w->b->z + pos->z)
-                    % w->diameter);
+            outfile << str(formatter % wire_ind++ % pi_w->m_segments 
+                    % (pi_w->mp_a->m_x + pos->m_x)
+                    % (pi_w->mp_a->m_y + pos->m_y)
+                    % (pi_w->mp_a->m_z + pos->m_z)
+                    % (pi_w->mp_b->m_x + pos->m_x)
+                    % (pi_w->mp_b->m_y + pos->m_y)
+                    % (pi_w->mp_b->m_z + pos->m_z)
+                    % pi_w->m_diameter);
         }
     }
     catch (...)
@@ -261,9 +261,9 @@ void algorithm::write_excitation(std::ofstream& outfile, unsigned int id)
         outfile << "GS   0    0         1\n";
         outfile << "GE   0   -1         0\n";
         outfile << "GN  -1\n";
-        outfile << str(boost::format("FR   0%5d    0    0%10.5f%10.5f\n") % step_freq % min_freq % incr_freq);
+        outfile << str(boost::format("FR   0%5d    0    0%10.5f%10.5f\n") % m_step_freq % m_min_freq % m_incr_freq);
         outfile << str(boost::format("EX   0%5d    1    0%10.5f%10.5f\n") % id % 1.0f % 0.0f);
-        outfile << str(boost::format("RP   0%5d%5d 1000%10.5f%10.5f%10.5f%10.5f%10.5f\n") % step_theta % step_phi % min_theta % min_phi % incr_theta % incr_phi % 0.0f);
+        outfile << str(boost::format("RP   0%5d%5d 1000%10.5f%10.5f%10.5f%10.5f%10.5f\n") % m_step_theta % m_step_phi % m_min_theta % m_min_phi % m_incr_theta % m_incr_phi % 0.0f);
         outfile << "EN";
     }
     catch (...)
@@ -278,7 +278,7 @@ void algorithm::run_freespace()
     try 
     {
         boost::format formatter("./nec2++.exe -i " + eap::freespace_directory + "ant%03d.nec");
-        for (unsigned int i=0; i<ant_configs.size(); i++)
+        for (unsigned int i=0; i<m_ant_configs.size(); i++)
             system(str(formatter % i).c_str());
         std::cout<<"***completed creating out files for free space patterns\n"; 
     }
@@ -293,13 +293,14 @@ void algorithm::read_freespace()
     try
     {
         boost::format formatter(eap::freespace_directory + "ant%03d.out");
-        for (unsigned int i=0; i<ant_configs.size(); i++)
+        for (unsigned int i=0; i<m_ant_configs.size(); i++)
         {
-            individual_ptr ind(new individual);
-            evaluation_ptr eval(new evaluation);
-            ind->evals.push_back(eval);
-            read_nou(str(formatter % i), ind->evals.back());
-            free_inds.push_back(ind);
+            individual_ptr p_ind(new individual);
+            evaluation_ptr p_eval(new evaluation);
+            p_ind->m_evals.push_back(p_eval);
+            read_nou(str(formatter % i), p_eval);
+            m_free_inds.push_back(p_ind);
+            std::cout<<m_ant_configs[i]->m_nec_file<<" free space fitness: "<<m_free_inds[i]->m_fitness<<"\n";
         }
     }
     catch (...)
@@ -309,7 +310,7 @@ void algorithm::read_freespace()
 }
 
 unsigned int algorithm::read_nou(const std::string results_file,
-        const evaluation_ptr &eval)
+        const evaluation_ptr &p_eval)
 {
     std::ifstream infile;
     try
@@ -322,8 +323,8 @@ unsigned int algorithm::read_nou(const std::string results_file,
         if (!infile) throw eap::InvalidStateException(results_file + " not found");
         do
         {
-            pattern_ptr pat(new pattern);
-            pat->frequency = min_freq + j*incr_freq;
+            pattern_ptr p_pat(new pattern);
+            p_pat->m_frequency = m_min_freq + j*m_incr_freq;
             while (std::getline(infile, line) && strncmp(line.c_str(), " DEGREES", 8));
 
             while (std::getline(infile, line))
@@ -331,17 +332,17 @@ unsigned int algorithm::read_nou(const std::string results_file,
                 std::istringstream iss(line);
                 if (!(iss >> theta >> phi >> vertdb >> horizdb >> totaldb)) break;
 
-                pat->db_gain.push_back(totaldb);
-                if (totaldb > eval->max_db)
-                    eval->max_db = totaldb;
-                if (totaldb < eval->min_db) 
-                    eval->min_db = totaldb;
+                p_pat->m_db_gain.push_back(totaldb);
+                if (totaldb > p_eval->m_max_db)
+                    p_eval->m_max_db = totaldb;
+                if (totaldb < p_eval->m_min_db) 
+                    p_eval->m_min_db = totaldb;
             }
-            if (pat->db_gain.size() > 0)
+            if (p_pat->m_db_gain.size() > 0)
             {
-                if (this->num_polar() != pat->db_gain.size()) throw eap::InvalidStateException("Problem with reading nec results for " + results_file);
-                eval->radiation.push_back(pat);
-                read += pat->db_gain.size();
+                if (num_polar() != p_pat->m_db_gain.size()) throw eap::InvalidStateException("Problem with reading nec results for " + results_file);
+                p_eval->m_radiation.push_back(p_pat);
+                read += p_pat->m_db_gain.size();
                 j++;
             }
         }
@@ -356,23 +357,23 @@ unsigned int algorithm::read_nou(const std::string results_file,
     }
 }
 
-float algorithm::compare(const evaluation_ptr &first,
-        const evaluation_ptr &second)
+float algorithm::compare(const evaluation_ptr &p_first,
+        const evaluation_ptr &p_second)
 {
     try 
     {
         float diff = 0.0f;
-        if (first->radiation.size() != second->radiation.size())
+        if (p_first->m_radiation.size() != p_second->m_radiation.size())
             throw eap::InvalidStateException("evaluation::radiation vector sizes don't match");
-        for (unsigned int i=0; i<first->radiation.size(); ++i)
+        for (unsigned int i=0; i<p_first->m_radiation.size(); ++i)
         {
-            pattern_ptr p1 = first->radiation[i];
-            pattern_ptr p2 = second->radiation[i];
+            pattern_ptr p_p1 = p_first->m_radiation[i];
+            pattern_ptr p_p2 = p_second->m_radiation[i];
             //why do we need to check for matching frequency?
-            if (p1->frequency != p2->frequency) throw eap::InvalidStateException("frequencies don't match");
+            if (p_p1->m_frequency != p_p2->m_frequency) throw eap::InvalidStateException("frequencies don't match");
             for (unsigned int j=0; j<num_polar(); ++j)
             {
-                diff += powf(fabs(p1->db_gain[j] - p2->db_gain[j]), exp_weight);
+                diff += powf(fabs(p_p1->m_db_gain[j] - p_p2->m_db_gain[j]), m_exp_weight);
             }
         }
         return diff;
@@ -389,30 +390,30 @@ individual_ptr algorithm::create_individual(std::string path, std::vector<positi
     try
     {
         boost::format formatter(path);
-        if (ant_configs.size() != placements.size())
+        if (m_ant_configs.size() != placements.size())
             throw eap::InvalidStateException("placements size should match #of antennas");
 
-        individual_ptr ind(new individual);
-        ind->positions = placements;
+        individual_ptr p_ind(new individual);
+        p_ind->m_positions = placements;
 
-        for (unsigned int j=0; j<ant_configs.size(); ++j)
+        for (unsigned int j=0; j<m_ant_configs.size(); ++j)
         {
             outfile.open(str(formatter % j));
             write_platform(outfile);
 
-            int count = platform->nec_wires.size();
+            int count = m_platform->m_nec_wires.size();
             int excitation_id;
-            for (unsigned int k=0; k<ant_configs.size(); ++k)
+            for (unsigned int k=0; k<m_ant_configs.size(); ++k)
             {
                 if (k==j)
                     excitation_id = count+1;
-                write_ant(outfile, ant_configs[k], placements[k], count+1);
-                count += ant_configs[k]->wires.size();
+                write_ant(outfile, m_ant_configs[k], placements[k], count+1);
+                count += m_ant_configs[k]->m_wires.size();
             }
             write_excitation(outfile, excitation_id);
             outfile.close();
         }
-        return ind;
+        return p_ind;
     }
     catch (...)
     {
@@ -427,27 +428,27 @@ individual_ptr algorithm::create_individual(std::string path, std::vector<positi
  * @param ind1, ind2 - two individuals
  * @return Vector of genetically bred individuals
  */
-std::vector<individual_ptr> algorithm::breed(const individual_ptr &ind1, const individual_ptr &ind2)
+std::vector<individual_ptr> algorithm::breed(const individual_ptr &p_ind1, const individual_ptr &p_ind2)
 {
     try
     {
         std::vector<individual_ptr> children;
-        individual_ptr child1 (new individual);
-        individual_ptr child2 (new individual);
-        children.push_back(child1);
-        children.push_back(child2);
+        individual_ptr p_child1 (new individual);
+        individual_ptr p_child2 (new individual);
+        children.push_back(p_child1);
+        children.push_back(p_child2);
 
-        unsigned int xover = eap::rand(0, ant_configs.size()-1);
+        unsigned int xover = eap::rand(0, m_ant_configs.size()-1);
         for (unsigned i = 0; i < xover; i++)
         {	
-            children[0]->positions.push_back(ind1->positions[i]);
-            children[1]->positions.push_back(ind2->positions[i]);
+            children[0]->m_positions.push_back(p_ind1->m_positions[i]);
+            children[1]->m_positions.push_back(p_ind2->m_positions[i]);
         }
 
-        for (unsigned i = xover; i < ant_configs.size(); i++)
+        for (unsigned i = xover; i < m_ant_configs.size(); i++)
         {
-            children[0]->positions.push_back(ind2->positions[i]);
-            children[1]->positions.push_back(ind1->positions[i]);
+            children[0]->m_positions.push_back(p_ind2->m_positions[i]);
+            children[1]->m_positions.push_back(p_ind1->m_positions[i]);
         }
         return children;
     }
@@ -461,13 +462,13 @@ std::vector<individual_ptr> algorithm::breed(const individual_ptr &ind1, const i
  * @desc Simple mutation of individual based on the mutation probability
  * @param individual_ptr
  */
-void algorithm::simple_mutation(individual_ptr &ind)
+void algorithm::simple_mutation(individual_ptr &p_ind)
 {
     try
     {
-    int bit = eap::rand(0, ant_configs.size() - 1);
-    int new_bit = eap::rand(0, ant_configs[bit]->positions.size()-1);
-    ind->positions[bit] = ant_configs[bit]->positions[new_bit];
+    int bit = eap::rand(0, m_ant_configs.size() - 1);
+    int new_bit = eap::rand(0, m_ant_configs[bit]->m_positions.size()-1);
+    p_ind->m_positions[bit] = m_ant_configs[bit]->m_positions[new_bit];
     }
     catch (...)
     {
@@ -480,17 +481,17 @@ void algorithm::simple_mutation(individual_ptr &ind)
 
 inline unsigned int algorithm::num_polar(void)
 {
-    return step_theta * step_phi;
+    return m_step_theta * m_step_phi;
 }
 
 /**
  * @desc Checks whether new antenna position overlaps a vector of positions
  */ 
-bool algorithm::overlap(std::vector<position_ptr> &existing, position_ptr &new_pos)
+bool algorithm::overlap(std::vector<position_ptr> &existing, position_ptr &p_new_pos)
 {
-    for (position_ptr pos : existing)
+    for (position_ptr p_pos : existing)
     {
-        if ((pos->x != new_pos->x) && (pos->y != new_pos->y) && (pos->z != new_pos->z)) 
+        if ((p_pos->m_x != p_new_pos->m_x) && (p_pos->m_y != p_new_pos->m_y) && (p_pos->m_z != p_new_pos->m_z)) 
             return true;
     }
     return false;
@@ -498,6 +499,6 @@ bool algorithm::overlap(std::vector<position_ptr> &existing, position_ptr &new_p
 
 algorithm::~algorithm(void)
 {
-    ant_configs.clear();
-    ant_configs.shrink_to_fit();
+    m_ant_configs.clear();
+    m_ant_configs.shrink_to_fit();
 }

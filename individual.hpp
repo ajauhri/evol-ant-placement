@@ -7,10 +7,10 @@
 #include<boost/shared_ptr.hpp>
 class individual {
 public:
-	float fitness;
-    std::vector<float> one_ant_on_fitness;
-    std::vector<position_ptr> positions;
-    std::vector<evaluation_ptr> evals;
+	float m_fitness;
+    std::vector<float> m_one_ant_on_fitness;
+    std::vector<position_ptr> m_positions;
+    std::vector<evaluation_ptr> m_evals;
 
 	individual(void);
 };

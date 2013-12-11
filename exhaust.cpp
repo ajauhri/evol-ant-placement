@@ -9,7 +9,7 @@ void exhaust::setup_algo_params()
 {
     try
     {
-        nec_input = boost::format(eap::run_directory + "ind%09d");
+        m_nec_input = boost::format(eap::run_directory + "ind%09d");
     }
     catch (...)
     {
@@ -25,8 +25,8 @@ void exhaust::run()
         std::cout<<"***creating individuals\n";
         recur_placements(placements, 0);
         evaluate();
-        std::sort(pop.begin(), pop.end(), eap::fitness_sort);
-        std::cout<<"best "<<pop[0]->fitness<<"\n";
+        std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
+        std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
     }
     catch (...)
     {
@@ -41,17 +41,17 @@ void exhaust::evaluate()
     {
         run_simulation(0); //argument doesn't signify anything here
         boost::format nec_output(eap::run_directory + "ind%09da%02d.out");
-        for (unsigned int i=0; i<pop.size(); ++i)
+        for (unsigned int i=0; i<m_pop.size(); ++i)
         {
-            for (unsigned int j=0; j<ant_configs.size(); ++j)
+            for (unsigned int j=0; j<m_ant_configs.size(); ++j)
             {
-                evaluation_ptr eval(new evaluation);
-                pop[i]->evals.push_back(eval);
-                unsigned int read = read_nou(str(nec_output % i % j), eval);
-                if (read != (num_polar() * step_freq))
+                evaluation_ptr p_eval(new evaluation);
+                m_pop[i]->m_evals.push_back(p_eval);
+                unsigned int read = read_nou(str(nec_output % i % j), p_eval);
+                if (read != (num_polar() * m_step_freq))
                     throw eap::InvalidStateException("Problem with output in " + str(nec_output % i % j));
-                pop[i]->one_ant_on_fitness.push_back(compare(free_inds[j]->evals[0], pop[i]->evals[j]));
-                pop[i]->fitness += pop[i]->one_ant_on_fitness[j];
+                m_pop[i]->m_one_ant_on_fitness.push_back(compare(m_free_inds[j]->m_evals[0], m_pop[i]->m_evals[j]));
+                m_pop[i]->m_fitness += m_pop[i]->m_one_ant_on_fitness[j];
             }
         }
     }
@@ -78,17 +78,17 @@ void exhaust::run_simulation(unsigned int id)
 
 void exhaust::recur_placements(std::vector<position_ptr> &placements, unsigned int i)
 {
-    if(ant_configs.size() == placements.size())
+    if(m_ant_configs.size() == placements.size())
     {
-        pop.push_back(create_individual(str(nec_input % pop.size())+"a%02d.nec", placements));
+        m_pop.push_back(create_individual(str(m_nec_input % m_pop.size())+"a%02d.nec", placements));
         return;
     }
 
-    for (unsigned int j=0; j<ant_configs[i]->positions.size(); j++)
+    for (unsigned int j=0; j<m_ant_configs[i]->m_positions.size(); j++)
     {
-        if(!overlap(placements, ant_configs[i]->positions[j]))
+        if(!overlap(placements, m_ant_configs[i]->m_positions[j]))
         {
-            placements.push_back(ant_configs[i]->positions[j]);
+            placements.push_back(m_ant_configs[i]->m_positions[j]);
             recur_placements(placements, i+1);
             placements.pop_back();
         }

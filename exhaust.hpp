@@ -7,8 +7,8 @@
 class exhaust : public algorithm
 {
     private:
-        std::vector<individual_ptr> pop;
-        boost::format nec_input;
+        std::vector<individual_ptr> m_pop;
+        boost::format m_nec_input;
 
         void run_simulation(unsigned int);
         void evaluate();

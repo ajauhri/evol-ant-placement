@@ -6,11 +6,12 @@ class sa :
 	public algorithm
 {
 private:
-	unsigned int iterations;
-	float initial_temperature;
-	float temperature_factor;
-	unsigned int iterations_per_temperature_change;
-	float convergence_factor;
+	unsigned int m_iterations;
+	float m_initial_temperature;
+	float m_temperature_factor;
+	unsigned int m_iterations_per_temperature_change;
+	float m_convergence_factor;
+    float m_converged_iterations;
 public:
 	sa(std::string);
 	~sa(void);

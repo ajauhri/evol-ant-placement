@@ -8,9 +8,9 @@ class evaluation
     public:
         evaluation(void);
 
-        std::vector<pattern_ptr> radiation;
-        float max_db;
-        float min_db;
+        std::vector<pattern_ptr> m_radiation;
+        float m_max_db;
+        float m_min_db;
 };
 typedef boost::shared_ptr<evaluation> evaluation_ptr;
 #endif

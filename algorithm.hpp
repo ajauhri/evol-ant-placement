@@ -17,22 +17,22 @@ class algorithm
 
     protected:
         /* common data members for all algorithms */
-        bool auto_seed;
-        float	exp_weight;
-        float mutation;
-        std::string lua_file;
-        std::vector<individual_ptr> free_inds;
+        bool m_auto_seed;
+        float m_exp_weight;
+        float m_mutation;
+        std::string m_lua_file;
+        std::vector<individual_ptr> m_free_inds;
 
         //ant_config_ptr clone(ant_config_ptr);
-        unsigned int min_theta = 0;
-        float step_theta = 46;
-        float incr_theta = 4;
-        float min_phi = 0;
-        float step_phi = 90;
-        float incr_phi = 4;
-        float min_freq = 100;
-        unsigned int step_freq = 1;
-        float incr_freq = 10;
+        unsigned int m_min_theta = 0;
+        float m_step_theta = 46;
+        float m_incr_theta = 4;
+        float m_min_phi = 0;
+        float m_step_phi = 90;
+        float m_incr_phi = 4;
+        float m_min_freq = 100;
+        unsigned int m_step_freq = 1;
+        float m_incr_freq = 10;
 
         unsigned int num_polar(void);
         virtual void write_platform(std::ofstream&);
@@ -48,8 +48,8 @@ class algorithm
         algorithm(std::string);
         virtual ~algorithm(void);
 
-        std::vector<ant_config_ptr> ant_configs; //stores antennas positions and all wires mentioned in the nec file
-        ant_config_ptr platform;
+        std::vector<ant_config_ptr> m_ant_configs; //stores antennas positions and all wires mentioned in the nec file
+        ant_config_ptr m_platform;
 
         virtual void setup_run_context();
         virtual void setup_algo_params();
@@ -61,16 +61,6 @@ class algorithm
         virtual unsigned int read_nou(const std::string, const evaluation_ptr &);
         virtual void run() = 0;
         virtual void run_simulation(unsigned int) = 0;
-
-        //virtual void seek_algo_node();
-#if 0
-
-        /* functions which work on an individual's data set */
-        bool overlaps_ant(individual_ptr, position_ptr);
-
-        /* stochastic operators */
-
-#endif
 };
 
 #endif

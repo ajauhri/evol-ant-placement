@@ -1,5 +1,5 @@
 #include<wire.hpp>
 wire::wire() :
-    segments(0), 
-    diameter(0.0f)
+    m_segments(0), 
+    m_diameter(0.0f)
 {}

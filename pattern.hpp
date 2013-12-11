@@ -5,22 +5,11 @@
 class pattern
 {
     public:
-        pattern(void)
-        { }
-        ~pattern(void)
-        {
-            //need to cout here and check if theser are deallocated at the end of each generation
-            db_gain.clear();
-            db_gain.shrink_to_fit();
+        pattern(void);
 
-            quad_db.clear();
-            quad_db.shrink_to_fit();
-        }
-
-        std::vector<float> db_gain;
-        std::vector<float> quad_db;
-        float frequency;
-        unsigned int id;
+        std::vector<float> m_db_gain;
+        std::vector<float> m_quad_db;
+        float m_frequency;
 };
 typedef boost::shared_ptr<pattern> pattern_ptr;
 #endif

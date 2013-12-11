@@ -6,10 +6,10 @@ class wire
 {	
     public:
         wire(void);
-        position_ptr a;
-        position_ptr b;
-        int segments;
-        float diameter;
+        position_ptr mp_a;
+        position_ptr mp_b;
+        int m_segments;
+        float m_diameter;
 };
 typedef boost::shared_ptr<wire> wire_ptr;
 #endif

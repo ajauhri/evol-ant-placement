@@ -11,10 +11,10 @@
 class ant_config
 {
 	public:
-		std::string nec_file; //name of nec file of antenna
-		std::vector<position_ptr> positions; //positions provided on a platform by the user
-		std::vector<wire_ptr> wires; //wires as provided in the nec file 
-        std::vector<std::string> nec_wires; // wires stored as strings to be written to files
+		std::string m_nec_file; //name of nec file of antenna
+		std::vector<position_ptr> m_positions; //positions provided on a platform by the user
+		std::vector<wire_ptr> m_wires; //wires as provided in the nec file 
+        std::vector<std::string> m_nec_wires; // wires stored as strings to be written to files
 
 };
 typedef boost::shared_ptr<ant_config> ant_config_ptr;

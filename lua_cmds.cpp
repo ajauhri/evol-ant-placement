@@ -21,10 +21,10 @@ namespace eap
 	{
 		if (algo)
 		{
-			const char *platform_file = lua_tostring (L, 1);
-			ant_config_ptr platform(new ant_config);
-			platform->nec_file.assign(platform_file);
-			algo->platform = platform;
+			const char *p_platform_file = lua_tostring (L, 1);
+			ant_config_ptr p_platform(new ant_config);
+			p_platform->m_nec_file.assign(p_platform_file);
+			algo->m_platform = p_platform;
 			//std::cout << "load platform: "<< algo->platform->nec_file <<std::endl;
 		}
 		return 0;
@@ -34,10 +34,10 @@ namespace eap
 	{
 		if (algo)
 		{
-			const char *ant_file = lua_tostring (L, 1);
-			ant_config_ptr config(new ant_config);
-			config->nec_file.assign(ant_file);
-			algo->ant_configs.push_back(config);
+			const char *p_ant_file = lua_tostring (L, 1);
+			ant_config_ptr p_config(new ant_config);
+			p_config->m_nec_file.assign(p_ant_file);
+			algo->m_ant_configs.push_back(p_config);
 			//std::cout << "load antenna: " << algo->ant_configs.back()->nec_file << std::endl;
 		}
 		return 0;
@@ -47,12 +47,12 @@ namespace eap
 	{
 		if (algo)
 		{
-			position_ptr ant_pos(new position);
-			ant_pos->x = lua_tonumber (L, 1);
-			ant_pos->y = lua_tonumber (L, 2);
-			ant_pos->z = lua_tonumber (L, 3);
+			position_ptr p_ant_pos(new position);
+			p_ant_pos->m_x = lua_tonumber (L, 1);
+			p_ant_pos->m_y = lua_tonumber (L, 2);
+			p_ant_pos->m_z = lua_tonumber (L, 3);
 			//std::cout<<"x="<<ant_pos->x<<"y="<<ant_pos->y<<"z="<<ant_pos->z<<"\n";
-			algo->ant_configs.back()->positions.push_back(ant_pos);
+			algo->m_ant_configs.back()->m_positions.push_back(p_ant_pos);
 		}
 		return 0;
 	}

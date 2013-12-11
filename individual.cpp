@@ -1,5 +1,5 @@
 #include<individual.hpp>
 individual::individual() :
-    fitness(0.0f)
+    m_fitness(0.0f)
 {}
 
