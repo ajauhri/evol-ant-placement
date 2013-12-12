@@ -58,10 +58,10 @@ void ga::run()
         for (unsigned int i_id=0; i_id<m_population_size; ++i_id)
         {
             std::vector<position_ptr> placements;
-            for (ant_config_ptr ant : m_ant_configs)
+            for (ant_config_ptr i_ant : m_ant_configs)
             {
-                int pos = eap::rand(0, ant->m_positions.size()-1);
-                placements.push_back(ant->m_positions[pos]);
+                int pos = eap::rand(0, i_ant->m_positions.size()-1);
+                placements.push_back(i_ant->m_positions[pos]);
             }
             m_pop.push_back(create_individual(str(nec_input % 0 % i_id)+"a%02d.nec", placements));
         }
@@ -112,17 +112,17 @@ void ga::evaluate_gen(unsigned int id)
     {
         run_simulation(id);
         boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
-        for (unsigned int i=0; i<m_pop.size(); ++i)
+        for (unsigned int i_pop=0; i_pop<m_pop.size(); ++i_pop)
         {
-            for (unsigned int j=0; j<m_ant_configs.size(); ++j)
+            for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
             {
-                evaluation_ptr eval(new evaluation);
-                m_pop[i]->m_evals.push_back(eval);
-                unsigned int read = read_nou(str(nec_output % id % i % j), eval);
+                evaluation_ptr p_eval(new evaluation);
+                m_pop[i_pop]->m_evals.push_back(p_eval);
+                unsigned int read = read_nou(str(nec_output % id % i_pop % i_ant), p_eval);
                 if (read != (num_polar() * m_step_freq))
-                    throw eap::InvalidStateException("Problem with output in " + str(nec_output % id % i % j));
-                m_pop[i]->m_one_ant_on_fitness.push_back(compare(m_free_inds[j]->m_evals[0], m_pop[i]->m_evals[j]));
-                m_pop[i]->m_fitness += m_pop[i]->m_one_ant_on_fitness[j];
+                    throw eap::InvalidStateException("Problem with output in " + str(nec_output % id % i_pop % i_ant));
+                m_pop[i_pop]->m_one_ant_on_fitness.push_back(compare(m_free_inds[i_ant]->m_evals[0], m_pop[i_pop]->m_evals[i_ant]));
+                m_pop[i_pop]->m_fitness += m_pop[i_pop]->m_one_ant_on_fitness[i_ant];
             }
         }
     }

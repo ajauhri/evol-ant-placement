@@ -466,9 +466,9 @@ void algorithm::simple_mutation(individual_ptr &p_ind)
 {
     try
     {
-    int bit = eap::rand(0, m_ant_configs.size() - 1);
-    int new_bit = eap::rand(0, m_ant_configs[bit]->m_positions.size()-1);
-    p_ind->m_positions[bit] = m_ant_configs[bit]->m_positions[new_bit];
+        int bit = eap::rand(0, m_ant_configs.size() - 1);
+        int new_bit = eap::rand(0, m_ant_configs[bit]->m_positions.size()-1);
+        p_ind->m_positions[bit] = m_ant_configs[bit]->m_positions[new_bit];
     }
     catch (...)
     {
