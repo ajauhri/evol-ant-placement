@@ -43,6 +43,9 @@ void hc::run_simulation(unsigned int id)
 {
 }
 
+void hc::save_best_nec()
+{
+}
 
 hc::~hc(void)
 {

@@ -10,12 +10,13 @@ class es :
 		unsigned int lambda;
 		unsigned int generations;
 
+        void run_simulation(unsigned int);
 	public:
 		es(std::string);
 		~es(void);
 
 		void setup_algo_params();
 		void run();
-        void run_simulation(unsigned int);
+        void save_best_nec();
 };
 #endif

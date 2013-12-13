@@ -155,6 +155,10 @@ void sa::run_simulation(unsigned int id)
     }
 }
 
+void sa::save_best_nec()
+{
+}
+
 sa::~sa(void)
 {
 }

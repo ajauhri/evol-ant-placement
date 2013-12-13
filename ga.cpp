@@ -212,6 +212,10 @@ individual_ptr ga::tour()
     return best;
 }
 
+void ga::save_best_nec()
+{
+}
+
 ga::~ga(void)
 {
     m_pop.clear();

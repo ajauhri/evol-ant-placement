@@ -273,6 +273,54 @@ void algorithm::write_excitation(std::ofstream& outfile, unsigned int id)
     } 
 }
 
+void algorithm::write_coupling(std::ofstream& outfile, std::vector<int> &start_ids)
+{
+    try
+    {
+        if (!outfile || start_ids.size() == 0) throw eap::InvalidStateException("write_coupling called incorrectly");
+        // the formatting is again BS
+        outfile << "GE   0\n";
+
+        for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
+        {
+            outfile << str(boost::format("FR   0%5d    0    0%10.5f%10.5f\n") % m_step_freq % m_min_freq % m_incr_freq);
+            std::string line(str(boost::format("CP  %d  1") % start_ids[i_ant])); 
+            for (unsigned int i_start=0; i_start<start_ids.size(); ++i_start)
+            {
+                if (i_start == i_ant)
+                {
+                    if (line.length() == 0)
+                        line = str(boost::format("CP %d 1") % start_ids[i_start]);
+                    else
+                    {
+                        outfile << str(boost::format("%s  %d  1\n") % line % start_ids[i_start]);
+                        line[0] = 0;
+                    }
+                }
+            }
+            if (line.length() != 0)
+                outfile << str(boost::format("%s\n") % line);
+
+            outfile << str(boost::format("EX   0%5d    1    0%10.5f%10.5f\n") % start_ids[i_ant] % 1.0f % 0.0f);
+            outfile << str(boost::format("RP   0%5d%5d 1000%10.5f%10.5f%10.5f%10.5f%10.5f\n") % m_step_theta % m_step_phi % m_min_theta % m_min_phi % m_incr_theta % m_incr_phi % 0.0f);
+
+            for(unsigned int i_start=0; i_start<start_ids.size(); ++i_start)
+            {
+                if (i_start != i_ant)
+                {
+                    outfile << str(boost::format("EX   0%5d    1    0%10.5f%10.5f\n") % start_ids[i_start] % 1.0f % 0.0f); 
+                    outfile << "XQ\n";
+                }
+            }
+        }
+        outfile << "EN";
+    }
+    catch (...)
+    {
+        throw;
+    }
+}
+
 
 void algorithm::run_freespace()
 {
@@ -414,6 +462,20 @@ individual_ptr algorithm::create_individual(std::string path, std::vector<positi
             write_excitation(outfile, excitation_id);
             outfile.close();
         }
+
+        // create coupling file 
+        outfile.open(str(formatter % m_ant_configs.size()));
+        write_platform(outfile);
+        int count = m_platform->m_nec_wires.size();
+        std::vector<int> start_ids;
+        for (unsigned int k=0; k<m_ant_configs.size(); ++k)
+        {
+            start_ids.push_back(count+1);
+            write_ant(outfile, m_ant_configs[k], placements[k], count+1);
+            count += m_ant_configs[k]->m_wires.size();
+        }
+        write_coupling(outfile, start_ids);
+
         return p_ind;
     }
     catch (...)

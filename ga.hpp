@@ -14,10 +14,12 @@ private:
     std::vector<individual_ptr> m_pop;
 	
     individual_ptr tour();
-    void run_simulation(unsigned int);
     void evaluate_gen(unsigned int);
     void create_generation(unsigned int);
     void select();
+
+    void save_best_nec();
+    void run_simulation(unsigned int);
 
 public:
 	ga(std::string);

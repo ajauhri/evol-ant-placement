@@ -36,11 +36,12 @@ class algorithm
         float m_incr_freq = 10;
 
         unsigned int num_polar(void);
-        virtual void write_platform(std::ofstream&);
-        virtual void write_ant(std::ofstream&, ant_config_ptr&, position_ptr&, unsigned int);
-        virtual void write_excitation(std::ofstream&, unsigned int);
-        virtual individual_ptr create_individual(std::string, std::vector<position_ptr> &);
-        virtual float compare(const evaluation_ptr &, const evaluation_ptr &);
+        void write_platform(std::ofstream&);
+        void write_ant(std::ofstream&, ant_config_ptr&, position_ptr&, unsigned int);
+        void write_excitation(std::ofstream&, unsigned int);
+        void write_coupling(std::ofstream&, std::vector<int>&);
+        individual_ptr create_individual(std::string, std::vector<position_ptr> &);
+        float compare(const evaluation_ptr &, const evaluation_ptr &);
         std::vector<individual_ptr> breed(const individual_ptr&, const individual_ptr&);
         void simple_mutation(individual_ptr&);
         bool overlap(std::vector<position_ptr>&, position_ptr&);
@@ -62,6 +63,7 @@ class algorithm
         virtual unsigned int read_nou(const std::string, const evaluation_ptr &);
         virtual void run() = 0;
         virtual void run_simulation(unsigned int) = 0;
+        virtual void save_best_nec() = 0;
 };
 
 #endif

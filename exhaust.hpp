@@ -13,6 +13,7 @@ class exhaust : public algorithm
         void run_simulation(unsigned int);
         void evaluate();
         void recur_placements(std::vector<position_ptr>&, unsigned int);
+        void save_best_nec();
 
     public:
         exhaust(std::string);

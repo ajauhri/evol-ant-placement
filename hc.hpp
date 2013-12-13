@@ -8,13 +8,14 @@ class hc :
 private:
 	float convergence_factor;
 	int iterations;
-
+    
+    void run_simulation(unsigned int);
+    void save_best_nec();
 public:
 	hc(std::string);
 	~hc(void);
 
 	void setup_algo_params();
     void run();
-    void run_simulation(unsigned int);
 };
 #endif
