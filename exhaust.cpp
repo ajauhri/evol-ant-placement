@@ -1,5 +1,11 @@
 #include<exhaust.hpp>
+#include<lua_cmds.hpp>
 #include<eap_resources.hpp>
+
+namespace 
+{
+    const std::string c_exp_weight = "exp_weight";
+}
 
 exhaust::exhaust(std::string lua_file) : algorithm(lua_file)
 {
@@ -10,6 +16,7 @@ void exhaust::setup_algo_params()
     try
     {
         m_nec_input = boost::format(eap::run_directory + "ind%09d");
+        m_exp_weight = eap::get_fvalue(c_exp_weight);
     }
     catch (...)
     {

@@ -6,8 +6,9 @@
 #include<evaluation.hpp>
 #include<string>
 #include<vector>
+
 /**
- * Base class for all implementations of stochastic algorithms
+ * Base class for all implementations of evolutionary algorithms
  */
 class algorithm
 {
