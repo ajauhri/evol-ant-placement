@@ -1,0 +1,7 @@
+runs/
+free/
+obj/
+*~
+*.swp
+evol_ant
+nec2++.exe

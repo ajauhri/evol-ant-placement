@@ -1,0 +1,34 @@
+algorithm.o: algorithm.cpp algorithm.hpp ant_config.hpp position.hpp \
+ wire.hpp position.hpp ancillary_config.hpp individual.hpp evaluation.hpp \
+ pattern.hpp eap_resources.hpp algorithms.hpp lua_cmds.hpp wire.hpp
+eap_resources.o: eap_resources.cpp eap_resources.hpp algorithm.hpp \
+ ant_config.hpp position.hpp wire.hpp position.hpp ancillary_config.hpp \
+ individual.hpp evaluation.hpp pattern.hpp algorithms.hpp lua_cmds.hpp
+es.o: es.cpp es.hpp algorithm.hpp ant_config.hpp position.hpp wire.hpp \
+ position.hpp ancillary_config.hpp individual.hpp evaluation.hpp \
+ pattern.hpp eap_resources.hpp algorithms.hpp lua_cmds.hpp
+evaluation.o: evaluation.cpp evaluation.hpp pattern.hpp
+exhaust.o: exhaust.cpp exhaust.hpp algorithm.hpp ant_config.hpp \
+ position.hpp wire.hpp position.hpp ancillary_config.hpp individual.hpp \
+ evaluation.hpp pattern.hpp lua_cmds.hpp eap_resources.hpp algorithms.hpp
+ga.o: ga.cpp ga.hpp algorithm.hpp ant_config.hpp position.hpp wire.hpp \
+ position.hpp ancillary_config.hpp individual.hpp evaluation.hpp \
+ pattern.hpp eap_resources.hpp algorithms.hpp lua_cmds.hpp
+hc.o: hc.cpp hc.hpp algorithm.hpp ant_config.hpp position.hpp wire.hpp \
+ position.hpp ancillary_config.hpp individual.hpp evaluation.hpp \
+ pattern.hpp eap_resources.hpp algorithm.hpp algorithms.hpp lua_cmds.hpp
+individual.o: individual.cpp individual.hpp ant_config.hpp position.hpp \
+ wire.hpp position.hpp evaluation.hpp pattern.hpp
+lua_cmds.o: lua_cmds.cpp algorithm.hpp ant_config.hpp position.hpp \
+ wire.hpp position.hpp ancillary_config.hpp individual.hpp evaluation.hpp \
+ pattern.hpp eap_resources.hpp algorithms.hpp
+main.o: main.cpp eap_resources.hpp algorithm.hpp ant_config.hpp \
+ position.hpp wire.hpp position.hpp ancillary_config.hpp individual.hpp \
+ evaluation.hpp pattern.hpp algorithms.hpp lua_cmds.hpp ga.hpp sa.hpp \
+ es.hpp hc.hpp algorithm.hpp exhaust.hpp
+pattern.o: pattern.cpp pattern.hpp
+position.o: position.cpp position.hpp
+sa.o: sa.cpp sa.hpp algorithm.hpp ant_config.hpp position.hpp wire.hpp \
+ position.hpp ancillary_config.hpp individual.hpp evaluation.hpp \
+ pattern.hpp eap_resources.hpp algorithms.hpp lua_cmds.hpp
+wire.o: wire.cpp wire.hpp position.hpp
