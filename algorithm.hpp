@@ -60,7 +60,7 @@ class algorithm
         virtual void load_nec_files();
         virtual void run_freespace();
         virtual void read_freespace();
-        virtual unsigned int read_nou(const std::string, const evaluation_ptr &);
+        virtual unsigned int read_radiation(const std::string, const evaluation_ptr &);
         virtual void run() = 0;
         virtual void run_simulation(unsigned int) = 0;
 };

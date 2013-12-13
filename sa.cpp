@@ -128,7 +128,7 @@ void sa::evaluate_iter(unsigned int id)
         {
             evaluation_ptr p_eval(new evaluation);
             m_p_parent->m_evals.push_back(p_eval);
-            unsigned int read = read_nou(str(nec_output % id % i_ant), p_eval);
+            unsigned int read = read_radiation(str(nec_output % id % i_ant), p_eval);
             if (read != (num_polar() * m_step_freq))
                 throw eap::InvalidStateException("Problem with output in " + str(nec_output % id % i_ant));
             m_p_parent->m_one_ant_on_fitness.push_back(compare(m_free_inds[i_ant]->m_evals[0], m_p_parent->m_evals[i_ant]));

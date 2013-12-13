@@ -55,7 +55,7 @@ void exhaust::evaluate()
             {
                 evaluation_ptr p_eval(new evaluation);
                 m_pop[i]->m_evals.push_back(p_eval);
-                unsigned int read = read_nou(str(nec_output % i % j), p_eval);
+                unsigned int read = read_radiation(str(nec_output % i % j), p_eval);
                 if (read != (num_polar() * m_step_freq))
                     throw eap::InvalidStateException("Problem with output in " + str(nec_output % i % j));
                 m_pop[i]->m_one_ant_on_fitness.push_back(compare(m_free_inds[j]->m_evals[0], m_pop[i]->m_evals[j]));

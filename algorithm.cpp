@@ -347,7 +347,7 @@ void algorithm::read_freespace()
             individual_ptr p_ind(new individual);
             evaluation_ptr p_eval(new evaluation);
             p_ind->m_evals.push_back(p_eval);
-            read_nou(str(formatter % i), p_eval);
+            read_radiation(str(formatter % i), p_eval);
             m_free_inds.push_back(p_ind);
             std::cout<<m_ant_configs[i]->m_nec_file<<" free space fitness: "<<m_free_inds[i]->m_fitness<<"\n";
         }
@@ -358,7 +358,7 @@ void algorithm::read_freespace()
     }
 }
 
-unsigned int algorithm::read_nou(const std::string results_file,
+unsigned int algorithm::read_radiation(const std::string results_file,
         const evaluation_ptr &p_eval)
 {
     std::ifstream infile;
