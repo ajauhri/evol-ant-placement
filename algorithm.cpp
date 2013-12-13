@@ -287,14 +287,14 @@ void algorithm::write_coupling(std::ofstream& outfile, std::vector<int> &start_i
             std::string line(str(boost::format("CP  %d  1") % start_ids[i_ant])); 
             for (unsigned int i_start=0; i_start<start_ids.size(); ++i_start)
             {
-                if (i_start == i_ant)
+                if (i_start != i_ant)
                 {
                     if (line.length() == 0)
                         line = str(boost::format("CP %d 1") % start_ids[i_start]);
                     else
                     {
                         outfile << str(boost::format("%s  %d  1\n") % line % start_ids[i_start]);
-                        line[0] = 0;
+                        line = "";
                     }
                 }
             }
