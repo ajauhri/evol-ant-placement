@@ -34,7 +34,7 @@ void exhaust::run()
         evaluate();
         std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
         std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
-        save_best_nec();
+        save_best_nec("EX", m_pop[0]);
     }
     catch (...)
     {
@@ -101,10 +101,6 @@ void exhaust::recur_placements(std::vector<position_ptr> &placements, unsigned i
             placements.pop_back();
         }
     }
-}
-
-void exhaust::save_best_nec()
-{
 }
 
 exhaust::~exhaust(void)

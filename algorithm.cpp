@@ -464,6 +464,7 @@ individual_ptr algorithm::create_individual(std::string path, std::vector<positi
         }
 
         // create coupling file 
+        /*
         outfile.open(str(formatter % m_ant_configs.size()));
         write_platform(outfile);
         int count = m_platform->m_nec_wires.size();
@@ -475,6 +476,7 @@ individual_ptr algorithm::create_individual(std::string path, std::vector<positi
             count += m_ant_configs[k]->m_wires.size();
         }
         write_coupling(outfile, start_ids);
+        */
 
         return p_ind;
     }
@@ -540,7 +542,32 @@ void algorithm::simple_mutation(individual_ptr &p_ind)
 
 }
 
-
+void algorithm::save_best_nec(const std::string &algo_id, individual_ptr &p_ind)
+{
+    std::ofstream outfile;
+    try
+    {
+        std::string path(eap::best_directory + algo_id + std::to_string(eap::rand()) + ".nec");
+        outfile.open(path);
+        outfile << std::string("CM " + m_platform->m_nec_file + "\n");
+        for (ant_config_ptr i_ant : m_ant_configs)
+            outfile << std::string("CM " + i_ant->m_nec_file + "\n");
+        outfile << std::string("CM fitness=" + std::to_string(p_ind->m_fitness) + "\n");
+        write_platform(outfile);
+        int count = m_platform->m_nec_wires.size();
+        for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
+        {
+            write_ant(outfile, m_ant_configs[i_ant], p_ind->m_positions[i_ant], count+1);
+            count += m_ant_configs[i_ant]->m_wires.size();
+        }
+        outfile.close();
+    }
+    catch (...)
+    {
+        outfile.close();
+        throw;
+    }
+}
 
 inline unsigned int algorithm::num_polar(void)
 {

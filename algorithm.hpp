@@ -1,7 +1,6 @@
 #ifndef ALGORITHM_HPP_INCLUDED
 #define ALGORITHM_HPP_INCLUDED
 #include<ant_config.hpp>
-#include<ancillary_config.hpp>
 #include<individual.hpp>
 #include<evaluation.hpp>
 #include<string>
@@ -45,6 +44,7 @@ class algorithm
         std::vector<individual_ptr> breed(const individual_ptr&, const individual_ptr&);
         void simple_mutation(individual_ptr&);
         bool overlap(std::vector<position_ptr>&, position_ptr&);
+        void save_best_nec(const std::string&, individual_ptr&);
 
     public:
         algorithm(std::string);
@@ -63,7 +63,6 @@ class algorithm
         virtual unsigned int read_nou(const std::string, const evaluation_ptr &);
         virtual void run() = 0;
         virtual void run_simulation(unsigned int) = 0;
-        virtual void save_best_nec() = 0;
 };
 
 #endif

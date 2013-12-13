@@ -17,6 +17,5 @@ class es :
 
 		void setup_algo_params();
 		void run();
-        void save_best_nec();
 };
 #endif

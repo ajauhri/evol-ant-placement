@@ -44,9 +44,6 @@ void es::run_simulation(unsigned int id)
 {
 }
 
-void es::save_best_nec()
-{}
-
 es::~es(void)
 {
 }

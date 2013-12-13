@@ -19,7 +19,6 @@ private:
     std::vector<position_ptr> mutate_pos(std::vector<position_ptr>);
     void evaluate_iter(unsigned int);
     void run_simulation(unsigned int);
-    void save_best_nec();
 
 public:
 	sa(std::string);

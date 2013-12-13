@@ -18,7 +18,6 @@ private:
     void create_generation(unsigned int);
     void select();
 
-    void save_best_nec();
     void run_simulation(unsigned int);
 
 public:
