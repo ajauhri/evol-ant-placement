@@ -3,6 +3,8 @@
 #include<lua_cmds.hpp>
 #include<iostream>
 #include<limits>
+#include<boost/format.hpp>
+
 
 namespace
 {
@@ -46,6 +48,7 @@ void sa::setup_algo_params()
 */
 void sa::run()
 {
+#if 0
     try
     {
         std::vector<position_ptr> placements;
@@ -65,6 +68,20 @@ void sa::run()
         {
            std::vector<position_ptr> placements = mutate_pos(m_p_parent->positions);
            individual_ptr p_child = create_individual(str(nec_input % m_iter++) + "a%02d.nec", placements);
+           evaluate_iter(m_iter);
+           if (p_child->m_fitness < m_p_parent->m_fitness)
+           {
+               m_best_fitness = p_child->m_fitness;
+               swap(m_p_parent, p_child);
+           }
+           else if (p_child->m_fitness > m_p_parent->m_fitness)
+           {
+               float delta_fitness = ((p_child->m_fitness - m_p_parent->m_fitness) / 100);
+               float prob = exp((-1.0 * delta_fitness) / temperature);
+
+
+
+           }
 
 
            
@@ -76,6 +93,7 @@ void sa::run()
     {
         throw;
     }
+#endif
 }
 
 std::vector<position_ptr> sa::mutate_pos(std::vector<position_ptr> orig_placements)
@@ -83,12 +101,12 @@ std::vector<position_ptr> sa::mutate_pos(std::vector<position_ptr> orig_placemen
     try
     {
         std::vector<position_ptr> placements;
-        for (int i_ant=0; i_ant<orig_placements.size(); ++i_ant)
+        for (unsigned int i_ant=0; i_ant<orig_placements.size(); ++i_ant)
         {
             if (eap::rand01() < m_mutation)
             {
-                int pos = eap::rand(0, m_ant_configs[i_ant]->positions.size() - 1);
-                placements.push_back(m_ant_config[i_ant]->positions[pos]);
+                int pos = eap::rand(0, m_ant_configs[i_ant]->m_positions.size() - 1);
+                placements.push_back(m_ant_configs[i_ant]->m_positions[pos]);
             }
             placements.push_back(orig_placements[i_ant]);
         }

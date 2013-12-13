@@ -1,0 +1,7 @@
+valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes ./evol_ant -i test_1ga.lua
+
+# --tool=memcheck (also default so redundant)
+# --leak-check=yes search for memory leaks when the client program finishes
+# --show-reachable=yes shows `reachable` and `indirectly` lost blocks
+# --tack-fds=yes list of open file descriptors open on exit. Currently showing 4 fds open (stdout, stdin, stderr and one more). Not sure about the 4th one
+#                   

@@ -15,6 +15,9 @@ private:
     individual_ptr m_p_parent;
     float m_best_fitness;
     int m_iter;
+
+    std::vector<position_ptr> mutate_pos(std::vector<position_ptr>);
+    void evaluate_iter(unsigned int);
 public:
 	sa(std::string);
 	~sa(void);
