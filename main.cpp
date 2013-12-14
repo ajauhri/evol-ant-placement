@@ -79,22 +79,22 @@ int main(int argc, char* argv[])
         eap::algo->setup_algo_params();
 
         /* load all possible antenna placements */
-        eap::algo->setup_ant_placements();
+        eap::algo->algorithm::setup_ant_placements();
 
         /* load all wires from nec files */
-        eap::algo->load_nec_files();
+        eap::algo->algorithm::load_nec_files();
 
         /*clean up previous output files */
-        eap::algo->setup_run_context();
+        eap::algo->algorithm::setup_run_context();
 
         /* create antenna free space patterns */
-        eap::algo->write_freespace();
+        eap::algo->algorithm::write_freespace();
 
         /* run free space pattern files */
-        eap::algo->run_freespace();
+        eap::algo->algorithm::run_freespace();
 
         /* read free space pattern results */
-        eap::algo->read_freespace();
+        eap::algo->algorithm::read_freespace();
 
         /* run the specific algorithm */
         eap::algo->run();

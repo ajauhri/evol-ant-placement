@@ -111,6 +111,7 @@ void algorithm::load_nec_files()
 
         //since the nec files for GW card require a special format and have to be written multiple times for the platform, might as well do it once and keep in memory
         create_nec_strs();
+        std::cout<<"***completed loading nec files\n";
     }
     catch (...)
     {
@@ -349,7 +350,6 @@ void algorithm::read_freespace()
             p_ind->m_evals.push_back(p_eval);
             read_radiation(str(formatter % i), p_eval);
             m_free_inds.push_back(p_ind);
-            std::cout<<m_ant_configs[i]->m_nec_file<<" free space fitness: "<<m_free_inds[i]->m_fitness<<"\n";
         }
     }
     catch (...)
@@ -369,7 +369,7 @@ unsigned int algorithm::read_radiation(const std::string results_file,
         unsigned int read = 0, j = 0;
         float theta, phi, vertdb, horizdb, totaldb;
 
-        if (!infile) throw eap::InvalidStateException(results_file + " not found");
+        if (!infile) throw eap::InvalidStateException("radiation pattern file " + results_file + " not found");
         do
         {
             pattern_ptr p_pat(new pattern);
@@ -405,6 +405,48 @@ unsigned int algorithm::read_radiation(const std::string results_file,
         throw;
     }
 }
+
+float algorithm::read_coupling(const std::string results_file, unsigned int size)
+{
+    std::ifstream infile;
+    try
+    {
+        infile.open(results_file);
+        std::string line;
+        unsigned int count_couplings = 0;
+        float coupling = 0.0f, resultant_coupling = 0.0f;
+
+        if (!infile) throw eap::InvalidStateException("coupling file " + results_file + " not found");
+        while (count_couplings < size)
+        {
+            while (std::getline(infile, line) && strncmp(line.c_str(), " ------- COUPLING BETWEEN", 25));
+            std::getline(infile, line);
+            std::getline(infile, line);
+
+            unsigned int read = 0;
+            while (read < size - 1)
+            {
+                sscanf(line.c_str(), "%*d %*d %*d %*d %*d %*d %f", &coupling);
+
+                if (coupling >= 100)
+                    resultant_coupling += 100*2;
+                else if (!(coupling <= -100))
+                    resultant_coupling += 100 + coupling;
+                read++;
+            }
+            count_couplings++;
+        }
+        infile.close();
+        return resultant_coupling;
+    }
+    catch (const eap::InvalidStateException &e)
+    {
+        infile.close();
+        throw;
+    }
+}
+
+
 
 float algorithm::compare(const evaluation_ptr &p_first,
         const evaluation_ptr &p_second)
@@ -445,6 +487,7 @@ individual_ptr algorithm::create_individual(std::string path, std::vector<positi
         individual_ptr p_ind(new individual);
         p_ind->m_positions = placements;
 
+        // create radiation file
         for (unsigned int j=0; j<m_ant_configs.size(); ++j)
         {
             outfile.open(str(formatter % j));
@@ -464,7 +507,6 @@ individual_ptr algorithm::create_individual(std::string path, std::vector<positi
         }
 
         // create coupling file 
-        /*
         outfile.open(str(formatter % m_ant_configs.size()));
         write_platform(outfile);
         int count = m_platform->m_nec_wires.size();
@@ -476,7 +518,7 @@ individual_ptr algorithm::create_individual(std::string path, std::vector<positi
             count += m_ant_configs[k]->m_wires.size();
         }
         write_coupling(outfile, start_ids);
-        */
+        
 
         return p_ind;
     }
@@ -567,11 +609,6 @@ void algorithm::save_best_nec(const std::string &algo_id, individual_ptr &p_ind)
         outfile.close();
         throw;
     }
-}
-
-inline unsigned int algorithm::num_polar(void)
-{
-    return m_step_theta * m_step_phi;
 }
 
 /**

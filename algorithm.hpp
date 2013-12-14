@@ -34,6 +34,9 @@ class algorithm
         unsigned int m_step_freq = 1;
         float m_incr_freq = 10;
 
+        const float gain_wt = 1;
+        const float coupling_wt = 0.0;
+
         unsigned int num_polar(void);
         void write_platform(std::ofstream&);
         void write_ant(std::ofstream&, ant_config_ptr&, position_ptr&, unsigned int);
@@ -45,6 +48,9 @@ class algorithm
         void simple_mutation(individual_ptr&);
         bool overlap(std::vector<position_ptr>&, position_ptr&);
         void save_best_nec(const std::string&, individual_ptr&);
+        unsigned int read_radiation(const std::string, const evaluation_ptr &);
+        float read_coupling(const std::string, unsigned int);
+        float cal_fitness(individual_ptr&);
 
     public:
         algorithm(std::string);
@@ -53,16 +59,27 @@ class algorithm
         std::vector<ant_config_ptr> m_ant_configs; //stores antennas positions and all wires mentioned in the nec file
         ant_config_ptr m_platform;
 
-        virtual void setup_run_context();
+        void setup_ant_placements();
+        void load_nec_files();
+        void setup_run_context();
+        void write_freespace();
+        void run_freespace();
+        void read_freespace();
+
         virtual void setup_algo_params();
-        virtual void setup_ant_placements();
-        virtual void write_freespace();
-        virtual void load_nec_files();
-        virtual void run_freespace();
-        virtual void read_freespace();
-        virtual unsigned int read_radiation(const std::string, const evaluation_ptr &);
         virtual void run() = 0;
         virtual void run_simulation(unsigned int) = 0;
 };
+
+// body of an inline function needs to be in the header so that the compiler can actually replace it 
+inline float algorithm::cal_fitness(individual_ptr &ind)
+{
+    return ((gain_wt * ind->m_gain_fitness) + (coupling_wt * ind->m_coupling_fitness));
+}
+
+inline unsigned int algorithm::num_polar(void)
+{
+    return m_step_theta * m_step_phi;
+}
 
 #endif
