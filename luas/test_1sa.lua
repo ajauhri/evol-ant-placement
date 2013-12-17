@@ -37,12 +37,8 @@ add_point( -0.203200,   0.304800,   0.000000)
 params = {
     iterations=20,
     mutation=0.1,
-    init_temp=25,
-    temp_factor=1.92,
-    iterations_per_temp_change=1000,
-    output_freq=5,
+    cooling_factor=0.9984,
     convergence_factor=1,
-    gen_condition=10,
     fitness_condition=1,
     exp_weight=2,
     auto_seed=1,

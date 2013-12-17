@@ -7,17 +7,16 @@ class sa :
 {
 private:
 	unsigned int m_iterations;
-	float m_initial_temperature;
-	float m_temperature_factor;
+	float m_init_temp;
+	float m_cooling_factor;
 	unsigned int m_iterations_per_temperature_change;
 	float m_convergence_factor;
     float m_converged_iterations;
     individual_ptr m_p_parent;
     float m_best_fitness;
-    int m_iter;
 
-    std::vector<position_ptr> mutate_pos(std::vector<position_ptr>);
-    void evaluate_iter(unsigned int);
+    std::vector<position_ptr> mutate_pos(std::vector<position_ptr>&);
+    void evaluate(unsigned int, individual_ptr&);
     void run_simulation(unsigned int);
 
 public:
