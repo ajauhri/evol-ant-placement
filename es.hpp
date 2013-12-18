@@ -6,11 +6,17 @@ class es :
 	public algorithm
 {
 	private: 
-		unsigned int mu ;
-		unsigned int lambda;
-		unsigned int generations;
+		unsigned int m_mu ;
+		unsigned int m_lambda;
+		unsigned int m_generations;
+        unsigned int m_mulambda_factor;
+        std::vector<individual_ptr> m_pop;
+
 
         void run_simulation(unsigned int);
+        void survivor_selection(void);
+        void create_pop(unsigned int);
+        void evaluate_gen(unsigned int);
 	public:
 		es(std::string);
 		~es(void);

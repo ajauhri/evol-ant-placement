@@ -1,45 +1,129 @@
 #include<es.hpp>
 #include<eap_resources.hpp>
 #include<lua_cmds.hpp>
-#include <iostream>
+#include<iostream>
+#include<boost/filesystem.hpp>
+#include<boost/format.hpp>
 
 namespace 
 {
-	char const *mu_s = "mu";
-	char const *lambda_s = "lambda";
+    const std::string c_mu = "mu";
+    const std::string c_lambda = "lambda";
+    const std::string c_generations = "generations";
 }
 
 
-es::es(std::string lua_file) : algorithm(lua_file)
+es::es(std::string lua_file) : algorithm(lua_file), m_mulambda_factor(0.0f)
 {
 }
 
 /**
-* @desc Loads parameters for the evolutionary strategy algorithm  
-*/
+ * @desc Loads parameters for the evolutionary strategy algorithm  
+ */
 void es::setup_algo_params()
 {
-	try
-	{
-		algorithm::setup_algo_params();
-		this->mu = eap::get_fvalue(mu_s); 
-		this->lambda = eap::get_fvalue(lambda_s); 
-		std::cout<<"Completed ES parameter setup"<<std::endl;
-	}
-	catch (const eap::InvalidStateException &e)
-	{
-		std::cerr<<e.what()<<"\n";
-	}
+    try
+    {
+        algorithm::setup_algo_params();
+        this->m_mu = eap::get_fvalue(c_mu); 
+        this->m_lambda = eap::get_fvalue(c_lambda); 
+        this->m_generations = eap::get_fvalue(c_generations);
+        this->m_mulambda_factor = (unsigned int) floor(m_lambda/m_mu);
+        std::cout<<"Completed ES parameter setup"<<std::endl;
+    }
+    catch (const eap::InvalidStateException &e)
+    {
+        std::cerr<<e.what()<<"\n";
+    }
 }
 
 /**
-* @desc Implements logic for ES runs
-*/
+ * @desc Implements logic for ES runs
+ */
 void es::run()
 {
-	
+    try
+    {
+        boost::filesystem::create_directory(std::string(eap::run_directory+"gen0000"));
+        boost::format nec_input(eap::run_directory + "gen%04d/ind%09d");
+
+        for (unsigned int i_id=0; i_id<m_mu; ++i_id)
+        {
+            std::vector<position_ptr> placements;
+            for (ant_config_ptr i_ant : m_ant_configs)
+            {
+                int pos = eap::rand(0, i_ant->m_positions.size()-1);
+                placements.push_back(i_ant->m_positions[pos]);
+            }
+            m_pop.push_back(create_individual(str(nec_input % 0 % i_id) + "a%02d.nec", placements));
+        }
+        std::cout<<"***generation 0 created\n";
+
+        for (unsigned int i=0; i<m_generations; ++i)
+        {
+            create_pop(i);
+            evaluate_gen(i);
+            std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
+            std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
+            survivor_selection();
+        }
+    }
+
+    catch (...)
+    {
+        throw;
+    }
+
 }
 
+// extends population size to lambda using mutations based on (lamda/mu) factor
+void es::create_pop(unsigned int gen)
+{
+    try
+    {
+        boost::format gen_dir(eap::run_directory+"gen%04d");
+        boost::format input_path(eap::run_directory + "gen%04d/ind%09d");
+        boost::filesystem::create_directory(str(gen_dir % gen));
+
+        std::vector<individual_ptr> new_pop;
+        for (unsigned int i=0; i<m_mu; ++i)
+        {
+            unsigned int counter = 0; 
+            while (counter<m_mulambda_factor)
+            {
+                int ant_id = eap::rand(0, m_pop[i]->m_positions.size() - 1);
+                int new_pos = eap::rand(0, m_ant_configs[ant_id]->m_positions.size() - 1);
+                std::vector<position_ptr> placements(m_pop[i]->m_positions);
+                placements[ant_id] = m_ant_configs[ant_id]->m_positions[new_pos];
+                new_pop.push_back(create_individual(str(input_path % gen % (i+counter)) + "a%02d.nec", placements));
+                counter++;
+            }
+        }
+        m_pop.swap(new_pop);
+    }
+    catch (...)
+    {
+        throw;
+    }
+}
+
+void es::survivor_selection()
+{
+    try
+    {
+        m_pop.erase(m_pop.begin() + m_mu, m_pop.end());
+        if (m_pop.size() != m_mu)
+            throw eap::InvalidStateException("population size does not equal to mu\n");
+    }
+    catch (...)
+    {
+        throw;
+    }
+}
+
+void es::evaluate_gen(unsigned int)
+{
+}
 void es::run_simulation(unsigned int id)
 {
 }

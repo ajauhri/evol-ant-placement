@@ -72,12 +72,13 @@ void sa::run()
             {
                 m_best_fitness = p_child->m_fitness;
                 swap(m_p_parent, p_child);
+                std::cout<<"***iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
+
             }
             else if (p_child->m_fitness > m_p_parent->m_fitness)
             {
                 float delta_fitness = (p_child->m_fitness - m_p_parent->m_fitness);
-                float prob = exp((-1.0 * delta_fitness) / temperature);
-                if (prob > eap::rand01())
+                if (eap::rand01() < exp((-1.0 * delta_fitness) / temperature))
                     swap(m_p_parent, p_child);
             }
 

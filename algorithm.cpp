@@ -518,8 +518,6 @@ individual_ptr algorithm::create_individual(std::string path, std::vector<positi
             count += m_ant_configs[k]->m_wires.size();
         }
         write_coupling(outfile, start_ids);
-        
-
         return p_ind;
     }
     catch (...)
@@ -573,9 +571,12 @@ void algorithm::simple_mutation(individual_ptr &p_ind)
 {
     try
     {
-        int bit = eap::rand(0, m_ant_configs.size() - 1);
-        int new_bit = eap::rand(0, m_ant_configs[bit]->m_positions.size()-1);
-        p_ind->m_positions[bit] = m_ant_configs[bit]->m_positions[new_bit];
+        if (p_ind->m_positions.size() != m_ant_configs.size()) 
+            throw eap::InvalidStateException("individual's antenna placements don't match with number of antennas provided during mutation\n");
+
+        int bit = eap::rand(0, p_ind->m_positions.size() - 1); // randomly select an antenna's position
+        int new_bit = eap::rand(0, m_ant_configs[bit]->m_positions.size()-1); // find a new location
+        p_ind->m_positions[bit] = m_ant_configs[bit]->m_positions[new_bit]; 
     }
     catch (...)
     {

@@ -38,9 +38,10 @@ params = {
     iterations=20,
     mutation=0.1,
     cooling_factor=0.9984,
-    convergence_factor=1,
+    convergence_factor=0.1,
     fitness_condition=1,
     exp_weight=2,
+    algorithm="SA",
     auto_seed=1,
     seed=30
 }

@@ -63,7 +63,7 @@ void ga::run()
                 int pos = eap::rand(0, i_ant->m_positions.size()-1);
                 placements.push_back(i_ant->m_positions[pos]);
             }
-            m_pop.push_back(create_individual(str(nec_input % 0 % i_id)+"a%02d.nec", placements));
+            m_pop.push_back(create_individual(str(nec_input % 0 % i_id) + "a%02d.nec", placements));
         }
         std::cout<<"***generation 0 created\n";
         evaluate_gen(0);
