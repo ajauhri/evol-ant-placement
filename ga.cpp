@@ -106,11 +106,11 @@ void ga::create_generation(unsigned int gen)
     }
 }
 
-void ga::evaluate_gen(unsigned int id)
+void ga::evaluate_gen(unsigned int gen_id) 
 {
     try
     {
-        run_simulation(id);
+        run_simulation(gen_id);
         boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
         for (unsigned int i_pop=0; i_pop<m_pop.size(); ++i_pop)
         {
@@ -118,13 +118,13 @@ void ga::evaluate_gen(unsigned int id)
             {
                 evaluation_ptr p_eval(new evaluation);
                 m_pop[i_pop]->m_evals.push_back(p_eval);
-                unsigned int read = read_radiation(str(nec_output % id % i_pop % i_ant), p_eval);
+                unsigned int read = read_radiation(str(nec_output % gen_id % i_pop % i_ant), p_eval);
                 if (read != (num_polar() * m_step_freq))
-                    throw eap::InvalidStateException("Problem with output in " + str(nec_output % id % i_pop % i_ant));
+                    throw eap::InvalidStateException("Problem with output in " + str(nec_output % gen_id % i_pop % i_ant));
                 m_pop[i_pop]->m_one_ant_on_fitness.push_back(compare(m_free_inds[i_ant]->m_evals[0], m_pop[i_pop]->m_evals[i_ant]));
                 m_pop[i_pop]->m_gain_fitness += m_pop[i_pop]->m_one_ant_on_fitness[i_ant];
             }
-            m_pop[i_pop]->m_coupling_fitness = read_coupling(str(nec_output % id % i_pop % m_ant_configs.size()), m_ant_configs.size());
+            m_pop[i_pop]->m_coupling_fitness = read_coupling(str(nec_output % gen_id % i_pop % m_ant_configs.size()), m_ant_configs.size());
             m_pop[i_pop]->m_fitness = cal_fitness(m_pop[i_pop]);
         }
     }
@@ -184,14 +184,14 @@ void ga::select()
     }
 }
 
-void ga::run_simulation(unsigned int id)
+void ga::run_simulation(unsigned int gen_id)
 {
     try
     {
         boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 ./nec2++.exe -i {}");
-        std::cout<<"***running simulation for generation "<<id<<"\n";
-        system(str(formatter % id).c_str());
-        std::cout<<"***completed simulation for generation "<<id<<"\n";
+        std::cout<<"***running simulation for generation "<<gen_id<<"\n";
+        system(str(formatter % gen_id).c_str());
+        std::cout<<"***completed simulation for generation "<<gen_id<<"\n";
     }
     catch (...)
     {

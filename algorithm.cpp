@@ -196,8 +196,7 @@ void algorithm::write_freespace()
         {
             std::string buffer = str(formatter % ant_id++);
             outfile.open(buffer);
-            write_platform(outfile);
-            write_ant(outfile, ant, ant->m_positions[0], m_platform->m_nec_wires.size() + 1); //put at the first position, doesn't matter for free space
+            write_ant(outfile, ant, ant->m_positions[0], 1); //put at the first position, doesn't matter for free space
 
             //need to cout here and check if theser are deallocated at the end of each generation
             int excitation_id = m_platform->m_nec_wires.size() + 1;
