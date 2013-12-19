@@ -66,10 +66,11 @@ void algorithm::setup_run_context()
     try 
     {
         boost::filesystem::remove_all(eap::run_directory);
-        boost::filesystem::create_directory(eap::run_directory);
-
         boost::filesystem::remove_all(eap::freespace_directory);
+        boost::filesystem::create_directory(eap::run_directory);
         boost::filesystem::create_directory(eap::freespace_directory);
+
+
     }
     catch (...)
     {
@@ -198,9 +199,7 @@ void algorithm::write_freespace()
             outfile.open(buffer);
             write_ant(outfile, ant, ant->m_positions[0], 1); //put at the first position, doesn't matter for free space
 
-            //need to cout here and check if theser are deallocated at the end of each generation
-            int excitation_id = m_platform->m_nec_wires.size() + 1;
-            write_excitation(outfile, excitation_id);
+            write_excitation(outfile, 1);
 
             outfile.close();
         }
