@@ -34,8 +34,8 @@ class algorithm
         unsigned int m_step_freq = 1;
         float m_incr_freq = 10;
 
-        const float gain_wt = 1;
-        const float coupling_wt = 0.0;
+        const float gain_wt = 0.5;
+        const float coupling_wt = 0.5;
 
         unsigned int num_polar(void);
         void write_platform(std::ofstream&);
