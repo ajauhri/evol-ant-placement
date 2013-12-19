@@ -1,6 +1,6 @@
 runs/
 free/
-obj/
+obj/*
 best/
 *~
 *.swp
