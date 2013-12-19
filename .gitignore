@@ -1,7 +1,5 @@
 runs/
 free/
-obj/*
-best/
 *~
 *.swp
 evol_ant
