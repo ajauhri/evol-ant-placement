@@ -593,6 +593,9 @@ void algorithm::save_best_nec(const std::string &algo_id, individual_ptr &p_ind)
         outfile << std::string("CM " + m_platform->m_nec_file + "\n");
         for (ant_config_ptr i_ant : m_ant_configs)
             outfile << std::string("CM " + i_ant->m_nec_file + "\n");
+
+        outfile << std::string("CM gain fitness=" + std::to_string(p_ind->m_gain_fitness) + "\n");
+        outfile << std::string("CM coupling fitness=" + std::to_string(p_ind->m_coupling_fitness) + "\n");
         outfile << std::string("CM fitness=" + std::to_string(p_ind->m_fitness) + "\n");
         write_platform(outfile);
         int count = m_platform->m_nec_wires.size();
