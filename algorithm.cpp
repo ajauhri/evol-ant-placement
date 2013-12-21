@@ -632,6 +632,7 @@ void algorithm::save_population(const std::string &dir_path, std::vector<individ
     try 
     {
         std::string path(dir_path + "pop.csv");
+        outfile.open(path);
         for (individual_ptr p_ind : pop)
         {
             outfile << p_ind->m_fitness << "," << p_ind->m_gain_fitness << "," << p_ind->m_coupling_fitness << ",";
