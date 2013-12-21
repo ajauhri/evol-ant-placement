@@ -596,12 +596,12 @@ void algorithm::simple_mutation(individual_ptr &p_ind)
 
 }
 
-void algorithm::save_best_nec(const std::string &algo_id, individual_ptr &p_ind)
+void algorithm::save_best_nec(const std::string &dir_path, individual_ptr &p_ind)
 {
     std::ofstream outfile;
     try
     {
-        std::string path(eap::best_directory + algo_id + std::to_string(eap::rand()) + ".nec");
+        std::string path(dir_path + "best.nec");
         outfile.open(path);
         outfile << std::string("CM " + m_platform->m_nec_file + "\n");
         for (ant_config_ptr i_ant : m_ant_configs)
@@ -626,11 +626,12 @@ void algorithm::save_best_nec(const std::string &algo_id, individual_ptr &p_ind)
     }
 }
 
-void algorithm::save_population(std::vector<individual_ptr> &pop)
+void algorithm::save_population(const std::string &dir_path, std::vector<individual_ptr> &pop)
 {
     std::ofstream outfile;
     try 
     {
+        std::string path(dir_path + "pop.csv");
         for (individual_ptr p_ind : pop)
         {
             outfile << p_ind->m_fitness << "," << p_ind->m_gain_fitness << "," << p_ind->m_coupling_fitness << ",";

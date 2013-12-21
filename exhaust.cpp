@@ -27,9 +27,22 @@ void exhaust::run()
         std::cout<<"***creating individuals\n";
         recur_placements(placements, 0);
         evaluate();
+        std::sort(m_pop.begin(), m_pop.end(), eap::gain_fitness_sort);
+        m_max_gain_fitness = m_pop.back()->m_gain_fitness;
+        std::sort(m_pop.begin(), m_pop.end(), eap::coupling_fitness_sort);
+        m_max_coup_fitness = m_pop.back()->m_gain_fitness;
+
+        for (individual_ptr i_ind : m_pop)
+        {
+            i_ind->m_coupling_fitness /= m_max_coup_fitness;
+            i_ind->m_gain_fitness /= m_max_gain_fitness;
+            i_ind->m_fitness = cal_fitness(i_ind);
+        }
+
         std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
         std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
-        save_best_nec("EX", m_pop[0]);
+        save_population(eap::run_directory, m_pop);
+        save_best_nec(eap::run_directory, m_pop[0]);
     }
     catch (...)
     {
