@@ -18,8 +18,14 @@ class algorithm
     protected:
         /* common data members for all algorithms */
         bool m_auto_seed;
+        
+        // flag to determine whether to clean and remove nec out files
+        // nec files will just be overwritten and the wall clock time isn't bad even for exhaustive!
+        bool m_run_simulator;
         float m_exp_weight;
         float m_mutation;
+        float m_max_gain_fitness;
+        float m_max_coup_fitness;
         std::string m_lua_file;
         std::vector<individual_ptr> m_free_inds;
 
@@ -48,6 +54,7 @@ class algorithm
         void simple_mutation(individual_ptr&);
         bool overlap(std::vector<position_ptr>&, position_ptr&);
         void save_best_nec(const std::string&, individual_ptr&);
+        void save_population(std::vector<individual_ptr>&);
         unsigned int read_radiation(const std::string, const evaluation_ptr &);
         float read_coupling(const std::string, unsigned int);
         float cal_fitness(individual_ptr&);

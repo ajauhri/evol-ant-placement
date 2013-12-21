@@ -57,6 +57,8 @@ namespace eap
 
 	int get_algorithm(void);
     int fitness_sort(const individual_ptr&, const individual_ptr&);
+    int gain_fitness_sort(const individual_ptr&, const individual_ptr&);
+    int coupling_fitness_sort(const individual_ptr&, const individual_ptr&);
 
 	extern std::unique_ptr<algorithm> algo;
 

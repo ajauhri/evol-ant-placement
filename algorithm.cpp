@@ -21,6 +21,9 @@ namespace
     const std::string c_exp_weight = "exp_weight";
     const std::string c_auto_seed  = "auto_seed";
     const std::string c_seed = "seed";
+    const std::string c_run_simulator = "run_simulator";
+    const std::string c_max_gain_fitness = "max_gain_fitness";
+    const std::string c_max_coup_fitness = "max_coup_fitness";
 
     const std::string WIRE_NEC = "GW %3d%5d%10f%10f%10f%10f%10f%10f%10f\n";
 }
@@ -32,6 +35,10 @@ namespace
 algorithm::algorithm(std::string lua_file)
 {
     m_lua_file = lua_file;
+    m_exp_weight = 0.0f;
+    m_mutation = 0.0f;
+    m_max_gain_fitness = 0.0f;//std::numeric_limits<float>::min();
+    m_max_coup_fitness = 0.0f;//std::numeric_limits<float>::min();
 }
 
 // extern declard in eap_resources.hpp
@@ -43,6 +50,9 @@ void algorithm::setup_algo_params()
     {
         m_mutation = eap::get_fvalue(c_mutation);
         m_exp_weight = eap::get_fvalue(c_exp_weight);
+        m_run_simulator = eap::get_fvalue(c_run_simulator);
+        m_max_gain_fitness = eap::get_fvalue(c_max_gain_fitness);
+        m_max_coup_fitness = eap::get_fvalue(c_max_coup_fitness);
         m_auto_seed = eap::get_fvalue(c_auto_seed);
         if (m_auto_seed != 0.0f) 
             eap::gen.seed(time(NULL) + getpid()); //getpid() - Binaries executed one after the other have PRNGs initialized differently
@@ -65,11 +75,14 @@ void algorithm::setup_run_context()
 {
     try 
     {
-        boost::filesystem::remove_all(eap::run_directory);
         boost::filesystem::remove_all(eap::freespace_directory);
-        boost::filesystem::create_directory(eap::run_directory);
         boost::filesystem::create_directory(eap::freespace_directory);
 
+        if (m_run_simulator)
+        {
+            boost::filesystem::remove_all(eap::run_directory);
+            boost::filesystem::create_directory(eap::run_directory);
+        }
 
     }
     catch (...)
@@ -426,10 +439,10 @@ float algorithm::read_coupling(const std::string results_file, unsigned int size
             {
                 sscanf(line.c_str(), "%*d %*d %*d %*d %*d %*d %f", &coupling);
 
-                if (coupling >= 100)
-                    resultant_coupling += 100*2;
-                else if (!(coupling <= -100))
-                    resultant_coupling += 100 + coupling;
+                if (coupling < 0)
+                    resultant_coupling += abs(coupling);
+                else
+                    resultant_coupling += 2 * coupling;
                 read++;
             }
             count_couplings++;
@@ -603,6 +616,27 @@ void algorithm::save_best_nec(const std::string &algo_id, individual_ptr &p_ind)
         {
             write_ant(outfile, m_ant_configs[i_ant], p_ind->m_positions[i_ant], count+1);
             count += m_ant_configs[i_ant]->m_wires.size();
+        }
+        outfile.close();
+    }
+    catch (...)
+    {
+        outfile.close();
+        throw;
+    }
+}
+
+void algorithm::save_population(std::vector<individual_ptr> &pop)
+{
+    std::ofstream outfile;
+    try 
+    {
+        for (individual_ptr p_ind : pop)
+        {
+            outfile << p_ind->m_fitness << "," << p_ind->m_gain_fitness << "," << p_ind->m_coupling_fitness << ",";
+            for (position_ptr p_pos : p_ind->m_positions)
+                outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z << ",";
+            outfile << "\n";
         }
         outfile.close();
     }

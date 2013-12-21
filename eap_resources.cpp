@@ -68,4 +68,13 @@ namespace eap
         return p_ind1->m_fitness < p_ind2->m_fitness;
     }
 
+    int gain_fitness_sort(const individual_ptr &p_ind1, const individual_ptr &p_ind2)
+    {
+        return p_ind1->m_gain_fitness < p_ind2->m_gain_fitness;
+    }
+
+    int coupling_fitness_sort(const individual_ptr &p_ind1, const individual_ptr &p_ind2)
+    {
+        return p_ind1->m_coupling_fitness < p_ind2->m_coupling_fitness;
+    }
 }

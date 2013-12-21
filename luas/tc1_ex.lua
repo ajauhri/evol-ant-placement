@@ -169,5 +169,6 @@ add_point( -0.203200,   0.000000,   0.000000)
 add_point( -0.101600,   0.000000,   0.000000)
 params = {
     exp_weight = 2,
-    algorithm = "GA",
+    algorithm = "EX",
+    run_simulator = 0,
 }
