@@ -229,7 +229,7 @@ void algorithm::write_platform(std::ofstream& outfile)
 {
     try 
     {
-        if (!outfile) throw eap::InvalidStateException("Write file not defiend for putting platform wires");
+        if (!outfile) throw eap::InvalidStateException("Write file not defined for putting platform wires");
         for (unsigned int i_wire = 0; i_wire<m_platform->m_nec_wires.size(); ++i_wire)
             outfile << m_platform->m_nec_wires[i_wire];
     }
