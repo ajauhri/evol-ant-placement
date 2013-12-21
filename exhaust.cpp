@@ -29,12 +29,15 @@ void exhaust::run()
         evaluate();
         std::sort(m_pop.begin(), m_pop.end(), eap::gain_fitness_sort);
         m_max_gain_fitness = m_pop.back()->m_gain_fitness;
+        
         std::sort(m_pop.begin(), m_pop.end(), eap::coupling_fitness_sort);
-        m_max_coup_fitness = m_pop.back()->m_gain_fitness;
+        m_min_coup_fitness = m_pop.front()->m_coupling_fitness;
+        m_max_coup_fitness = m_pop.back()->m_coupling_fitness + abs(m_min_coup_fitness);
 
         for (individual_ptr i_ind : m_pop)
         {
-            i_ind->m_coupling_fitness /= m_max_coup_fitness;
+            i_ind->m_coupling_fitness += abs(m_min_coup_fitness);
+	    i_ind->m_coupling_fitness /= m_max_coup_fitness;
             i_ind->m_gain_fitness /= m_max_gain_fitness;
             i_ind->m_fitness = cal_fitness(i_ind);
         }
@@ -72,6 +75,9 @@ void exhaust::evaluate()
                 m_pop[i]->m_gain_fitness += m_pop[i]->m_one_ant_on_fitness[j];
             }
             m_pop[i]->m_coupling_fitness = read_coupling(str(nec_output % i % m_ant_configs.size()), m_ant_configs.size());
+            if (m_pop[i]->m_coupling_fitness == 0.0f)
+               throw eap::InvalidStateException("coupling bad\n");		
+				
             m_pop[i]->m_fitness = cal_fitness(m_pop[i]);
         }
     }

@@ -39,6 +39,7 @@ algorithm::algorithm(std::string lua_file)
     m_mutation = 0.0f;
     m_max_gain_fitness = 0.0f;//std::numeric_limits<float>::min();
     m_max_coup_fitness = 0.0f;//std::numeric_limits<float>::min();
+    m_min_coup_fitness = 0.0f;
 }
 
 // extern declard in eap_resources.hpp
@@ -426,6 +427,7 @@ float algorithm::read_coupling(const std::string results_file, unsigned int size
         std::string line;
         unsigned int count_couplings = 0;
         float coupling = 0.0f, resultant_coupling = 0.0f;
+        float tag1, seg1, no1, tag2, seg2, no2;
 
         if (!infile) throw eap::InvalidStateException("coupling file " + results_file + " not found");
         while (count_couplings < size)
@@ -437,12 +439,11 @@ float algorithm::read_coupling(const std::string results_file, unsigned int size
             unsigned int read = 0;
             while (read < size - 1)
             {
-                sscanf(line.c_str(), "%*d %*d %*d %*d %*d %*d %f", &coupling);
-
-                if (coupling < 0)
-                    resultant_coupling += abs(coupling);
-                else
-                    resultant_coupling += 2 * coupling;
+                std::getline(infile, line);
+                std::istringstream iss(line);
+                iss >> tag1 >> seg1 >> no1 >> tag2 >> seg2 >> no2 >> coupling;
+                //sscanf(line.c_str(), "%*d %*d %*d %*d %*d %*d %f", &coupling);
+                resultant_coupling += coupling;
                 read++;
             }
             count_couplings++;
@@ -632,6 +633,7 @@ void algorithm::save_population(const std::string &dir_path, std::vector<individ
     try 
     {
         std::string path(dir_path + "pop.csv");
+	outfile.open(path);
         for (individual_ptr p_ind : pop)
         {
             outfile << p_ind->m_fitness << "," << p_ind->m_gain_fitness << "," << p_ind->m_coupling_fitness << ",";
