@@ -71,13 +71,21 @@ void ga::run()
         for (unsigned int i=1; i<m_generations; ++i)
         {
             std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
+            boost::format gen_dir(eap::run_directory + "gen%04d");
+            save_population(str(gen_dir % (i-1)), m_pop);
+            save_best_nec(str(gen_dir % (i-1)), m_pop[0]);
+
             std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
             select();
             create_generation(i);
             evaluate_gen(i);
         }
+
         std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
         std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
+        boost::format gen_dir(eap::run_directory + "gen%04d");
+        save_population(str(gen_dir % (m_generations-1)), m_pop);
+        save_best_nec(str(gen_dir % (m_generations-1)), m_pop[0]);
     }
     catch (...)
     {
@@ -124,7 +132,10 @@ void ga::evaluate_gen(unsigned int gen_id)
                 m_pop[i_pop]->m_one_ant_on_fitness.push_back(compare(m_free_inds[i_ant]->m_evals[0], m_pop[i_pop]->m_evals[i_ant]));
                 m_pop[i_pop]->m_gain_fitness += m_pop[i_pop]->m_one_ant_on_fitness[i_ant];
             }
+            m_pop[i_pop]->m_gain_fitness /= m_max_gain;
             m_pop[i_pop]->m_coupling_fitness = read_coupling(str(nec_output % gen_id % i_pop % m_ant_configs.size()), m_ant_configs.size());
+            m_pop[i_pop]->m_coupling_fitness += std::abs(m_min_coup);
+            m_pop[i_pop]->m_coupling_fitness /= m_max_coup;
             m_pop[i_pop]->m_fitness = cal_fitness(m_pop[i_pop]);
         }
     }

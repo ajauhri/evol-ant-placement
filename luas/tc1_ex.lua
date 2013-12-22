@@ -176,5 +176,5 @@ params = {
     max_coup_fitness = 1,
     min_coup_fitness = 1,
     run_simulator = 0,
-    auto_seed = 1
+    auto_seed = 1, 
 }

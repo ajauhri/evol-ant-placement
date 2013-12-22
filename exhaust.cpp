@@ -30,19 +30,19 @@ void exhaust::run()
         evaluate();
 
         std::sort(m_pop.begin(), m_pop.end(), eap::gain_fitness_sort);
-        m_max_gain_fitness = m_pop.back()->m_gain_fitness;
+        m_max_gain = m_pop.back()->m_gain_fitness;
         
         std::sort(m_pop.begin(), m_pop.end(), eap::coupling_fitness_sort);
-        m_min_coup_fitness = m_pop.front()->m_coupling_fitness;
-        m_max_coup_fitness = m_pop.back()->m_coupling_fitness + std::abs(m_min_coup_fitness);
+        m_min_coup = m_pop.front()->m_coupling_fitness;
+        m_max_coup = m_pop.back()->m_coupling_fitness + std::abs(m_min_coup);
 
         for (individual_ptr i_ind : m_pop)
         {
-            i_ind->m_coupling_fitness += std::abs(m_min_coup_fitness);
+            i_ind->m_coupling_fitness += std::abs(m_min_coup);
             if (i_ind->m_coupling_fitness < 0)
                 throw eap::InvalidStateException("Invalid coupling calculation\n");
-	        i_ind->m_coupling_fitness /= m_max_coup_fitness;
-            i_ind->m_gain_fitness /= m_max_gain_fitness;
+	        i_ind->m_coupling_fitness /= m_max_coup;
+            i_ind->m_gain_fitness /= m_max_gain;
             i_ind->m_fitness = cal_fitness(i_ind);
         }
 

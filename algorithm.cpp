@@ -22,9 +22,9 @@ namespace
     const std::string c_auto_seed  = "auto_seed";
     const std::string c_seed = "seed";
     const std::string c_run_simulator = "run_simulator";
-    const std::string c_max_gain_fitness = "max_gain_fitness";
-    const std::string c_max_coup_fitness = "max_coup_fitness";
-    const std::string c_min_coup_fitness = "min_coup_fitness";
+    const std::string c_max_gain = "max_gain";
+    const std::string c_max_coup = "max_coup";
+    const std::string c_min_coup = "min_coup";
 
     const std::string WIRE_NEC = "GW %3d%5d%10f%10f%10f%10f%10f%10f%10f\n";
 }
@@ -38,9 +38,9 @@ algorithm::algorithm(std::string lua_file)
     m_lua_file = lua_file;
     m_exp_weight = 0.0f;
     m_mutation = 0.0f;
-    m_max_gain_fitness = 0.0f;//std::numeric_limits<float>::min();
-    m_max_coup_fitness = 0.0f;//std::numeric_limits<float>::min();
-    m_min_coup_fitness = 0.0f;
+    m_max_gain = 0.0f;//std::numeric_limits<float>::min();
+    m_max_coup = 0.0f;//std::numeric_limits<float>::min();
+    m_min_coup = 0.0f;
 }
 
 // extern declard in eap_resources.hpp
@@ -53,9 +53,9 @@ void algorithm::setup_algo_params()
         m_mutation = eap::get_fvalue(c_mutation);
         m_exp_weight = eap::get_fvalue(c_exp_weight);
         m_run_simulator = eap::get_fvalue(c_run_simulator);
-        m_max_gain_fitness = eap::get_fvalue(c_max_gain_fitness);
-        m_max_coup_fitness = eap::get_fvalue(c_max_coup_fitness);
-        m_min_coup_fitness = eap::get_fvalue(c_min_coup_fitness);
+        m_max_gain = eap::get_fvalue(c_max_gain);
+        m_max_coup = eap::get_fvalue(c_max_coup);
+        m_min_coup = eap::get_fvalue(c_min_coup);
         m_auto_seed = eap::get_fvalue(c_auto_seed);
         if (m_auto_seed != 0.0f) 
             eap::gen.seed(time(NULL) + getpid()); //getpid() - Binaries executed one after the other have PRNGs initialized differently
@@ -659,9 +659,9 @@ void algorithm::save_norm(const std::string &dir_path)
     {
         std::string path(dir_path + "norm");
 	    outfile.open(path);
-        outfile << "max_gain_fitness=" << m_max_gain_fitness << "\n";
-        outfile << "max_coup_fitness=" << m_max_coup_fitness << "\n";
-        outfile << "min_coup_fitness=" << m_min_coup_fitness << "\n";
+        outfile << "max_gain_fitness=" << m_max_gain << "\n";
+        outfile << "max_coup_fitness=" << m_max_coup << "\n";
+        outfile << "min_coup_fitness=" << m_min_coup << "\n";
         outfile.close();
     }
     catch (...)

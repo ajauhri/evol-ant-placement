@@ -2,6 +2,7 @@
 #include<iostream>
 #include<stdio.h>
 #include<string>
+#include<limits>
 #include<algorithm.hpp>
 #include<ant_config.hpp>
 #include<position.hpp>
@@ -79,8 +80,10 @@ namespace eap
 		lua_setglobal(L, "add_point");
 	}
 
+    //refer http://stackoverflow.com/questions/1438842/iterating-through-a-lua-table-from-c 
 	float get_fvalue(const std::string key)
 	{
+        float value = std::numeric_limits<float>::max();
 		if (key.empty() || L == NULL)
 		{
 			throw InvalidStateException("Invalid conditions for function call");
@@ -93,16 +96,22 @@ namespace eap
 			{
 				if (lua_tostring(L, -2) == key)
 				{
-					return lua_isnumber(L, -1) ? lua_tonumber(L, -1) : -1;
+					value = lua_isnumber(L, -1) ? lua_tonumber(L, -1) : -1;
 				}
 				lua_pop(L, 1);
 			}
-			throw ParseException("No value found for key - " + key);
+            lua_pop(L, 1);
+            if (value == std::numeric_limits<float>::max())
+			    throw ParseException("No value found for key - " + key);
+            else
+                return value;
 		}
+
 	}
 
 	std::string get_svalue(const std::string key)
 	{
+        std::string value;
 		if (key.empty() || L == NULL)
 		{
 			throw InvalidStateException("Invalid conditions for function call");
@@ -115,19 +124,22 @@ namespace eap
 			{
 				if (lua_tostring(L, -2) == key)
 				{
-					return lua_isstring(L, -1) ? lua_tostring(L, -1) : ""; // `main.cpp` will throw error to state not a valid algorithm
+					value = lua_isstring(L, -1) ? lua_tostring(L, -1) : ""; // `main.cpp` will throw error to state not a valid algorithm
 				}
 				lua_pop(L, 1);
 			}
-			throw ParseException("No value found for key - " + key);
+            lua_pop(L, 1);
+            if (value.empty())
+			    throw ParseException("No value found for key - " + key);
+            else 
+                return value;
 		}
 	}
 
 
 	void load_lua_lib(const char *name)
 	{
-		int ret = luaL_dofile(L, name);
-		if (ret == 1)
+		if (luaL_dofile(L, name))
 			throw InvalidStateException("Problem with loading lua file");
 
 	}

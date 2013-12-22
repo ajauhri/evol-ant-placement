@@ -24,9 +24,9 @@ class algorithm
         bool m_run_simulator;
         float m_exp_weight;
         float m_mutation;
-        float m_max_gain_fitness;
-        float m_max_coup_fitness;
-        float m_min_coup_fitness;
+        float m_max_gain;
+        float m_max_coup;
+        float m_min_coup;
         std::string m_lua_file;
         std::vector<individual_ptr> m_free_inds;
 
