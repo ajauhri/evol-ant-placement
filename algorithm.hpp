@@ -26,6 +26,7 @@ class algorithm
         float m_mutation;
         float m_max_gain_fitness;
         float m_max_coup_fitness;
+        float m_min_coup_fitness;
         std::string m_lua_file;
         std::vector<individual_ptr> m_free_inds;
 
@@ -40,8 +41,8 @@ class algorithm
         unsigned int m_step_freq = 1;
         float m_incr_freq = 10;
 
-        const float gain_wt = 1;
-        const float coupling_wt = 0;
+        const float gain_wt = 0.5;
+        const float coupling_wt = 0.5;
 
         unsigned int num_polar(void);
         void write_platform(std::ofstream&);
