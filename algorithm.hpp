@@ -56,6 +56,7 @@ class algorithm
         bool overlap(std::vector<position_ptr>&, position_ptr&);
         void save_best_nec(const std::string&, individual_ptr&);
         void save_population(const std::string&, std::vector<individual_ptr>&);
+        void save_norm(const std::string&);
         unsigned int read_radiation(const std::string, const evaluation_ptr &);
         float read_coupling(const std::string, unsigned int);
         float cal_fitness(individual_ptr&);

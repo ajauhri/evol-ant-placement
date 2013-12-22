@@ -24,6 +24,7 @@ namespace
     const std::string c_run_simulator = "run_simulator";
     const std::string c_max_gain_fitness = "max_gain_fitness";
     const std::string c_max_coup_fitness = "max_coup_fitness";
+    const std::string c_min_coup_fitness = "min_coup_fitness";
 
     const std::string WIRE_NEC = "GW %3d%5d%10f%10f%10f%10f%10f%10f%10f\n";
 }
@@ -54,6 +55,7 @@ void algorithm::setup_algo_params()
         m_run_simulator = eap::get_fvalue(c_run_simulator);
         m_max_gain_fitness = eap::get_fvalue(c_max_gain_fitness);
         m_max_coup_fitness = eap::get_fvalue(c_max_coup_fitness);
+        m_min_coup_fitness = eap::get_fvalue(c_min_coup_fitness);
         m_auto_seed = eap::get_fvalue(c_auto_seed);
         if (m_auto_seed != 0.0f) 
             eap::gen.seed(time(NULL) + getpid()); //getpid() - Binaries executed one after the other have PRNGs initialized differently
@@ -632,7 +634,7 @@ void algorithm::save_population(const std::string &dir_path, std::vector<individ
     try 
     {
         std::string path(dir_path + "pop.csv");
-	outfile.open(path);
+	    outfile.open(path);
         for (individual_ptr p_ind : pop)
         {
             outfile << p_ind->m_fitness << "," << p_ind->m_gain_fitness << "," << p_ind->m_coupling_fitness << ",";
@@ -640,6 +642,26 @@ void algorithm::save_population(const std::string &dir_path, std::vector<individ
                 outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z << ",";
             outfile << "\n";
         }
+        outfile.close();
+    }
+    catch (...)
+    {
+        outfile.close();
+        throw;
+    }
+}
+
+// save normalization values for test cases
+void algorithm::save_norm(const std::string &dir_path)
+{
+    std::ofstream outfile;
+    try 
+    {
+        std::string path(dir_path + "norm");
+	    outfile.open(path);
+        outfile << "max_gain_fitness=" << m_max_gain_fitness << "\n";
+        outfile << "max_coup_fitness=" << m_max_coup_fitness << "\n";
+        outfile << "min_coup_fitness=" << m_min_coup_fitness << "\n";
         outfile.close();
     }
     catch (...)
