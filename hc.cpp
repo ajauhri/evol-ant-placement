@@ -130,6 +130,8 @@ void hc::evaluate(unsigned int id, individual_ptr &p_ind)
         }
         p_ind->m_gain_fitness /= m_max_gain;
         p_ind->m_coupling_fitness = read_coupling(str(nec_output % id % m_ant_configs.size()), m_ant_configs.size());
+        p_ind->m_coupling_fitness += std::abs(m_min_coup);
+        p_ind->m_coupling_fitness /= m_max_coup;
         p_ind->m_fitness = cal_fitness(p_ind);
     }
     catch (...)

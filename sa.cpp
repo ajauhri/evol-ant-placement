@@ -184,8 +184,15 @@ void sa::evaluate(unsigned int id, individual_ptr &p_ind)
             p_ind->m_one_ant_on_fitness.push_back(compare(m_free_inds[i_ant]->m_evals[0], p_ind->m_evals[i_ant]));
             p_ind->m_gain_fitness += p_ind->m_one_ant_on_fitness[i_ant];
         }
+
+        // normalize gain fitness
         p_ind->m_gain_fitness /= m_max_gain;
         p_ind->m_coupling_fitness = read_coupling(str(nec_output % id % m_ant_configs.size()), m_ant_configs.size());
+
+        // normalize coupling fitness
+        p_ind->m_coupling_fitness += std::abs(m_min_coup);
+        p_ind->m_coupling_fitness /= m_max_coup;
+
         p_ind->m_fitness = cal_fitness(p_ind);
     }
     catch (...)

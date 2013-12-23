@@ -451,10 +451,6 @@ float algorithm::read_coupling(const std::string results_file, unsigned int size
             count_couplings++;
         }
         infile.close();
-        
-        // normalize
-        resultant_coupling += std::abs(m_min_coup);
-        resultant_coupling /= m_max_coup;
         return resultant_coupling;
     }
     catch (const eap::InvalidStateException &e)
