@@ -6,8 +6,8 @@
 
 namespace 
 {
-	const std::string c_iterations = "iterations";
-	const std::string c_convergence_factor = "convergence_factor_s";
+    const std::string c_iterations = "iterations";
+    const std::string c_convergence_factor = "convergence_factor_s";
 }
 
 hc::hc(std::string lua_file) : algorithm(lua_file)
@@ -19,27 +19,27 @@ hc::hc(std::string lua_file) : algorithm(lua_file)
 
 
 /**
-* @desc Loads parameters for the hill climber algorithm  
-*/
+ * @desc Loads parameters for the hill climber algorithm  
+ */
 void hc::setup_algo_params()
 {
-	try
-	{
-		algorithm::setup_algo_params();
-		m_iterations = eap::get_fvalue(c_iterations);
-		m_convergence_factor = eap::get_fvalue(c_convergence_factor);
+    try
+    {
+        algorithm::setup_algo_params();
+        m_iterations = eap::get_fvalue(c_iterations);
+        m_convergence_factor = eap::get_fvalue(c_convergence_factor);
         m_converged_iterations = m_iterations * m_convergence_factor;
-		std::cout<<"Completed HC parameter setup"<<std::endl;
-	}
-	catch (const eap::InvalidStateException &e)
-	{
-		std::cerr<<e.what()<<"\n";
-	}
+        std::cout<<"Completed HC parameter setup"<<std::endl;
+    }
+    catch (const eap::InvalidStateException &e)
+    {
+        std::cerr<<e.what()<<"\n";
+    }
 }
 
 /**
-* @desc Implements logic for HC runs
-*/
+ * @desc Implements logic for HC runs
+ */
 void hc::run()
 {
     try

@@ -50,7 +50,7 @@ void ga::run()
     try 
     {
         if (m_elitism > m_population_size)
-            throw eap::InvalidStateException("Elitism cannot be greater than population size");
+            throw eap::InvalidStateException("GA:Elitism cannot be greater than population size");
 
         boost::filesystem::create_directory(std::string(eap::run_directory+"gen0000"));
 
@@ -183,7 +183,7 @@ void ga::select()
             simple_mutation(new_pop[ind_id]);
         }
         
-        if (new_pop.size() != m_population_size) throw eap::InvalidStateException("population size don't match");
+        if (new_pop.size() != m_population_size) throw eap::InvalidStateException("GA:population size don't match");
         std::cout<<"***done with creating next generation\n";
         m_pop.swap(new_pop);
     }
