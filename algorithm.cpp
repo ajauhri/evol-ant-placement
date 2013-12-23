@@ -420,6 +420,7 @@ unsigned int algorithm::read_radiation(const std::string results_file,
     }
 }
 
+// normalization of the fitness happens here as opposed to radiation pattern
 float algorithm::read_coupling(const std::string results_file, unsigned int size)
 {
     std::ifstream infile;
@@ -450,6 +451,10 @@ float algorithm::read_coupling(const std::string results_file, unsigned int size
             count_couplings++;
         }
         infile.close();
+        
+        // normalize
+        resultant_coupling += std::abs(m_min_coup);
+        resultant_coupling /= m_max_coup;
         return resultant_coupling;
     }
     catch (const eap::InvalidStateException &e)

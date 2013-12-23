@@ -6,11 +6,15 @@ class hc :
 	public algorithm
 {
 private:
-	float convergence_factor;
-	int iterations;
+	float m_convergence_factor;
+	unsigned int m_iterations;
+    individual_ptr m_p_parent;
+    float m_best_fitness;
+    float m_converged_iterations;
     
+    std::vector<position_ptr> mutate_pos(std::vector<position_ptr>&);    
+    void evaluate(unsigned int, individual_ptr&);
     void run_simulation(unsigned int);
-    void save_best_nec();
 public:
 	hc(std::string);
 	~hc(void);

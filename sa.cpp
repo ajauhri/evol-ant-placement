@@ -2,7 +2,6 @@
 #include<eap_resources.hpp>
 #include<lua_cmds.hpp>
 #include<iostream>
-#include<limits>
 #include<boost/format.hpp>
 
 
@@ -14,8 +13,13 @@ namespace
     const std::string c_convergence_factor = "convergence_factor";
 }
 
-sa::sa(std::string lua_file) : algorithm(lua_file), m_best_fitness(std::numeric_limits<float>::max())
+sa::sa(std::string lua_file) : algorithm(lua_file)
 {
+    m_init_temp = 0.0f;
+    m_cooling_factor = 0.0f;
+    m_convergence_factor = 0.0f;
+    m_converged_iterations = 0.0f;
+    m_best_fitness = 0.0f;
 }
 
 /**
@@ -30,8 +34,6 @@ void sa::setup_algo_params()
         m_init_temp = 100; // TO BE CALCULATED USING http://cs.stackexchange.com/questions/11126/initial-temperature-in-simulated-annealing-algorithm 
         m_cooling_factor = eap::get_fvalue(c_cooling_factor); 
         m_convergence_factor = eap::get_fvalue(c_convergence_factor);
-
-        // m_converged_iterations is computed 
         m_converged_iterations = m_iterations * m_convergence_factor;
         std::cout<<"Completed SA parameter setup"<<std::endl;
     }
@@ -61,6 +63,7 @@ void sa::run()
         }
         m_p_parent = create_individual(str(nec_input % 0) + "a%02d.nec", placements);
         evaluate(0, m_p_parent);
+        m_best_fitness = m_p_parent->m_fitness;
 
         for (unsigned int i=1; i<m_iterations; ++i)
         {
@@ -138,10 +141,11 @@ void sa::evaluate(unsigned int id, individual_ptr &p_ind)
             p_ind->m_evals.push_back(p_eval);
             unsigned int read = read_radiation(str(nec_output % id % i_ant), p_eval);
             if (read != (num_polar() * m_step_freq))
-                throw eap::InvalidStateException("Problem with output in " + str(nec_output % id % i_ant));
+                throw eap::InvalidStateException("SA:Problem with output in " + str(nec_output % id % i_ant));
             p_ind->m_one_ant_on_fitness.push_back(compare(m_free_inds[i_ant]->m_evals[0], p_ind->m_evals[i_ant]));
             p_ind->m_gain_fitness += p_ind->m_one_ant_on_fitness[i_ant];
         }
+        p_ind->m_gain_fitness /= m_max_gain;
         p_ind->m_coupling_fitness = read_coupling(str(nec_output % id % m_ant_configs.size()), m_ant_configs.size());
         p_ind->m_fitness = cal_fitness(p_ind);
     }
