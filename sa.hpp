@@ -14,9 +14,10 @@ private:
     float m_converged_iterations;
     individual_ptr m_p_parent;
     float m_best_fitness;
+    float m_temp_pop_factor;
     
-    //Computing initial temp data
-    //For description of these variables, refer to algorithm described in http://cs.stackexchange.com/questions/11126/initial-temperature-in-simulated-annealing-algorithm 
+    /* Computing initial temp data
+    For description of these variables, refer to algorithm described in http://cs.stackexchange.com/questions/11126/initial-temperature-in-simulated-annealing-algorithm  */
     class transition
     {
         public:
@@ -28,6 +29,7 @@ private:
     float m_accept_prob;
     float m_e;
     float m_p;
+    /*******************/
 
     std::vector<position_ptr> mutate_pos(std::vector<position_ptr>&);
     std::vector<position_ptr> mutate_pos_once(std::vector<position_ptr>&);

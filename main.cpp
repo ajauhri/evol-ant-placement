@@ -24,17 +24,20 @@ int main(int argc, char* argv[])
     try 
     {
         std::string lua_file;
+        unsigned int runs = 0;
 
         prg_opts::options_description desc("\nUsage");
         desc.add_options()
             ("help,h", "view valid options")
-            ("input,i", prg_opts::value<std::string>(&lua_file), "Input file");
+            ("input,i", prg_opts::value<std::string>(&lua_file), "Input file")
+            ("runs,r", prg_opts::value<unsigned int>(&runs), "#of runs");
+
 
         prg_opts::variables_map vm;
         prg_opts::store(prg_opts::parse_command_line(argc, argv, desc), vm);
         prg_opts::notify(vm);
 
-        if (vm.count("help") || !vm.count("input") )
+        if (vm.count("help") || !vm.count("input") || !vm.count("runs"))
         {
             std::cout << desc << "\n";
             return 0;
@@ -74,30 +77,38 @@ int main(int argc, char* argv[])
             default:
                 std::cout<<"Not a valid algorithm"<<std::endl;	
         }
+        for (unsigned int i=0; i<runs; ++i)
+        {
+            /* load algorithm run parameters */
+            eap::algo->setup_algo_params();
 
-        /* load algorithm run parameters */
-        eap::algo->setup_algo_params();
+            /* load all possible antenna placements */
+            eap::algo->algorithm::setup_ant_placements();
 
-        /* load all possible antenna placements */
-        eap::algo->algorithm::setup_ant_placements();
+            /* load all wires from nec files */
+            eap::algo->algorithm::load_nec_files();
 
-        /* load all wires from nec files */
-        eap::algo->algorithm::load_nec_files();
+            /*clean up previous output files */
+            eap::algo->algorithm::setup_run_context();
 
-        /*clean up previous output files */
-        eap::algo->algorithm::setup_run_context();
+            /* create antenna free space patterns */
+            eap::algo->algorithm::write_freespace();
 
-        /* create antenna free space patterns */
-        eap::algo->algorithm::write_freespace();
+            /* run free space pattern files */
+            eap::algo->algorithm::run_freespace();
 
-        /* run free space pattern files */
-        eap::algo->algorithm::run_freespace();
+            /* read free space pattern results */
+            eap::algo->algorithm::read_freespace();
 
-        /* read free space pattern results */
-        eap::algo->algorithm::read_freespace();
+            /* run the specific algorithm */
+            eap::algo->run();
 
-        /* run the specific algorithm */
-        eap::algo->run();
+            /* save results */
+            boost::format formatter("cd " + eap::run_directory + ";" + "tar cjf ../../" + lua_file.c_str() + "_" + std::to_string(eap::get_algorithm()) + "_" + std::to_string(i) + "tar.bz2 *");
+            system(str(formatter % i).c_str());
+        }
+
+
     }
     catch (const std::exception &e)
     {
