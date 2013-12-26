@@ -52,6 +52,12 @@ void ga::run()
         if (m_elitism > m_population_size)
             throw eap::InvalidStateException("GA:Elitism cannot be greater than population size");
 
+        if (m_pop.size() > 1)
+            m_pop.erase(m_pop.begin(), m_pop.end());
+
+        if (m_pop.size() != 0)
+            throw eap::InvalidStateException("GA: Population size should be zero");
+
         boost::filesystem::create_directory(std::string(eap::run_directory+"gen0000"));
 
         boost::format nec_input(eap::run_directory + "gen%04d/ind%09d");
@@ -71,7 +77,7 @@ void ga::run()
         for (unsigned int i=1; i<m_generations; ++i)
         {
             std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
-            boost::format gen_dir(eap::run_directory + "gen%04d");
+            boost::format gen_dir(eap::run_directory + "gen%04d/");
             save_population(str(gen_dir % (i-1)), m_pop);
             save_best_nec(str(gen_dir % (i-1)), m_pop[0]);
 
@@ -83,7 +89,7 @@ void ga::run()
 
         std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
         std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
-        boost::format gen_dir(eap::run_directory + "gen%04d");
+        boost::format gen_dir(eap::run_directory + "gen%04d/");
         save_population(str(gen_dir % (m_generations-1)), m_pop);
         save_best_nec(str(gen_dir % (m_generations-1)), m_pop[0]);
     }
@@ -185,7 +191,7 @@ void ga::select()
             simple_mutation(new_pop[ind_id]);
         }
         
-        if (new_pop.size() != m_population_size) throw eap::InvalidStateException("GA:population size don't match");
+        if (new_pop.size() != m_population_size) throw eap::InvalidStateException("GA: population size don't match");
         std::cout<<"***done with creating next generation\n";
         m_pop.swap(new_pop);
     }

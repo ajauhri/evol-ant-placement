@@ -84,8 +84,9 @@ void algorithm::setup_run_context()
         if (m_run_simulator)
         {
             boost::filesystem::remove_all(eap::run_directory);
-            boost::filesystem::create_directory(eap::run_directory);
         }
+        //TODO: test whether this deletes
+        boost::filesystem::create_directory(eap::run_directory);
 
     }
     catch (...)
@@ -604,7 +605,7 @@ void algorithm::save_best_nec(const std::string &dir_path, individual_ptr &p_ind
     std::ofstream outfile;
     try
     {
-        std::string path(dir_path + "best.nec");
+        std::string path(dir_path + "/best.nec");
         outfile.open(path);
         outfile << std::string("CM " + m_platform->m_nec_file + "\n");
         for (ant_config_ptr i_ant : m_ant_configs)

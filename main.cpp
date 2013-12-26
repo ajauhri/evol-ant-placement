@@ -77,38 +77,39 @@ int main(int argc, char* argv[])
             default:
                 std::cout<<"Not a valid algorithm"<<std::endl;	
         }
+
+        /* load algorithm run parameters */
+        eap::algo->setup_algo_params();
+
+        /* load all possible antenna placements */
+        eap::algo->algorithm::setup_ant_placements();
+
+        /* load all wires from nec files */
+        eap::algo->algorithm::load_nec_files();
+
+        /*clean up previous output files */
+        eap::algo->algorithm::setup_run_context();
+
+        /* create antenna free space patterns */
+        eap::algo->algorithm::write_freespace();
+
+        /* run free space pattern files */
+        eap::algo->algorithm::run_freespace();
+
+        /* read free space pattern results */
+        eap::algo->algorithm::read_freespace();
+
         for (unsigned int i=0; i<runs; ++i)
         {
-            /* load algorithm run parameters */
-            eap::algo->setup_algo_params();
-
-            /* load all possible antenna placements */
-            eap::algo->algorithm::setup_ant_placements();
-
-            /* load all wires from nec files */
-            eap::algo->algorithm::load_nec_files();
-
-            /*clean up previous output files */
-            eap::algo->algorithm::setup_run_context();
-
-            /* create antenna free space patterns */
-            eap::algo->algorithm::write_freespace();
-
-            /* run free space pattern files */
-            eap::algo->algorithm::run_freespace();
-
-            /* read free space pattern results */
-            eap::algo->algorithm::read_freespace();
-
             /* run the specific algorithm */
             eap::algo->run();
-
+            std::string name = boost::filesystem::basename (lua_file);
+            
             /* save results */
-            boost::format formatter("cd " + eap::run_directory + ";" + "tar cjf ../../" + lua_file.c_str() + "_" + std::to_string(eap::get_algorithm()) + "_" + std::to_string(i) + "tar.bz2 *");
+            boost::format formatter("cd " + eap::run_directory + "; tar -cjf ../../" + name + "_a" + std::to_string(eap::get_algorithm()) + "_i%02d." + "tar.bz2 *");
+            std::cout<<str(formatter % i)<<"\n";
             system(str(formatter % i).c_str());
         }
-
-
     }
     catch (const std::exception &e)
     {
