@@ -678,7 +678,7 @@ bool algorithm::overlap(std::vector<position_ptr> &existing, position_ptr &p_new
 {
     for (position_ptr p_pos : existing)
     {
-        if ((p_pos->m_x != p_new_pos->m_x) && (p_pos->m_y != p_new_pos->m_y) && (p_pos->m_z != p_new_pos->m_z)) 
+        if ((p_pos->m_x == p_new_pos->m_x) && (p_pos->m_y == p_new_pos->m_y) && (p_pos->m_z == p_new_pos->m_z)) 
             return true;
     }
     return false;

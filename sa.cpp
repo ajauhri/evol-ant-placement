@@ -4,12 +4,12 @@
 #include<iostream>
 #include<boost/format.hpp>
 #include<boost/filesystem.hpp>
+#include<math.h>
 
 
 namespace
 {
     const std::string c_iterations = "iterations";
-    const std::string c_init_temp = "init_temp";
     const std::string c_cooling_factor = "cooling_factor";
     const std::string c_convergence_factor = "convergence_factor";
     const std::string c_temp_pop_factor = "temp_pop_factor";
@@ -23,6 +23,12 @@ sa::sa(std::string lua_file) : algorithm(lua_file)
     m_converged_iterations = 0.0f;
     m_best_fitness = 0.0f;
     m_temp_pop_factor = 0.0f;
+
+    // for computing initial temperature
+    m_accept_prob = 0.9;
+    m_e = pow(10, -3);
+    m_p = 100;
+
 }
 
 /**
@@ -34,7 +40,7 @@ void sa::setup_algo_params()
     {
         algorithm::setup_algo_params();
         m_iterations = eap::get_fvalue(c_iterations); 
-        m_init_temp = 100; // TO BE CALCULATED USING http://cs.stackexchange.com/questions/11126/initial-temperature-in-simulated-annealing-algorithm 
+        m_init_temp = 100; // to be calculated using http://cs.stackexchange.com/questions/11126/initial-temperature-in-simulated-annealing-algorithm 
         m_cooling_factor = eap::get_fvalue(c_cooling_factor); 
         m_convergence_factor = eap::get_fvalue(c_convergence_factor);
         m_temp_pop_factor = eap::get_fvalue(c_temp_pop_factor);
@@ -55,6 +61,7 @@ void sa::run()
     try
     {
         compute_temp();
+        std::cout<<"***init temperature = "<<m_init_temp<<"\n";
         std::vector<position_ptr> placements;
         boost::format nec_input(eap::run_directory + "iter%09d");
         float temperature = m_init_temp;
@@ -139,9 +146,9 @@ std::vector<position_ptr> sa::mutate_pos(std::vector<position_ptr> &orig_placeme
  */
 std::vector<position_ptr> sa::mutate_pos_once(std::vector<position_ptr> &orig_placements)
 {
+    std::vector<position_ptr> placements;
     try
     {
-        std::vector<position_ptr> placements;
         unsigned int ant = eap::rand(0, m_ant_configs.size() - 1);
 
         for (unsigned int i_ant=0; i_ant<orig_placements.size(); ++i_ant)
@@ -161,10 +168,15 @@ std::vector<position_ptr> sa::mutate_pos_once(std::vector<position_ptr> &orig_pl
                 placements.push_back(orig_placements[i_ant]);
             }
         }
+
+        if (placements.size() != m_ant_configs.size())
+            throw eap::InvalidStateException("antenna placements exceeds the #of antennas");
+
         return placements;
     }
     catch (...)
     {
+        placements.erase(placements.begin(), placements.end());
         throw;
     }
 }
@@ -175,7 +187,7 @@ void sa::evaluate(unsigned int id, individual_ptr &p_ind)
     try
     {
         run_simulation(id);
-        boost::format nec_output(eap::run_directory + "iter%09da%2d.out");
+        boost::format nec_output(eap::run_directory + "iter%09da%02d.out");
         for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
         {
             evaluation_ptr p_eval(new evaluation);
@@ -220,23 +232,23 @@ void sa::run_simulation(unsigned int id)
 void sa::compute_temp()
 {
     // populate m_S a.k.a. set for transistions s.t. the hypothesis after the tranisition is less fitter than the hypothesis before the transition
+    std::cout<<"***computing initial temp\n";
+
     unsigned int curr_size = 0;
     boost::format nec_input(eap::run_directory + "iter%09d");
-    std::vector<position_ptr> placements;
 
     // calculate total possible permutations. Assumption - that none of the placements overlap
     float tot_size = 1; 
     for (ant_config_ptr i_ant : m_ant_configs)
         tot_size *= i_ant->m_positions.size();
 
-    while (curr_size != m_temp_pop_factor * tot_size) 
+    while (curr_size != 50) //m_temp_pop_factor * tot_size) 
     {
         transition_ptr p_s(new transition);
         individual_ptr p_min(new individual);
         individual_ptr p_max(new individual);
+        std::vector<position_ptr> placements;
         
-        p_s->m_min = p_min;
-
         for (ant_config_ptr i_ant : m_ant_configs)
         {
             int pos = eap::rand(0, i_ant->m_positions.size() - 1);
@@ -244,10 +256,12 @@ void sa::compute_temp()
         }
         p_min = create_individual(str(nec_input % curr_size) + "a%02d.nec", placements);
         evaluate(curr_size, p_min);
-
+        p_s->m_min = p_min;
+        
+        int count = 0;
         do 
         {
-            std::vector<position_ptr> placements = mutate_pos_once(p_min->m_positions);
+            placements = mutate_pos_once(p_min->m_positions);
             p_max = create_individual(str(nec_input % (curr_size+1)) + "a%02d.nec", placements); 
             evaluate((curr_size+1), p_max);
             for (unsigned int i=0; i<=m_ant_configs.size(); ++i)
@@ -255,12 +269,26 @@ void sa::compute_temp()
                 boost::filesystem::remove(str(nec_input % (curr_size+1)) + "a%02d.nec");
                 boost::filesystem::remove(str(nec_input % (curr_size+1)) + "a%02d.out");
             } 
-        }
-        while(p_max->m_fitness <= p_min->m_fitness);
-
+            count++;
+        } 
+        while(p_max->m_fitness <= p_min->m_fitness && count <= 10);
+        if (p_max->m_fitness <= p_min->m_fitness && count > 10)
+            continue;
+        
         p_s->m_max = p_max;
         m_S.push_back(p_s);
         curr_size++;
+
+        unsigned int overlaps = 0;
+        for (position_ptr i_ant : p_max->m_positions)
+        {
+            if (overlap(p_min->m_positions, i_ant))
+                overlaps++;
+        }
+        if (overlaps != m_ant_configs.size() - 1)
+            throw eap::InvalidStateException("All except one antenna position should not overlap");
+
+        std::cout<<"*** m_S size = "<<m_S.size()<<"\n";
     }
 
     float num, deno = 0.0f;
@@ -271,11 +299,15 @@ void sa::compute_temp()
             num += exp(-(p_s->m_max->m_fitness) / m_init_temp);
             deno += exp(-(p_s->m_min->m_fitness) / m_init_temp);
         }
-        if (abs( (num/deno) - m_accept_prob) < m_e)
+        std::cout<<"std::abs((num/den)-m_accept_prob)"<<std::abs((num/deno) - m_accept_prob)<<"\n";
+
+        if (std::abs( (num/deno) - m_accept_prob) < m_e)
             break;
         else 
         {
+            std::cout<<"updating\n";
             m_init_temp = m_init_temp * pow((log(num/deno) / log(m_accept_prob)), 1/m_p);
+            std::cout<<"init temp= "<<m_init_temp<<"\n";
         }
     }
 }
