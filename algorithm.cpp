@@ -84,10 +84,8 @@ void algorithm::setup_run_context()
         if (m_run_simulator)
         {
             boost::filesystem::remove_all(eap::run_directory);
+            boost::filesystem::create_directory(eap::run_directory);
         }
-        //TODO: test whether this deletes
-        boost::filesystem::create_directory(eap::run_directory);
-
     }
     catch (...)
     {

@@ -106,9 +106,12 @@ int main(int argc, char* argv[])
             std::string name = boost::filesystem::basename (lua_file);
             
             /* save results */
-            boost::format formatter("cd " + eap::run_directory + "; tar -cjf ../../" + name + "_a" + std::to_string(eap::get_algorithm()) + "_i%02d." + "tar.bz2 *");
-            std::cout<<str(formatter % i)<<"\n";
+            std::cout<<"***Archiving results\n";
+            boost::format formatter("cd " + eap::run_directory + "; tar -cjf ../" + name + "_a" + std::to_string(eap::get_algorithm()) + "_i%02d." + "tar.bz2 *");
             system(str(formatter % i).c_str());
+            std::cout<<"***deleting runs directory\n";
+            boost::filesystem::remove_all(eap::run_directory);
+            boost::filesystem::create_directory(eap::run_directory);
         }
     }
     catch (const std::exception &e)
