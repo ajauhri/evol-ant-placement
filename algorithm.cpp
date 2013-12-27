@@ -620,7 +620,7 @@ void algorithm::save_best_nec(const std::string &dir_path, individual_ptr &p_ind
             count += m_ant_configs[i_ant]->m_wires.size();
         }
         outfile.close();
-        create_indvidual(dir_path + "besta%02d.nec", p_ind->positions);
+        create_individual(dir_path + "besta%02d.nec", p_ind->m_positions);
     }
     catch (...)
     {
