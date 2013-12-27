@@ -603,7 +603,7 @@ void algorithm::save_best_nec(const std::string &dir_path, individual_ptr &p_ind
     std::ofstream outfile;
     try
     {
-        std::string path(dir_path + "/best.nec");
+        std::string path(dir_path + "best.nec");
         outfile.open(path);
         outfile << std::string("CM " + m_platform->m_nec_file + "\n");
         for (ant_config_ptr i_ant : m_ant_configs)
@@ -620,6 +620,7 @@ void algorithm::save_best_nec(const std::string &dir_path, individual_ptr &p_ind
             count += m_ant_configs[i_ant]->m_wires.size();
         }
         outfile.close();
+        create_indvidual(dir_path + "besta%02d.nec", p_ind->positions);
     }
     catch (...)
     {
