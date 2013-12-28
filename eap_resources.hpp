@@ -48,7 +48,6 @@ namespace eap
 	const std::string iterations_folder = "Iterations";
     const std::string run_directory = "runs/";
     const std::string freespace_directory = "free/";
-    const std::string input_directory = "input/";
 
 	typedef std::map<std::string, algorithms> a_map;
 

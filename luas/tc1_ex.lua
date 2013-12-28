@@ -172,9 +172,8 @@ params = {
     exp_weight = 2,
     algorithm = "EX",
     run_simulator = 0,
-    max_gain_fitness = 1,
-    max_coup_fitness = 1,
-    min_coup_fitness = 1,
-    run_simulator = 0,
+    max_gain = 1,
+    max_coup = 1,
+    min_coup = 1,
     auto_seed = 1, 
 }

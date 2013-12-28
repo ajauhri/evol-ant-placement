@@ -155,7 +155,7 @@ void algorithm::create_nec_strs()
 
 std::vector<wire_ptr> algorithm::load_wires(const std::string& nec_file, const std::string& err_msg)
 {
-    std::ifstream infile(eap::input_directory + nec_file);
+    std::ifstream infile(nec_file);
     std::vector<wire_ptr> wires;
     std::string line;
     float ax, ay, az, bx, by, bz, dia;
