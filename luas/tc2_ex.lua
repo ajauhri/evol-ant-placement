@@ -1601,3 +1601,13 @@ add_point(0.6095999,-0.8128,-0.2032)
 add_point(0.6095999,-0.8128,-0.2032)
 add_point(0.6096,-0.9144,-0.3048)
 add_point(0.6096,-0.9144,-0.3048)
+params = {
+    mutation = 0.0,
+    exp_weight = 2,
+    algorithm = "EX",
+    run_simulator = 1,
+    max_gain = 1,
+    max_coup = 1,
+    min_coup = 1,
+    auto_seed = 1, 
+}
