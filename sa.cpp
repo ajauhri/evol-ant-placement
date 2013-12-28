@@ -70,7 +70,11 @@ void sa::run()
 
         for (ant_config_ptr i_ant : m_ant_configs)
         {
-            int pos = eap::rand(0, i_ant->m_positions.size() - 1);
+            int pos;
+            do 
+            {
+                pos = eap::rand(0, i_ant->m_positions.size()-1);
+            } while(overlap(placements, i_ant->m_positions[pos]));
             placements.push_back(i_ant->m_positions[pos]);
         }
         m_p_parent = create_individual(str(nec_input % 0) + "a%02d.nec", placements);
@@ -123,15 +127,27 @@ std::vector<position_ptr> sa::mutate_pos(std::vector<position_ptr> &orig_placeme
 {
     try
     {
-        std::vector<position_ptr> placements;
+        std::vector<position_ptr> placements; //vector<T> have constructors initialzing the object to empty
         for (unsigned int i_ant=0; i_ant<orig_placements.size(); ++i_ant)
         {
             if (eap::rand01() < m_mutation)
             {
-                int pos = eap::rand(0, m_ant_configs[i_ant]->m_positions.size() - 1);
+                int pos;
+                do
+                {
+                    pos = eap::rand(0, m_ant_configs[i_ant]->m_positions.size() - 1);
+                } while(overlap(placements, m_ant_configs[i_ant]->m_positions[pos]));
                 placements.push_back(m_ant_configs[i_ant]->m_positions[pos]);
             }
-            placements.push_back(orig_placements[i_ant]);
+            else
+            {
+                while(overlap(placements, orig_placements[i_ant]))
+                {
+                    int pos = eap::rand(0, m_ant_configs[i_ant]->m_positions.size() - 1);
+                    orig_placements[i_ant] = m_ant_configs[i_ant]->m_positions[pos];
+                }
+                placements.push_back(orig_placements[i_ant]);
+            }
         }
         return placements;
     }
@@ -248,7 +264,7 @@ void sa::compute_temp()
         individual_ptr p_min(new individual);
         individual_ptr p_max(new individual);
         std::vector<position_ptr> placements;
-        
+
         for (ant_config_ptr i_ant : m_ant_configs)
         {
             int pos = eap::rand(0, i_ant->m_positions.size() - 1);
@@ -257,7 +273,7 @@ void sa::compute_temp()
         p_min = create_individual(str(nec_input % curr_size) + "a%02d.nec", placements);
         evaluate(curr_size, p_min);
         p_s->m_min = p_min;
-        
+
         int count = 0;
         do 
         {
@@ -274,7 +290,7 @@ void sa::compute_temp()
         while(p_max->m_fitness <= p_min->m_fitness && count <= 10);
         if (p_max->m_fitness <= p_min->m_fitness && count > 10)
             continue;
-        
+
         p_s->m_max = p_max;
         m_S.push_back(p_s);
         curr_size++;

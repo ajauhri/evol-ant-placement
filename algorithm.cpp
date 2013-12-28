@@ -568,6 +568,25 @@ std::vector<individual_ptr> algorithm::breed(const individual_ptr &p_ind1, const
             children[0]->m_positions.push_back(p_ind2->m_positions[i]);
             children[1]->m_positions.push_back(p_ind1->m_positions[i]);
         }
+
+        // check for overlapping
+        for (individual_ptr child : children)
+        {
+            for (unsigned i = 0; i < m_ant_configs.size(); ++i)
+            {
+                std::vector<position_ptr> positions;
+                for (unsigned j=0; j!=i && j<m_ant_configs.size(); ++j)
+                {
+                    positions.push_back(child->m_positions[j]);
+                }
+                while (overlap(positions, child->m_positions[i]))
+                {
+                    int pos = eap::rand(0, m_ant_configs[i]->m_positions.size()-1);
+                    child->m_positions[i] = m_ant_configs[i]->m_positions[pos];
+                }
+
+            }
+        }
         return children;
     }
     catch (...)
@@ -587,9 +606,13 @@ void algorithm::simple_mutation(individual_ptr &p_ind)
         if (p_ind->m_positions.size() != m_ant_configs.size()) 
             throw eap::InvalidStateException("individual's antenna placements don't match with number of antennas provided during mutation\n");
 
-        int bit = eap::rand(0, p_ind->m_positions.size() - 1); // randomly select an antenna's position
-        int new_bit = eap::rand(0, m_ant_configs[bit]->m_positions.size()-1); // find a new location
-        p_ind->m_positions[bit] = m_ant_configs[bit]->m_positions[new_bit]; 
+        int ant = eap::rand(0, p_ind->m_positions.size() - 1); // randomly select an antenna
+        int new_bit;
+        do
+        {
+            new_bit = eap::rand(0, m_ant_configs[ant]->m_positions.size()-1); // find a new location
+        } while (overlap(p_ind->m_positions, m_ant_configs[ant]->m_positions[new_bit]));
+        p_ind->m_positions[ant] = m_ant_configs[ant]->m_positions[new_bit]; 
     }
     catch (...)
     {
@@ -635,7 +658,7 @@ void algorithm::save_population(const std::string &dir_path, std::vector<individ
     try 
     {
         std::string path(dir_path + "pop.csv");
-	    outfile.open(path);
+        outfile.open(path);
         for (individual_ptr p_ind : pop)
         {
             outfile << p_ind->m_fitness << "," << p_ind->m_gain_fitness << "," << p_ind->m_coupling_fitness << ",";
@@ -659,7 +682,7 @@ void algorithm::save_norm(const std::string &dir_path)
     try 
     {
         std::string path(dir_path + "norm");
-	    outfile.open(path);
+        outfile.open(path);
         outfile << "max_gain_fitness=" << m_max_gain << "\n";
         outfile << "max_coup_fitness=" << m_max_coup << "\n";
         outfile << "min_coup_fitness=" << m_min_coup << "\n";
@@ -677,12 +700,21 @@ void algorithm::save_norm(const std::string &dir_path)
  */ 
 bool algorithm::overlap(std::vector<position_ptr> &existing, position_ptr &p_new_pos)
 {
+    try
+    {
+
     for (position_ptr p_pos : existing)
     {
         if ((p_pos->m_x == p_new_pos->m_x) && (p_pos->m_y == p_new_pos->m_y) && (p_pos->m_z == p_new_pos->m_z)) 
             return true;
     }
     return false;
+    }
+    catch (...)
+    {
+        throw;
+    }
+
 }
 
 algorithm::~algorithm(void)

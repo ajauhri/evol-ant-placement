@@ -57,7 +57,7 @@ void ga::run()
 
         if (m_pop.size() != 0)
             throw eap::InvalidStateException("GA: Population size should be zero");
-    
+
         if (!boost::filesystem::create_directory(std::string(eap::run_directory+"gen0000")))
             throw eap::InvalidStateException("Problem creating directory");
 
@@ -67,7 +67,11 @@ void ga::run()
             std::vector<position_ptr> placements;
             for (ant_config_ptr i_ant : m_ant_configs)
             {
-                int pos = eap::rand(0, i_ant->m_positions.size()-1);
+                int pos;
+                do 
+                {
+                    pos = eap::rand(0, i_ant->m_positions.size()-1);
+                } while (overlap(placements, i_ant->m_positions[pos]));
                 placements.push_back(i_ant->m_positions[pos]);
             }
             m_pop.push_back(create_individual(str(nec_input % 0 % i_id) + "a%02d.nec", placements));
@@ -165,7 +169,7 @@ void ga::select()
         {	
             new_pop.push_back(m_pop[i]);
         }
-        
+
         // pick individuals in pairs
         for (unsigned int i = m_elitism; i < m_population_size; i+=2)
         {
@@ -191,7 +195,7 @@ void ga::select()
             int ind_id = eap::rand(0, m_population_size-1);
             simple_mutation(new_pop[ind_id]);
         }
-        
+
         if (new_pop.size() != m_population_size) throw eap::InvalidStateException("GA: population size don't match");
         std::cout<<"***done with creating next generation\n";
         m_pop.swap(new_pop);
