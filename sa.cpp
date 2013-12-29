@@ -255,11 +255,11 @@ void sa::compute_temp()
     // populate m_S a.k.a. set for transistions s.t. the hypothesis after the tranisition is less fitter than the hypothesis before the transition
     std::cout<<"***computing initial temp\n";
 
-    unsigned int curr_size = 0;
     boost::format nec_input(eap::run_directory + "iter%09d");
 
     // calculate total possible permutations. Assumption - that none of the placements overlap
     float tot_size = 1; 
+    unsigned int curr_size = 0;
     for (ant_config_ptr i_ant : m_ant_configs)
         tot_size *= i_ant->m_positions.size();
 
@@ -272,33 +272,29 @@ void sa::compute_temp()
 
         for (ant_config_ptr i_ant : m_ant_configs)
         {
-            int pos = eap::rand(0, i_ant->m_positions.size() - 1);
+            int pos;
+            do 
+            {
+                pos = eap::rand(0, i_ant->m_positions.size() - 1);
+            } while (overlap(placements, i_ant->m_positions[pos]));
             placements.push_back(i_ant->m_positions[pos]);
         }
         p_min = create_individual(str(nec_input % curr_size) + "a%02d.nec", placements);
         evaluate(curr_size, p_min);
+
+        placements = mutate_pos_once(p_min->m_positions);
+        p_max = create_individual(str(nec_input % (curr_size+1)) + "a%02d.nec", placements);
+        evaluate(curr_size + 1, p_max);
+
+        if (p_max->m_fitness < p_min->m_fitness)
+            p_min.swap(p_max);
+
         p_s->m_min = p_min;
-
-        int count = 0;
-        do 
-        {
-            placements = mutate_pos_once(p_min->m_positions);
-            p_max = create_individual(str(nec_input % (curr_size+1)) + "a%02d.nec", placements); 
-            evaluate((curr_size+1), p_max);
-            for (unsigned int i=0; i<=m_ant_configs.size(); ++i)
-            {
-                boost::filesystem::remove(str(nec_input % (curr_size+1)) + "a%02d.nec");
-                boost::filesystem::remove(str(nec_input % (curr_size+1)) + "a%02d.out");
-            } 
-            count++;
-        } 
-        while(p_max->m_fitness <= p_min->m_fitness && count <= 10);
-        if (p_max->m_fitness <= p_min->m_fitness && count > 10)
-            continue;
-
         p_s->m_max = p_max;
         m_S.push_back(p_s);
-        curr_size++;
+        curr_size += 2;
+
+        std::cout<<p_s->m_min->m_fitness<<" "<<p_s->m_max->m_fitness<<"\n";
 
         unsigned int overlaps = 0;
         for (position_ptr i_ant : p_max->m_positions)
@@ -308,9 +304,10 @@ void sa::compute_temp()
         }
         if (overlaps != m_ant_configs.size() - 1)
             throw eap::InvalidStateException("All except one antenna position should not overlap");
-
-        std::cout<<"*** m_S size = "<<m_S.size()<<"\n";
     }
+
+    boost::filesystem::remove_all(eap::run_directory);
+    boost::filesystem::create_directory(eap::run_directory);
 
     float num, deno = 0.0f;
     while (1)
