@@ -13,6 +13,8 @@ namespace
     const std::string c_cooling_factor = "cooling_factor";
     const std::string c_convergence_factor = "convergence_factor";
     const std::string c_temp_pop_factor = "temp_pop_factor";
+    const std::string c_temp_error = "temp_error";
+    const std::string c_accept_prob = "accept_prob";
 }
 
 sa::sa(std::string lua_file) : algorithm(lua_file)
@@ -25,8 +27,8 @@ sa::sa(std::string lua_file) : algorithm(lua_file)
     m_temp_pop_factor = 0.0f;
 
     // for computing initial temperature
-    m_accept_prob = 0.9;
-    m_e = pow(10, -3);
+    m_accept_prob = 0.0f;
+    m_e = 0.0f;
     m_p = 100;
 
 }
@@ -44,6 +46,8 @@ void sa::setup_algo_params()
         m_cooling_factor = eap::get_fvalue(c_cooling_factor); 
         m_convergence_factor = eap::get_fvalue(c_convergence_factor);
         m_temp_pop_factor = eap::get_fvalue(c_temp_pop_factor);
+        m_e = eap::get_fvalue(c_temp_error);
+        m_accept_prob = eap::get_fvalue(c_accept_prob);
         m_converged_iterations = m_iterations * m_convergence_factor;
         std::cout<<"Completed SA parameter setup"<<std::endl;
     }
@@ -112,6 +116,7 @@ void sa::run()
             if (q > m_converged_iterations)
             {
                 //change mutation probability
+                m_mutation *= 1.1;
                 q = 0;
             }
 

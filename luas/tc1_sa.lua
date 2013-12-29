@@ -1,5 +1,5 @@
-load_platform("S1 - 4ft square plate fixed.nec")
-add_antenna("A2 - 150mono fixed.nec")
+load_platform("input/S1 - 4ft square plate fixed.nec")
+add_antenna("input/A2 - 150mono fixed.nec")
 add_point(  0.101600,   0.000000,   0.000000)
 add_point(  0.203200,   0.000000,   0.000000)
 add_point(  0.304800,   0.000000,   0.000000)
@@ -83,7 +83,7 @@ add_point(  0.203200,  -0.508000,   0.000000)
 add_point(  0.304800,  -0.508000,   0.000000)
 add_point(  0.304800,  -0.609600,   0.000000)
 add_point(  0.406400,  -0.609600,   0.000000)
-add_antenna("A5 - 300dipole fixed.nec")
+add_antenna("input/A5 - 300dipole fixed.nec")
 add_point( -0.609600,   0.609600,   0.000000)
 add_point( -0.508000,   0.609600,   0.000000)
 add_point( -0.406400,   0.609600,   0.000000)
@@ -168,7 +168,7 @@ add_point( -0.304800,   0.000000,   0.000000)
 add_point( -0.203200,   0.000000,   0.000000)
 add_point( -0.101600,   0.000000,   0.000000)
 params = {
-    iterations = 20,
+    iterations = 2000,
     cooling_factor = 0.9984,
     convergence_factor = 0.1,
     mutation = 0.1,
@@ -179,5 +179,8 @@ params = {
     max_coup = 27.37,
     min_coup = -30.966,
     temp_pop_factor = 0.1,
-    auto_seed = 1
+    auto_seed = 1,
+    temp_error = 0.05,
+    accept_prob = 0.9
+
 }
