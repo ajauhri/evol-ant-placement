@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# doesn't work as expected due to overlapping wire ends and as a result overflowing lua files here
 # quick hack to generate all test cases such each antenna is present on all points of the platform
 # sys.argv[1] - should be platform
 # sys.argv[2:] - should be all antenna(s)

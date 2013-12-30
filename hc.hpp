@@ -12,7 +12,6 @@ private:
     float m_best_fitness;
     float m_converged_iterations;
     
-    std::vector<position_ptr> mutate_pos(std::vector<position_ptr>&);    
     void evaluate(unsigned int, individual_ptr&);
     void run_simulation(unsigned int);
 public:

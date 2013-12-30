@@ -62,12 +62,15 @@ void sa::setup_algo_params()
  */
 void sa::run()
 {
+    std::ofstream outfile;
     try
     {
         compute_temp();
-        std::cout<<"***init temperature = "<<m_init_temp<<"\n";
+        std::cout<<"***init computed temperature = "<<m_init_temp<<"\n";
+        // TODO check if runs/ is empty
         std::vector<position_ptr> placements;
         boost::format nec_input(eap::run_directory + "iter%09d");
+        outfile.open(eap::run_directory + "iters.csv");
         float temperature = m_init_temp;
         int q = 0; //successive state with best solution
         //p successive temperatures best solution holds
@@ -84,6 +87,10 @@ void sa::run()
         m_p_parent = create_individual(str(nec_input % 0) + "a%02d.nec", placements);
         evaluate(0, m_p_parent);
         m_best_fitness = m_p_parent->m_fitness;
+        outfile << 0 << "," << m_p_parent->m_fitness << "," << m_p_parent->m_gain_fitness << "," << m_p_parent->m_coupling_fitness << ",";
+        for (position_ptr p_pos : m_p_parent->m_positions)
+            outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z <<",";
+        outfile << "\n";
 
         for (unsigned int i=1; i<m_iterations; ++i)
         {
@@ -95,16 +102,28 @@ void sa::run()
             {
                 m_best_fitness = p_child->m_fitness;
                 swap(m_p_parent, p_child);
-                std::cout<<"***iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
+                outfile << i << "," << m_p_parent->m_fitness << "," << m_p_parent->m_gain_fitness << "," << m_p_parent->m_coupling_fitness << ",";
+                for (position_ptr p_pos : m_p_parent->m_positions)
+                    outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z <<",";
+                outfile << "\n";
+
+                std::cout<<"***fitness improved iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
 
             }
             else if (p_child->m_fitness > m_p_parent->m_fitness)
             {
                 float delta_fitness = (p_child->m_fitness - m_p_parent->m_fitness);
                 if (eap::rand01() < exp((-1.0 * delta_fitness) / temperature))
+                {
+                    std::cout<<"SA GOT BAD " << exp((-1.0 * delta_fitness) / temperature)<<"\n";
                     swap(m_p_parent, p_child);
+                    outfile << i << "," << m_p_parent->m_fitness << "," << m_p_parent->m_gain_fitness << "," << m_p_parent->m_coupling_fitness << ",";
+                    for (position_ptr p_pos : m_p_parent->m_positions)
+                        outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z <<",";
+                    outfile << "\n";
+                    std::cout<<"***fitness got bad iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
+                }
             }
-
             temperature = m_cooling_factor * temperature;
 
             // for q iterations, the best solution didn't improve
@@ -121,43 +140,11 @@ void sa::run()
             }
 
         }
+        outfile.close();
     }
     catch (...)
     {
-        throw;
-    }
-}
-
-std::vector<position_ptr> sa::mutate_pos(std::vector<position_ptr> &orig_placements)
-{
-    try
-    {
-        std::vector<position_ptr> placements; //vector<T> have constructors initialzing the object to empty
-        for (unsigned int i_ant=0; i_ant<orig_placements.size(); ++i_ant)
-        {
-            if (eap::rand01() < m_mutation)
-            {
-                int pos;
-                do
-                {
-                    pos = eap::rand(0, m_ant_configs[i_ant]->m_positions.size() - 1);
-                } while(overlap(placements, m_ant_configs[i_ant]->m_positions[pos]));
-                placements.push_back(m_ant_configs[i_ant]->m_positions[pos]);
-            }
-            else
-            {
-                while(overlap(placements, orig_placements[i_ant]))
-                {
-                    int pos = eap::rand(0, m_ant_configs[i_ant]->m_positions.size() - 1);
-                    orig_placements[i_ant] = m_ant_configs[i_ant]->m_positions[pos];
-                }
-                placements.push_back(orig_placements[i_ant]);
-            }
-        }
-        return placements;
-    }
-    catch (...)
-    {
+        outfile.close();
         throw;
     }
 }
@@ -263,7 +250,7 @@ void sa::compute_temp()
     for (ant_config_ptr i_ant : m_ant_configs)
         tot_size *= i_ant->m_positions.size();
 
-    while (curr_size != 50) //m_temp_pop_factor * tot_size) 
+    while (curr_size != 10) //m_temp_pop_factor * tot_size) 
     {
         transition_ptr p_s(new transition);
         individual_ptr p_min(new individual);
@@ -323,9 +310,8 @@ void sa::compute_temp()
             break;
         else 
         {
-            std::cout<<"updating\n";
             m_init_temp = m_init_temp * pow((log(num/deno) / log(m_accept_prob)), 1/m_p);
-            std::cout<<"init temp= "<<m_init_temp<<"\n";
+            std::cout<<"updating init temp= "<<m_init_temp<<"\n";
         }
     }
 }

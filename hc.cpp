@@ -7,7 +7,7 @@
 namespace 
 {
     const std::string c_iterations = "iterations";
-    const std::string c_convergence_factor = "convergence_factor_s";
+    const std::string c_convergence_factor = "convergence_factor";
 }
 
 hc::hc(std::string lua_file) : algorithm(lua_file)
@@ -29,7 +29,7 @@ void hc::setup_algo_params()
         m_iterations = eap::get_fvalue(c_iterations);
         m_convergence_factor = eap::get_fvalue(c_convergence_factor);
         m_converged_iterations = m_iterations * m_convergence_factor;
-        std::cout<<"Completed HC parameter setup"<<std::endl;
+        std::cout<<"***completed HC parameter setup"<<std::endl;
     }
     catch (const eap::InvalidStateException &e)
     {
@@ -42,21 +42,32 @@ void hc::setup_algo_params()
  */
 void hc::run()
 {
+    std::ofstream outfile;
     try
     {
         std::vector<position_ptr> placements;
+        outfile.open(eap::run_directory + "iters.csv");
         boost::format nec_input(eap::run_directory + "iter%09d");
         int q = 0; // successive state with best solution
 
         for (ant_config_ptr i_ant : m_ant_configs)
         {
-            int pos = eap::rand(0, i_ant->m_positions.size() - 1);
+            int pos;
+            do 
+            {
+                pos = eap::rand(0, i_ant->m_positions.size() - 1);
+            } while(overlap(placements, i_ant->m_positions[pos]));
             placements.push_back(i_ant->m_positions[pos]);
         }
 
         m_p_parent = create_individual(str(nec_input % 0) + "a%02d.nec", placements);
         evaluate(0, m_p_parent);
         m_best_fitness = m_p_parent->m_fitness;
+        outfile << 0 << "," << m_p_parent->m_fitness << "," << m_p_parent->m_gain_fitness << "," << m_p_parent->m_coupling_fitness << ",";
+        for (position_ptr p_pos : m_p_parent->m_positions)
+            outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z <<",";
+        outfile << "\n";
+
 
         for (unsigned int i=1; i<m_iterations; ++i)
         {
@@ -68,6 +79,10 @@ void hc::run()
             {
                 m_best_fitness = p_child->m_fitness;
                 swap(m_p_parent, p_child);
+                outfile << i << "," << m_p_parent->m_fitness << "," << m_p_parent->m_gain_fitness << "," << m_p_parent->m_coupling_fitness << ",";
+                for (position_ptr p_pos : m_p_parent->m_positions)
+                    outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z <<",";
+                outfile << "\n";
                 std::cout<<"***iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
             }
 
@@ -79,45 +94,27 @@ void hc::run()
             if (q > m_converged_iterations)
             {
                 //change mutation probability
+                m_mutation *= 1.1;
                 q = 0;
             }
         }
+
+        outfile.close();
     }
+
     catch (...)
     {
+        outfile.close();
         throw;
     }
 }
-
-std::vector<position_ptr> hc::mutate_pos(std::vector<position_ptr> &orig_placements)
-{
-    try
-    {
-        std::vector<position_ptr> placements;
-        for (unsigned int i_ant=0; i_ant<orig_placements.size(); ++i_ant)
-        {
-            if (eap::rand01() < m_mutation)
-            {
-                int pos = eap::rand(0, m_ant_configs[i_ant]->m_positions.size() - 1);
-                placements.push_back(m_ant_configs[i_ant]->m_positions[pos]);
-            }
-            placements.push_back(orig_placements[i_ant]);
-        }
-        return placements;
-    }
-    catch (...)
-    {
-        throw;
-    }
-}
-
 
 void hc::evaluate(unsigned int id, individual_ptr &p_ind)
 {
     try
     {
         run_simulation(id);
-        boost::format nec_output(eap::run_directory + "iter%09da%2d.out");
+        boost::format nec_output(eap::run_directory + "iter%09da%02d.out");
         for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
         {
             evaluation_ptr p_eval(new evaluation);
@@ -130,6 +127,7 @@ void hc::evaluate(unsigned int id, individual_ptr &p_ind)
         }
         p_ind->m_gain_fitness /= m_max_gain;
         p_ind->m_coupling_fitness = read_coupling(str(nec_output % id % m_ant_configs.size()), m_ant_configs.size());
+        //normalizing fitness
         p_ind->m_coupling_fitness += std::abs(m_min_coup);
         p_ind->m_coupling_fitness /= m_max_coup;
         p_ind->m_fitness = cal_fitness(p_ind);

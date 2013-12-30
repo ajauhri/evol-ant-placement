@@ -717,6 +717,41 @@ bool algorithm::overlap(std::vector<position_ptr> &existing, position_ptr &p_new
 
 }
 
+std::vector<position_ptr> algorithm::mutate_pos(std::vector<position_ptr> &orig_placements)
+{
+    try
+    {
+        std::vector<position_ptr> placements; //vector<T> have constructors initialzing the object to empty
+        for (unsigned int i_ant=0; i_ant<orig_placements.size(); ++i_ant)
+        {
+            if (eap::rand01() < m_mutation)
+            {
+                int pos;
+                do
+                {
+                    pos = eap::rand(0, m_ant_configs[i_ant]->m_positions.size() - 1);
+                } while(overlap(placements, m_ant_configs[i_ant]->m_positions[pos]));
+                placements.push_back(m_ant_configs[i_ant]->m_positions[pos]);
+            }
+            else
+            {
+                while(overlap(placements, orig_placements[i_ant]))
+                {
+                    int pos = eap::rand(0, m_ant_configs[i_ant]->m_positions.size() - 1);
+                    orig_placements[i_ant] = m_ant_configs[i_ant]->m_positions[pos];
+                }
+                placements.push_back(orig_placements[i_ant]);
+            }
+        }
+        return placements;
+    }
+    catch (...)
+    {
+        throw;
+    }
+}
+
+
 algorithm::~algorithm(void)
 {
     m_ant_configs.clear();

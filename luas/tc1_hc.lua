@@ -169,17 +169,13 @@ add_point( -0.203200,   0.000000,   0.000000)
 add_point( -0.101600,   0.000000,   0.000000)
 params = {
     iterations = 2000,
-    cooling_factor = 0.9985,
-    convergence_factor = 0.1,
     mutation = 0.1,
+    convergence_factor = 0.1,
     exp_weight = 2,
-    algorithm = "SA",
+    algorithm = "HC",
     run_simulator = 1,
     max_gain = 3.61123e+08,
     max_coup = 27.37,
     min_coup = -30.966,
-    temp_pop_factor = 0.1,
     auto_seed = 1,
-    temp_error = 0.02,
-    accept_prob = 0.9
 }
