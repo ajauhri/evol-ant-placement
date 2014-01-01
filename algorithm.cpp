@@ -340,7 +340,7 @@ void algorithm::run_freespace()
 {
     try 
     {
-        boost::format formatter("./nec2++.exe -i " + eap::freespace_directory + "ant%03d.nec");
+        boost::format formatter("nec2++ -i " + eap::freespace_directory + "ant%03d.nec");
         for (unsigned int i=0; i<m_ant_configs.size(); i++)
             system(str(formatter % i).c_str());
         std::cout<<"***completed creating out files for free space patterns\n"; 
