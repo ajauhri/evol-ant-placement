@@ -97,7 +97,7 @@ void exhaust::run_simulation(unsigned int id)
     try
     {
         std::cout<<"***running simulation for exhaustive\n";
-        std::string cmd("find " + eap::run_directory + " -iname \"*.nec\" | parallel -j+0 ./nec2++.exe -i {}");
+        std::string cmd("find " + eap::run_directory + " -iname \"*.nec\" | parallel -j+0 nec2++ -i {}");
         system(cmd.c_str());
         std::cout<<"***completed simulation for exhaustive\n";
     }

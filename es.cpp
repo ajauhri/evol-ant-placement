@@ -48,7 +48,7 @@ void es::run()
             m_pop.erase(m_pop.begin(), m_pop.end());
 
         if (m_pop.size() != 0)
-            throw eap::InvalidStateException("GA: Population size sould be zero");
+            throw eap::InvalidStateException("ES: Population size sould be zero");
 
         boost::filesystem::create_directory(std::string(eap::run_directory+"gen0000"));
         boost::format nec_input(eap::run_directory + "gen%04d/ind%09d");
