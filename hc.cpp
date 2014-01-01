@@ -95,6 +95,7 @@ void hc::run()
             {
                 //change mutation probability
                 m_mutation *= 1.1;
+                std::cout<<"***mutatation_prob changed to "<<m_mutation<<"\n";
                 q = 0;
             }
         }
