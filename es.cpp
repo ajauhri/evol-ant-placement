@@ -97,10 +97,7 @@ void es::create_pop(unsigned int gen)
             unsigned int counter = 0; 
             while (counter<m_mulambda_factor)
             {
-                int ant_id = eap::rand(0, m_pop[i]->m_positions.size() - 1);
-                int new_pos = eap::rand(0, m_ant_configs[ant_id]->m_positions.size() - 1);
-                std::vector<position_ptr> placements(m_pop[i]->m_positions);
-                placements[ant_id] = m_ant_configs[ant_id]->m_positions[new_pos];
+                std::vector<position_ptr> placements = mutate_pos(m_pop[i]->m_positions);
                 new_pop.push_back(create_individual(str(input_path % gen % (i+counter)) + "a%02d.nec", placements));
                 counter++;
             }
