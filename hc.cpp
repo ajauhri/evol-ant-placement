@@ -3,6 +3,7 @@
 #include<eap_resources.hpp>
 #include<lua_cmds.hpp>
 #include<boost/format.hpp>
+#include<boost/filesystem.hpp>
 
 namespace 
 {
@@ -40,13 +41,13 @@ void hc::setup_algo_params()
 /**
  * @desc Implements logic for HC runs
  */
-void hc::run()
+void hc::run(unsigned int run_id)
 {
     std::ofstream outfile;
     try
     {
         std::vector<position_ptr> placements;
-        outfile.open(eap::run_directory + "iters.csv");
+        outfile.open(eap::results_directory + boost::filesystem::basename(m_lua_file) + "_r" + std::to_string(run_id) + "iters.csv");
         boost::format nec_input(eap::run_directory + "iter%09d");
         int q = 0; // successive state with best solution
 

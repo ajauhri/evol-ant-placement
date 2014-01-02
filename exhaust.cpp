@@ -20,7 +20,7 @@ void exhaust::setup_algo_params()
     }
 }
 
-void exhaust::run()
+void exhaust::run(unsigned int run_id)
 {
     try
     {
@@ -49,8 +49,8 @@ void exhaust::run()
         std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
         std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
         save_norm(eap::run_directory);
-        save_population(eap::run_directory, m_pop);
-        save_best_nec(eap::run_directory, m_pop[0]);
+        save_population(m_pop, run_id, 0);
+        save_best_nec(m_pop[0], run_id, 0);
     }
     catch (...)
     {

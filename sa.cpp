@@ -60,7 +60,7 @@ void sa::setup_algo_params()
 /**
  * @desc Implements logic for SA runs
  */
-void sa::run()
+void sa::run(unsigned int run_id)
 {
     std::ofstream outfile;
     try
@@ -70,7 +70,7 @@ void sa::run()
         // TODO check if runs/ is empty
         std::vector<position_ptr> placements;
         boost::format nec_input(eap::run_directory + "iter%09d");
-        outfile.open(eap::run_directory + "iters.csv");
+        outfile.open(eap::results_directory + boost::filesystem::basename(m_lua_file) + "_r" + std::to_string(run_id) + "_iters.csv");
         float temperature = m_init_temp;
         int q = 0; //successive state with best solution
         //p successive temperatures best solution holds

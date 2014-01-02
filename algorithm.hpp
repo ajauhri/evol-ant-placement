@@ -55,8 +55,8 @@ class algorithm
         void simple_mutation(individual_ptr&);
         std::vector<position_ptr> mutate_pos(std::vector<position_ptr>&);
         bool overlap(std::vector<position_ptr>&, position_ptr&);
-        void save_best_nec(const std::string&, individual_ptr&);
-        void save_population(const std::string&, std::vector<individual_ptr>&);
+        void save_best_nec(individual_ptr&, unsigned int, unsigned int);
+        void save_population(std::vector<individual_ptr>&, unsigned int, unsigned int);
         void save_norm(const std::string&);
         unsigned int read_radiation(const std::string, const evaluation_ptr &);
         float read_coupling(const std::string, unsigned int);
@@ -77,7 +77,7 @@ class algorithm
         void read_freespace();
 
         virtual void setup_algo_params();
-        virtual void run() = 0;
+        virtual void run(unsigned int) = 0;
         virtual void run_simulation(unsigned int) = 0;
 };
 

@@ -19,6 +19,6 @@ public:
 	~hc(void);
 
 	void setup_algo_params();
-    void run();
+    void run(unsigned int);
 };
 #endif

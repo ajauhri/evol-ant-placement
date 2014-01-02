@@ -621,12 +621,13 @@ void algorithm::simple_mutation(individual_ptr &p_ind)
 
 }
 
-void algorithm::save_best_nec(const std::string &dir_path, individual_ptr &p_ind)
+void algorithm::save_best_nec(individual_ptr &p_ind, unsigned int run_id, unsigned int other_id)
 {
     std::ofstream outfile;
     try
     {
-        std::string path(dir_path + "best.nec");
+        std::string path_prefix (eap::results_directory + boost::filesystem::basename(m_lua_file) + "_r" + std::to_string(run_id) + "_o" + std::to_string(other_id));
+        std::string path(path_prefix + "_best.nec");
         outfile.open(path);
         outfile << std::string("CM " + m_platform->m_nec_file + "\n");
         for (ant_config_ptr i_ant : m_ant_configs)
@@ -643,7 +644,7 @@ void algorithm::save_best_nec(const std::string &dir_path, individual_ptr &p_ind
             count += m_ant_configs[i_ant]->m_wires.size();
         }
         outfile.close();
-        create_individual(dir_path + "besta%02d.nec", p_ind->m_positions);
+        create_individual(path_prefix + "besta%02d.nec", p_ind->m_positions);
     }
     catch (...)
     {
@@ -652,12 +653,14 @@ void algorithm::save_best_nec(const std::string &dir_path, individual_ptr &p_ind
     }
 }
 
-void algorithm::save_population(const std::string &dir_path, std::vector<individual_ptr> &pop)
+void algorithm::save_population(std::vector<individual_ptr> &pop, unsigned int run_id, unsigned int gen_id)
 {
     std::ofstream outfile;
     try 
     {
-        std::string path(dir_path + "pop.csv");
+        std::string path_prefix(eap::results_directory + boost::filesystem::basename(m_lua_file) + "_r" + std::to_string(run_id) + "_g" + std::to_string(gen_id));
+        
+        std::string path(path_prefix + "_pop.csv");
         outfile.open(path);
         for (individual_ptr p_ind : pop)
         {
@@ -681,7 +684,7 @@ void algorithm::save_norm(const std::string &dir_path)
     std::ofstream outfile;
     try 
     {
-        std::string path(dir_path + "norm");
+        std::string path(eap::results_directory + boost::filesystem::basename(m_lua_file)  + "_norm");
         outfile.open(path);
         outfile << "max_gain_fitness=" << m_max_gain << "\n";
         outfile << "max_coup_fitness=" << m_max_coup << "\n";

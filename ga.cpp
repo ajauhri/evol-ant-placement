@@ -45,7 +45,7 @@ void ga::setup_algo_params()
 /**
  * @desc Implements logic for GA runs
  */
-void ga::run()
+void ga::run(unsigned int run_id)
 {
     try 
     {
@@ -82,9 +82,8 @@ void ga::run()
         for (unsigned int i=1; i<m_generations; ++i)
         {
             std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
-            boost::format gen_dir(eap::run_directory + "gen%04d/");
-            save_population(str(gen_dir % (i-1)), m_pop);
-            save_best_nec(str(gen_dir % (i-1)), m_pop[0]);
+            save_population(m_pop, run_id, i-1);
+            save_best_nec(m_pop[0], run_id, i-1);
 
             std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
             select();
@@ -94,9 +93,8 @@ void ga::run()
 
         std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
         std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
-        boost::format gen_dir(eap::run_directory + "gen%04d/");
-        save_population(str(gen_dir % (m_generations-1)), m_pop);
-        save_best_nec(str(gen_dir % (m_generations-1)), m_pop[0]);
+        save_population(m_pop, run_id, m_generations - 1);
+        save_best_nec(m_pop[0], run_id, m_generations - 1);
     }
     catch (...)
     {

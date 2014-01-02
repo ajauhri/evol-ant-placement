@@ -40,7 +40,7 @@ void es::setup_algo_params()
 /**
  * @desc Implements logic for ES runs
  */
-void es::run()
+void es::run(unsigned int run_id)
 {
     try
     {
@@ -70,6 +70,8 @@ void es::run()
             create_pop(i);
             evaluate_gen(i);
             std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
+            save_population(m_pop, run_id, i);
+            save_best_nec(m_pop[0], run_id, i);
             std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
             survivor_selection();
         }

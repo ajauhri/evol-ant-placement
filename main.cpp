@@ -102,12 +102,12 @@ int main(int argc, char* argv[])
         for (unsigned int i=0; i<runs; ++i)
         {
             /* run the specific algorithm */
-            eap::algo->run();
+            eap::algo->run(i);
             std::string name = boost::filesystem::basename (lua_file);
             
             /* save results */
             std::cout<<"***Archiving results\n";
-            boost::format formatter("cd " + eap::run_directory + "; tar -cjf ../" + name + "_a" + std::to_string(eap::get_algorithm()) + "_i%02d." + "tar.bz2 *");
+            boost::format formatter("cd " + eap::run_directory + "; tar -cjf ../" + name + "_a" + "_i%02d." + "tar.bz2 *");
             system(str(formatter % i).c_str());
             std::cout<<"***deleting runs directory\n";
             boost::filesystem::remove_all(eap::run_directory);
