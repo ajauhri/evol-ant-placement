@@ -644,7 +644,7 @@ void algorithm::save_best_nec(individual_ptr &p_ind, unsigned int run_id, unsign
             count += m_ant_configs[i_ant]->m_wires.size();
         }
         outfile.close();
-        create_individual(path_prefix + "besta%02d.nec", p_ind->m_positions);
+        create_individual(path_prefix + "_besta%02d.nec", p_ind->m_positions);
     }
     catch (...)
     {

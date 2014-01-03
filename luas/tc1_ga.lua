@@ -178,7 +178,7 @@ params = {
     algorithm = "GA",
     run_simulator = 1,
     max_gain = 3.61123e+08,
-    max_coup = 27.37,
-    min_coup = -30.966,
+    max_coup = 27.372,
+    min_coup = -30.968,
     auto_seed = 1,
 }

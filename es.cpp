@@ -165,7 +165,7 @@ void es::run_simulation(unsigned int gen_id)
 {
     try
     {
-        boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 ./nec2++.exe -i {}");
+        boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 nec2++ -i {}");
         std::cout<<"***running simulation for generation "<<gen_id<<"\n";
         system(str(formatter % gen_id).c_str());
         std::cout<<"***completed simulation for generation "<<gen_id<<"\n";

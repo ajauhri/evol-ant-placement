@@ -208,7 +208,7 @@ void ga::run_simulation(unsigned int gen_id)
 {
     try
     {
-        boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 ./nec2++.exe -i {}");
+        boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 nec2++ -i {}");
         std::cout<<"***running simulation for generation "<<gen_id<<"\n";
         system(str(formatter % gen_id).c_str());
         std::cout<<"***completed simulation for generation "<<gen_id<<"\n";
@@ -220,14 +220,14 @@ void ga::run_simulation(unsigned int gen_id)
 }
 
 /**
- * @desc Tours the population and selects the best fit indivudal 
+ * @desc Tours a subset of the population `n` times, and selects the best fit indivudal 
  */
 individual_ptr ga::tour()
 {
     individual_ptr best;
     for (unsigned int i = 0; i < m_tournament_size; i++)
     {
-        unsigned r_index = eap::rand(0, m_population_size-1);
+        unsigned r_index = eap::rand(m_elitism, m_population_size-1);
         if (!best || m_pop[r_index]->m_fitness < best->m_fitness) 
             best = m_pop[r_index];
     }
