@@ -3,6 +3,7 @@
 #include<boost/algorithm/string.hpp>
 #include<boost/format.hpp>
 #include<boost/filesystem.hpp>
+#include<boost/make_shared.hpp>
 #include<ga.hpp>
 #include<eap_resources.hpp>
 #include<lua_cmds.hpp>
@@ -131,6 +132,7 @@ void ga::evaluate_gen(unsigned int gen_id)
         boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
         for (unsigned int i_pop=0; i_pop<m_pop.size(); ++i_pop)
         {
+            m_pop[i_pop]->m_gain_fitness = 0.0f;
             for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
             {
                 evaluation_ptr p_eval(new evaluation);
@@ -165,13 +167,13 @@ void ga::select()
     {
         for (unsigned int i=0; i<m_elitism; i++)
         {	
-            new_pop.push_back(m_pop[i]);
+            new_pop.push_back(boost::make_shared<individual>(*m_pop[i]));
         }
 
         // pick individuals in pairs
         for (unsigned int i = m_elitism; i < m_population_size; i+=2)
         {
-            individual_ptr parent1 = tour();
+            individual_ptr parent1 = m_pop[eap::rand(0, m_elitism-1)];
             individual_ptr parent2 = tour();
 
             if (eap::rand01() < m_recombination)
@@ -182,8 +184,8 @@ void ga::select()
             }
             else
             {
-                new_pop.push_back(parent1);
-                new_pop.push_back(parent2);
+                new_pop.push_back(boost::make_shared<individual>(*parent1));
+                new_pop.push_back(boost::make_shared<individual>(*parent2));
             }
         }
 
@@ -196,7 +198,7 @@ void ga::select()
 
         if (new_pop.size() != m_population_size) throw eap::InvalidStateException("GA: population size don't match");
         std::cout<<"***done with creating next generation\n";
-        m_pop.swap(new_pop);
+        m_pop = new_pop;
     }
     catch (...)
     {
