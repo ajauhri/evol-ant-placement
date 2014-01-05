@@ -175,25 +175,22 @@ void ga::select()
         {
             individual_ptr parent1 = m_pop[eap::rand(0, m_elitism-1)];
             individual_ptr parent2 = tour();
+            std::vector<individual_ptr> offsprings;
 
             if (eap::rand01() < m_recombination)
             {
-                std::vector<individual_ptr> children = breed(parent1, parent2);
-                new_pop.push_back(children[0]);
-                new_pop.push_back(children[1]);
+                offsprings = breed(parent1, parent2);
             }
             else
             {
-                new_pop.push_back(boost::make_shared<individual>(*parent1));
-                new_pop.push_back(boost::make_shared<individual>(*parent2));
+                offsprings.push_back(boost::make_shared<individual>(*parent1));
+                offsprings.push_back(boost::make_shared<individual>(*parent2));
             }
-        }
+            offsprings[0]->m_positions = mutate_pos(offsprings[0]->m_positions);
+            offsprings[0]->m_positions = mutate_pos(offsprings[0]->m_positions);
 
-        // pick m individuals from population and mutate one bit
-        for (unsigned int i=0; i<(m_mutation*m_population_size); ++i)
-        {
-            int ind_id = eap::rand(0, m_population_size-1);
-            simple_mutation(new_pop[ind_id]);
+            new_pop.push_back(offsprings[0]);
+            new_pop.push_back(offsprings[1]);
         }
 
         if (new_pop.size() != m_population_size) throw eap::InvalidStateException("GA: population size don't match");

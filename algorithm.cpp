@@ -658,7 +658,7 @@ void algorithm::save_population(std::vector<individual_ptr> &pop, unsigned int r
     std::ofstream outfile;
     try 
     {
-        std::string path_prefix(eap::results_directory + boost::filesystem::basename(m_lua_file) + "_r" + std::to_string(run_id) + "_g" + std::to_string(gen_id));
+        std::string path_prefix(eap::results_directory + boost::filesystem::basename(m_lua_file) + "_r" + std::to_string(run_id) + "_o" + std::to_string(gen_id));
         
         std::string path(path_prefix + "_pop.csv");
         outfile.open(path);
