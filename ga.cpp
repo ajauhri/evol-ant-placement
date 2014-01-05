@@ -189,7 +189,7 @@ void ga::select()
             }
         }
 
-        // pick m individuals from population and mutate one bit of theirs
+        // pick m individuals from population and mutate one bit
         for (unsigned int i=0; i<(m_mutation*m_population_size); ++i)
         {
             int ind_id = eap::rand(0, m_population_size-1);

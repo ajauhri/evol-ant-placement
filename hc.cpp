@@ -144,7 +144,7 @@ void hc::run_simulation(unsigned int id)
 {
     try
     {
-        boost::format formatter("ls " + eap::run_directory + "iter%09da*.nec | parallel -j+0 ./nec2++.exe -i {}");
+        boost::format formatter("ls " + eap::run_directory + "iter%09da*.nec | parallel -j+0 nec2++ -i {}");
         system(str(formatter % id).c_str());
         std::cout<<"***completed simulation for iteration "<<id<<"\n";
     }
