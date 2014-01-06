@@ -132,7 +132,6 @@ void ga::evaluate_gen(unsigned int gen_id)
         boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
         for (unsigned int i_pop=0; i_pop<m_pop.size(); ++i_pop)
         {
-            m_pop[i_pop]->m_gain_fitness = 0.0f;
             for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
             {
                 evaluation_ptr p_eval(new evaluation);
@@ -173,7 +172,7 @@ void ga::select()
         // pick individuals in pairs
         for (unsigned int i = m_elitism; i < m_population_size; i+=2)
         {
-            individual_ptr parent1 = m_pop[eap::rand(0, m_population-1)];
+            individual_ptr parent1 = m_pop[eap::rand(0, m_population_size-1)];
             individual_ptr parent2 = tour();
             std::vector<individual_ptr> offsprings;
 

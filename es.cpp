@@ -4,7 +4,9 @@
 #include<iostream>
 #include<boost/filesystem.hpp>
 #include<boost/format.hpp>
-
+// Classical ES - \mu individuals are mutated to produce lambda new solutions and the algorithm chooses \mu + \lambda solutions to be the first mu for next generation
+//
+// http://stackoverflow.com/questions/12776719/is-cma-es-mu-lambda-or-mu-lambda
 namespace 
 {
     const std::string c_mu = "mu";
@@ -28,7 +30,7 @@ void es::setup_algo_params()
         this->m_mu = eap::get_fvalue(c_mu); 
         this->m_lambda = eap::get_fvalue(c_lambda); 
         this->m_generations = eap::get_fvalue(c_generations);
-        this->m_mulambda_factor = (unsigned int) floor(m_lambda/m_mu);
+        this->m_mulambda_factor = (unsigned int) floor((m_lambda - m_mu )/m_mu);
         std::cout<<"Completed ES parameter setup"<<std::endl;
     }
     catch (const eap::InvalidStateException &e)
@@ -58,12 +60,15 @@ void es::run(unsigned int run_id)
             std::vector<position_ptr> placements;
             for (ant_config_ptr i_ant : m_ant_configs)
             {
-                int pos = eap::rand(0, i_ant->m_positions.size()-1);
+                int pos;
+                do 
+                {
+                    pos = eap::rand(0, i_ant->m_positions.size()-1);
+                } while (overlap(placements, i_ant->m_positions[pos]));
                 placements.push_back(i_ant->m_positions[pos]);
             }
             m_pop.push_back(create_individual(str(nec_input % 0 % i_id) + "a%02d.nec", placements));
         }
-        std::cout<<"***generation 0 created\n";
 
         for (unsigned int i=0; i<m_generations; ++i)
         {
@@ -81,7 +86,6 @@ void es::run(unsigned int run_id)
     {
         throw;
     }
-
 }
 
 // extends population size to lambda using mutations based on (lamda/mu) factor
@@ -92,19 +96,35 @@ void es::create_pop(unsigned int gen)
         boost::format gen_dir(eap::run_directory+"gen%04d");
         boost::format input_path(eap::run_directory + "gen%04d/ind%09d");
         boost::filesystem::create_directory(str(gen_dir % gen));
-
         std::vector<individual_ptr> new_pop;
+
+        if (gen != 0)
+        {
+            for (unsigned int i=0; i<m_mu; ++i)
+            {
+                new_pop.push_back(create_individual(str(input_path % gen % i) + "a%02d.nec", m_pop[i]->m_positions));
+            }
+        }
+        else if (gen == 0)
+        {
+            for (unsigned int i=0; i<m_mu; ++i)
+            {
+                new_pop.push_back(m_pop[i]);
+            }
+        }
+
         for (unsigned int i=0; i<m_mu; ++i)
         {
-            unsigned int counter = 0; 
+            unsigned int counter = 0;
             while (counter<m_mulambda_factor)
             {
+                int id = m_mu + i*m_mulambda_factor + counter;
                 std::vector<position_ptr> placements = mutate_pos(m_pop[i]->m_positions);
-                new_pop.push_back(create_individual(str(input_path % gen % (i+counter)) + "a%02d.nec", placements));
+                new_pop.push_back(create_individual(str(input_path % gen % id) + "a%02d.nec", placements));
                 counter++;
             }
         }
-        m_pop.swap(new_pop);
+        m_pop = new_pop;
     }
     catch (...)
     {
@@ -112,6 +132,7 @@ void es::create_pop(unsigned int gen)
     }
 }
 
+// (\mu + \lambda) selection
 void es::survivor_selection()
 {
     try
