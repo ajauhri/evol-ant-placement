@@ -62,8 +62,6 @@ void ga::run(unsigned int run_id)
         if (!boost::filesystem::create_directory(std::string(eap::run_directory+"gen0000")))
             throw eap::InvalidStateException("Problem creating directory");
 
-        m_mutation += 0.05;
-
         boost::format nec_input(eap::run_directory + "gen%04d/ind%09d");
         for (unsigned int i_id=0; i_id<m_population_size; ++i_id)
         {
