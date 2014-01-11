@@ -754,6 +754,47 @@ std::vector<position_ptr> algorithm::mutate_pos(std::vector<position_ptr> &orig_
     }
 }
 
+/*
+ * mutate the position of just one antenna 
+ */
+std::vector<position_ptr> algorithm::mutate_pos_once(std::vector<position_ptr> &orig_placements)
+{
+    std::vector<position_ptr> placements;
+    try
+    {
+        unsigned int ant = eap::rand(0, m_ant_configs.size() - 1);
+
+        for (unsigned int i_ant=0; i_ant<orig_placements.size(); ++i_ant)
+        {
+            if (i_ant == ant)
+            {
+                unsigned int new_pos;
+                do
+                {
+                    new_pos = eap::rand(0, m_ant_configs[ant]->m_positions.size() - 1);
+                } while (overlap(orig_placements, m_ant_configs[i_ant]->m_positions[new_pos]));
+
+                placements.push_back(m_ant_configs[i_ant]->m_positions[new_pos]);
+            }
+            else
+            {
+                placements.push_back(orig_placements[i_ant]);
+            }
+        }
+
+        if (placements.size() != m_ant_configs.size())
+            throw eap::InvalidStateException("antenna placements exceeds the #of antennas");
+
+        return placements;
+    }
+    catch (...)
+    {
+        placements.erase(placements.begin(), placements.end());
+        throw;
+    }
+}
+
+
 
 algorithm::~algorithm(void)
 {

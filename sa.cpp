@@ -67,7 +67,6 @@ void sa::run(unsigned int run_id)
     {
         compute_temp();
         std::cout<<"***init computed temperature = "<<m_init_temp<<"\n";
-        // TODO check if runs/ is empty
         std::vector<position_ptr> placements;
         boost::format nec_input(eap::run_directory + "iter%09d");
         outfile.open(eap::results_directory + boost::filesystem::basename(m_lua_file) + "_r" + std::to_string(run_id) + "_iters.csv");
@@ -94,7 +93,7 @@ void sa::run(unsigned int run_id)
 
         for (unsigned int i=1; i<m_iterations; ++i)
         {
-            placements = mutate_pos(m_p_parent->m_positions);
+            placements = mutate_pos_once(m_p_parent->m_positions);
             individual_ptr p_child = create_individual(str(nec_input % i) + "a%02d.nec", placements);
             evaluate(i, p_child);
 
@@ -149,47 +148,6 @@ void sa::run(unsigned int run_id)
         throw;
     }
 }
-
-/*
- * mutate the position of just one antenna 
- */
-std::vector<position_ptr> sa::mutate_pos_once(std::vector<position_ptr> &orig_placements)
-{
-    std::vector<position_ptr> placements;
-    try
-    {
-        unsigned int ant = eap::rand(0, m_ant_configs.size() - 1);
-
-        for (unsigned int i_ant=0; i_ant<orig_placements.size(); ++i_ant)
-        {
-            if (i_ant == ant)
-            {
-                unsigned int new_pos;
-                do
-                {
-                    new_pos = eap::rand(0, m_ant_configs[ant]->m_positions.size() - 1);
-                } while (overlap(orig_placements, m_ant_configs[i_ant]->m_positions[new_pos]));
-
-                placements.push_back(m_ant_configs[i_ant]->m_positions[new_pos]);
-            }
-            else
-            {
-                placements.push_back(orig_placements[i_ant]);
-            }
-        }
-
-        if (placements.size() != m_ant_configs.size())
-            throw eap::InvalidStateException("antenna placements exceeds the #of antennas");
-
-        return placements;
-    }
-    catch (...)
-    {
-        placements.erase(placements.begin(), placements.end());
-        throw;
-    }
-}
-
 
 void sa::evaluate(unsigned int id, individual_ptr &p_ind)
 {

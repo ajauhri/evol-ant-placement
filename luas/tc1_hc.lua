@@ -168,8 +168,8 @@ add_point( -0.304800,   0.000000,   0.000000)
 add_point( -0.203200,   0.000000,   0.000000)
 add_point( -0.101600,   0.000000,   0.000000)
 params = {
-    iterations = 2000,
-    mutation = 0.1,
+    iterations = 4000,
+    mutation = 0.2,
     convergence_factor = 0.1,
     exp_weight = 2,
     algorithm = "HC",

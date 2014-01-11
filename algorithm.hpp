@@ -53,6 +53,7 @@ class algorithm
         float compare(const evaluation_ptr &, const evaluation_ptr &);
         std::vector<individual_ptr> breed(const individual_ptr&, const individual_ptr&);
         void simple_mutation(individual_ptr&);
+        std::vector<position_ptr> mutate_pos_once(std::vector<position_ptr>&);
         std::vector<position_ptr> mutate_pos(std::vector<position_ptr>&);
         bool overlap(std::vector<position_ptr>&, position_ptr&);
         void save_best_nec(individual_ptr&, unsigned int, unsigned int);

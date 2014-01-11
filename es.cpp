@@ -119,7 +119,7 @@ void es::create_pop(unsigned int gen)
             while (counter<m_mulambda_factor)
             {
                 int id = m_mu + i*m_mulambda_factor + counter;
-                std::vector<position_ptr> placements = mutate_pos(m_pop[i]->m_positions);
+                std::vector<position_ptr> placements = mutate_pos_once(m_pop[i]->m_positions);
                 new_pop.push_back(create_individual(str(input_path % gen % id) + "a%02d.nec", placements));
                 counter++;
             }

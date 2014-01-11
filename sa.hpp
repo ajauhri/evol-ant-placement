@@ -31,7 +31,6 @@ private:
     float m_p;
     /*******************/
 
-    std::vector<position_ptr> mutate_pos_once(std::vector<position_ptr>&);
     void evaluate(unsigned int, individual_ptr&);
     void run_simulation(unsigned int);
     void compute_temp();

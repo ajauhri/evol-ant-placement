@@ -72,7 +72,7 @@ void hc::run(unsigned int run_id)
 
         for (unsigned int i=1; i<m_iterations; ++i)
         {
-            std::vector<position_ptr> placements = mutate_pos(m_p_parent->m_positions);
+            std::vector<position_ptr> placements = mutate_pos_once(m_p_parent->m_positions);
             individual_ptr p_child = create_individual(str(nec_input % i) + "a%02d.nec", placements);
             evaluate(i, p_child);
 
