@@ -102,7 +102,6 @@ int main(int argc, char* argv[])
         for (unsigned int i=0; i<runs; ++i)
         {
             /* run the specific algorithm */
-            std::cout<<"***completed run "<<i<<"\n";
             eap::algo->run(i);
             std::string name = boost::filesystem::basename (lua_file);
             
@@ -113,7 +112,7 @@ int main(int argc, char* argv[])
             std::cout<<"***deleting runs directory\n";
             boost::filesystem::remove_all(eap::run_directory);
             boost::filesystem::create_directory(eap::run_directory);
-            std::cout<<"***completed run "<<i<<"\n";
+            std::cout<<"***completed run "<<i<<"/"<<runs<<"\n";
         }
     }
     catch (const std::exception &e)

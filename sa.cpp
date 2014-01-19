@@ -65,8 +65,11 @@ void sa::run(unsigned int run_id)
     std::ofstream outfile;
     try
     {
-        compute_temp();
-        std::cout<<"***init computed temperature = "<<m_init_temp<<"\n";
+        if (run_id == 0) 
+        {
+            compute_temp();
+            std::cout<<"***init computed temperature = "<<m_init_temp<<"\n";
+        }
         std::vector<position_ptr> placements;
         boost::format nec_input(eap::run_directory + "iter%09d");
         outfile.open(eap::results_directory + boost::filesystem::basename(m_lua_file) + "_r" + std::to_string(run_id) + "_iters.csv");
@@ -209,7 +212,7 @@ void sa::compute_temp()
     for (ant_config_ptr i_ant : m_ant_configs)
         tot_size *= i_ant->m_positions.size();
 
-    while (curr_size != 10) //m_temp_pop_factor * tot_size) 
+    while (curr_size != m_temp_pop_factor * tot_size) 
     {
         transition_ptr p_s(new transition);
         individual_ptr p_min(new individual);
