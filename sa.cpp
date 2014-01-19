@@ -258,7 +258,8 @@ void sa::compute_temp()
     boost::filesystem::remove_all(eap::run_directory);
     boost::filesystem::create_directory(eap::run_directory);
 
-    float num, deno = 0.0f;
+    float num = 0.0f;
+    float deno = 0.0f;
     while (1)
     {
         for (transition_ptr p_s : m_S)
