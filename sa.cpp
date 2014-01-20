@@ -212,7 +212,7 @@ void sa::compute_temp()
     for (ant_config_ptr i_ant : m_ant_configs)
         tot_size *= i_ant->m_positions.size();
 
-    while (curr_size != m_temp_pop_factor * tot_size) 
+    while (curr_size <= m_temp_pop_factor * tot_size) 
     {
         transition_ptr p_s(new transition);
         individual_ptr p_min(new individual);

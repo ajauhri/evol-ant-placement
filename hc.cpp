@@ -92,6 +92,9 @@ void hc::run(unsigned int run_id)
             else 
                 q=0;
 
+            if (fabs(m_p_parent->m_fitness - 0.496877) < 0.003)
+                break;
+
             if (q > m_converged_iterations)
             {
                 //change mutation probability
