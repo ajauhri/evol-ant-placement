@@ -67,7 +67,8 @@ void sa::run(unsigned int run_id)
     {
         if (run_id == 0) 
         {
-            compute_temp();
+            //compute_temp();
+            m_init_temp = 0.328292; // for tc1 
             std::cout<<"***init computed temperature = "<<m_init_temp<<"\n";
         }
         std::vector<position_ptr> placements;
@@ -141,6 +142,12 @@ void sa::run(unsigned int run_id)
                 std::cout<<"***mutation_prob changed to "<<m_mutation<<"\n";
                 q = 0;
             }
+
+            // remove all after an iteration
+            boost::filesystem::path path_to_remove(eap::run_directory);
+            for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it)
+                remove_all(it->path());
+
 
         }
         outfile.close();
@@ -253,6 +260,10 @@ void sa::compute_temp()
         }
         if (overlaps != m_ant_configs.size() - 1)
             throw eap::InvalidStateException("All except one antenna position should not overlap");
+        // remove all after an iteration
+       boost::filesystem::path path_to_remove(eap::run_directory);
+       for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it)
+           remove_all(it->path());
     }
 
     boost::filesystem::remove_all(eap::run_directory);
