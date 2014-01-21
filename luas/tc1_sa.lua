@@ -168,8 +168,8 @@ add_point( -0.304800,   0.000000,   0.000000)
 add_point( -0.203200,   0.000000,   0.000000)
 add_point( -0.101600,   0.000000,   0.000000)
 params = {
-    iterations = 2000,
-    cooling_factor = 0.9985,
+    iterations = 5000,
+    cooling_factor = 0.995,
     convergence_factor = 0.1,
     mutation = 0.1,
     exp_weight = 2,
@@ -180,6 +180,7 @@ params = {
     min_coup = -30.968,
     temp_pop_factor = 0.1,
     auto_seed = 1,
-    temp_error = 0.02,
+    temp_error = 0.05,
     accept_prob = 0.9
 }
+inittemp = 0.328292
