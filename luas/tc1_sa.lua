@@ -183,4 +183,3 @@ params = {
     temp_error = 0.05,
     accept_prob = 0.9
 }
-inittemp = 0.328292
