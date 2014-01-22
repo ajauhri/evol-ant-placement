@@ -104,7 +104,7 @@ void hc::run(unsigned int run_id)
             for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it)
                 remove_all(it->path());
 
-            if (fabs(m_p_parent->m_fitness - 0.496877) <= 0.0f) //exit condition for tc2
+            if (abs(m_p_parent->m_fitness - 0.496877) > 0.0000001) //exit condition for tc2
                 break;
         }
 
