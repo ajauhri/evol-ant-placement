@@ -94,18 +94,13 @@ void hc::run(unsigned int run_id)
 
             if (q > m_converged_iterations)
             {
-                //change mutation probability
-                m_mutation *= 1.1;
-                std::cout<<"***mutatation_prob changed to "<<m_mutation<<"\n";
-                q = 0;
+                break;
             }
             // remove all after an iteration
             boost::filesystem::path path_to_remove(eap::run_directory);
             for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it)
                 remove_all(it->path());
 
-            if (abs(m_p_parent->m_fitness - 0.496877) > 0.0000001) //exit condition for tc2
-                break;
         }
 
         outfile.close();
