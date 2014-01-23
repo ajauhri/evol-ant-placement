@@ -14,7 +14,6 @@ namespace
 hc::hc(std::string lua_file) : algorithm(lua_file)
 {
     m_convergence_factor = 0.0f;
-    m_best_fitness = 0.0f;
     m_converged_iterations = 0.0f;
 }
 
@@ -63,7 +62,6 @@ void hc::run(unsigned int run_id)
 
         m_p_parent = create_individual(str(nec_input % 0) + "a%02d.nec", placements);
         evaluate(0, m_p_parent);
-        m_best_fitness = m_p_parent->m_fitness;
         outfile << 0 << "," << m_p_parent->m_fitness << "," << m_p_parent->m_gain_fitness << "," << m_p_parent->m_coupling_fitness << ",";
         for (position_ptr p_pos : m_p_parent->m_positions)
             outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z <<",";
@@ -78,19 +76,16 @@ void hc::run(unsigned int run_id)
 
             if (p_child->m_fitness < m_p_parent->m_fitness)
             {
-                m_best_fitness = p_child->m_fitness;
                 swap(m_p_parent, p_child);
                 outfile << i << "," << m_p_parent->m_fitness << "," << m_p_parent->m_gain_fitness << "," << m_p_parent->m_coupling_fitness << ",";
                 for (position_ptr p_pos : m_p_parent->m_positions)
                     outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z <<",";
                 outfile << "\n";
                 std::cout<<"***iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
+                q = 0;
             }
-
-            if (m_p_parent->m_fitness >= m_best_fitness)
+            else
                 q++;
-            else 
-                q=0;
 
             if (q > m_converged_iterations)
             {
@@ -102,7 +97,6 @@ void hc::run(unsigned int run_id)
                 remove_all(it->path());
 
         }
-
         outfile.close();
     }
 
