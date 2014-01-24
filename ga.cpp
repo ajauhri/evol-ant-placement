@@ -90,6 +90,12 @@ void ga::run(unsigned int run_id)
             select();
             create_generation(i);
             evaluate_gen(i);
+            if ((m_pop[0]->m_fitness - 0.49926) < 0.1)
+            {
+                std::cout<<"***breaked early\n";
+                break;
+            }
+            
         }
 
         std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);

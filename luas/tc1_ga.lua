@@ -168,10 +168,10 @@ add_point( -0.304800,   0.000000,   0.000000)
 add_point( -0.203200,   0.000000,   0.000000)
 add_point( -0.101600,   0.000000,   0.000000)
 params = {
-    pop = 500,
+    pop = 5,
     generations = 10,
-    elitism = 50,
-    tournament_size = 50,
+    elitism = 1,
+    tournament_size = 1,
     mutation = 0.1,
     recombination = 0.6,
     exp_weight = 2,
