@@ -192,7 +192,12 @@ void es::run_simulation(unsigned int gen_id)
 {
     try
     {
-        system("ssh -l ajauhri hopt.sv.cmu.edu 'rm ~/runs/*.*;'");
+        boost::format formatter("ls " + eap::run_directory + "gen%04d/*.nec | parallel -j+0 nec2++ -i {}");
+        std::cout<<"***running simulation for generation "<<gen_id<<"\n";
+        system(str(formatter % gen_id).c_str());
+        std::cout<<"***completed simulation for generation "<<gen_id<<"\n";
+        /*
+        system("ssh -l ajauhri hopt.sv.cmu.edu 'rm ~/runs*.*;'");
         boost::format cmd_in("rsync -avzP  " + eap::run_directory + "gen%04d/ ajauhri@hopt.sv.cmu.edu:~/runs/");
         system(str(cmd_in % gen_id).c_str());
         std::cout<<"***running simulation for generation "<<gen_id<<"\n";
@@ -200,6 +205,7 @@ void es::run_simulation(unsigned int gen_id)
         boost::format cmd_out("rsync -avzP ajauhri@hopt.sv.cmu.edu:~/runs/ " + eap::run_directory + "gen%04d/");
         system(str(cmd_out % gen_id).c_str());
         std::cout<<"***completed simulation for generation "<<gen_id<<"\n";
+        */
     }
     catch (...)
     {
