@@ -52,14 +52,11 @@ add_point(  0.406400,  -0.508000,   0.000000)
 add_point(  0.406400,  -0.609600,   0.000000)
 add_point(  0.508000,  -0.609600,   0.000000)
 params = {
-    pop = 1500,
-    generations = 10,
-    elitism = 150,
-    tournament_size = 150,
+    iterations = 15400,
     mutation = 0.1,
-    recombination = 0.6,
+    convergence_factor = 0.1,
     exp_weight = 2,
-    algorithm = "GA",
+    algorithm = "HC",
     run_simulator = 1,
     max_gain = 7.21229e+08,
     max_coup = 28.464,
