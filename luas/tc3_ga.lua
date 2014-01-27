@@ -170,12 +170,17 @@ add_point(  0.609600,   0.000000,   0.000000)
 add_point(  0.609600,  -0.101600,   0.000000)
 add_point(  0.609600,  -0.203200,   0.000000)
 params = {
-    mutation = 0.0,
+    pop = 8500,
+    generations = 10,
+    elitism = 850,
+    tournament_size = 850,
+    mutation = 0.1,
+    recombination = 0.6,
     exp_weight = 2,
-    algorithm = "EX",
-    run_simulator = 0,
-    max_gain = 1,
-    max_coup = 1,
-    min_coup = 1,
-    auto_seed = 1, 
+    algorithm = "GA",
+    run_simulator = 1,
+    max_gain = 5.35206e+08,
+    max_coup = 72.902,
+    min_coup = -81.006,
+    auto_seed = 1,
 }
