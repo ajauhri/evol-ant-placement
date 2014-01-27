@@ -72,25 +72,32 @@ def main():
             fitness = float(line.split(",")[1])
             if fitness < best:
                 best = fitness
+                iter = int(line.split(",")[0])
+
         fit_agg += best
+        print "iter=%d, best=%f" % (iter, best)
     ex_result_fit = float(open(test_case_name+"/"+test_case_name+"_ex_r0_o0_pop.csv").readline().split(",")[0])
     fit_agg /= int(options.runs)
-    print "sa agg=%f, ex_best=%f" % (fit_agg, ex_result_fit)
+    print "sa agg=%f, ex_best=%f" % (fit_agg,  ex_result_fit)
 
     #HC
     fit_agg = 0
     for r in xrange(0, int(options.runs)):
         best = 1.0
+        iter = 0
         file = test_case_name + "/" + test_case_name + "_hc" + "_r" + str(r) + "iters.csv"
         lines = open(file).readlines()
         for line in lines:
             fitness = float(line.split(",")[1])
             if fitness < best:
                 best = fitness
+                iter = int(line.split(",")[0])
+
         fit_agg += best
+        print "iter=%d, best=%f" % (iter, best)
     ex_result_fit = float(open(test_case_name+"/"+test_case_name+"_ex_r0_o0_pop.csv").readline().split(",")[0])
     fit_agg /= int(options.runs)
-    print "hc agg=%f, ex_best=%f" % (fit_agg, ex_result_fit)
+    print "hc agg=%f,  ex_best=%f" % (fit_agg, ex_result_fit)
     
     
 
