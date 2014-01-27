@@ -79,8 +79,8 @@ void es::run(unsigned int run_id)
             save_best_nec(m_pop[0], run_id, i);
             std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
             survivor_selection();
-            //tc4
-            if ((m_pop[0]->m_fitness - 0.49926) < 0.1)
+            //tc3
+            if ((m_pop[0]->m_fitness - 0.49747) < 0.0001)
             {
                 std::cout<<"***breaked early\n";
                 break;
