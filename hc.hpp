@@ -9,7 +9,6 @@ private:
 	float m_convergence_factor;
 	unsigned int m_iterations;
     individual_ptr m_p_parent;
-    float m_best_fitness;
     float m_converged_iterations;
     
     void evaluate(unsigned int, individual_ptr&);

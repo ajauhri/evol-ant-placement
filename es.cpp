@@ -79,6 +79,12 @@ void es::run(unsigned int run_id)
             save_best_nec(m_pop[0], run_id, i);
             std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
             survivor_selection();
+            //tc3
+            if ((m_pop[0]->m_fitness - 0.49747) < 0.0001)
+            {
+                std::cout<<"***breaked early\n";
+                break;
+            }
         }
     }
 
@@ -190,6 +196,16 @@ void es::run_simulation(unsigned int gen_id)
         std::cout<<"***running simulation for generation "<<gen_id<<"\n";
         system(str(formatter % gen_id).c_str());
         std::cout<<"***completed simulation for generation "<<gen_id<<"\n";
+        /*
+        system("ssh -l ajauhri hopt.sv.cmu.edu 'rm ~/runs*.*;'");
+        boost::format cmd_in("rsync -avzP  " + eap::run_directory + "gen%04d/ ajauhri@hopt.sv.cmu.edu:~/runs/");
+        system(str(cmd_in % gen_id).c_str());
+        std::cout<<"***running simulation for generation "<<gen_id<<"\n";
+        system("ssh -l ajauhri hopt.sv.cmu.edu 'find runs/ -iname \"*.nec\" | parallel -j+0 nec2++ -i {}'");
+        boost::format cmd_out("rsync -avzP ajauhri@hopt.sv.cmu.edu:~/runs/ " + eap::run_directory + "gen%04d/");
+        system(str(cmd_out % gen_id).c_str());
+        std::cout<<"***completed simulation for generation "<<gen_id<<"\n";
+        */
     }
     catch (...)
     {

@@ -65,8 +65,11 @@ void sa::run(unsigned int run_id)
     std::ofstream outfile;
     try
     {
-        compute_temp();
-        std::cout<<"***init computed temperature = "<<m_init_temp<<"\n";
+        if (run_id == 0) 
+        {
+            compute_temp();
+            std::cout<<"***init computed temperature = "<<m_init_temp<<"\n";
+        }
         std::vector<position_ptr> placements;
         boost::format nec_input(eap::run_directory + "iter%09d");
         outfile.open(eap::results_directory + boost::filesystem::basename(m_lua_file) + "_r" + std::to_string(run_id) + "_iters.csv");
@@ -135,9 +138,14 @@ void sa::run(unsigned int run_id)
             {
                 //change mutation probability
                 m_mutation *= 1.1;
-                std::cout<<"***mutation_prob changed to "<<m_mutation<<"\n";
+                //std::cout<<"***mutation_prob changed to "<<m_mutation<<"\n";
                 q = 0;
             }
+
+            // remove all after an iteration
+            boost::filesystem::path path_to_remove(eap::run_directory);
+            for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it)
+                remove_all(it->path());
 
         }
         outfile.close();
@@ -209,7 +217,7 @@ void sa::compute_temp()
     for (ant_config_ptr i_ant : m_ant_configs)
         tot_size *= i_ant->m_positions.size();
 
-    while (curr_size != 10) //m_temp_pop_factor * tot_size) 
+    while (curr_size <= m_temp_pop_factor * tot_size) 
     {
         transition_ptr p_s(new transition);
         individual_ptr p_min(new individual);
@@ -250,12 +258,17 @@ void sa::compute_temp()
         }
         if (overlaps != m_ant_configs.size() - 1)
             throw eap::InvalidStateException("All except one antenna position should not overlap");
+        // remove all after an iteration
+        boost::filesystem::path path_to_remove(eap::run_directory);
+        for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it)
+            remove_all(it->path());
     }
 
     boost::filesystem::remove_all(eap::run_directory);
     boost::filesystem::create_directory(eap::run_directory);
 
-    float num, deno = 0.0f;
+    float num = 0.0f;
+    float deno = 0.0f;
     while (1)
     {
         for (transition_ptr p_s : m_S)
