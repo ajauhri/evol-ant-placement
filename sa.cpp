@@ -67,7 +67,8 @@ void sa::run(unsigned int run_id)
     {
         if (run_id == 0) 
         {
-            compute_temp();
+            //compute_temp();
+           m_init_temp = 0.23;
             std::cout<<"***init computed temperature = "<<m_init_temp<<"\n";
         }
         std::vector<position_ptr> placements;
@@ -124,6 +125,7 @@ void sa::run(unsigned int run_id)
                         outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z <<",";
                     outfile << "\n";
                     std::cout<<"***fitness got bad iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
+			outfile.flush();
                 }
             }
             temperature = m_cooling_factor * temperature;
@@ -136,11 +138,11 @@ void sa::run(unsigned int run_id)
 
             if (q > m_converged_iterations)
             {
-                //change mutation probability
-                m_mutation *= 1.1;
-                //std::cout<<"***mutation_prob changed to "<<m_mutation<<"\n";
-                q = 0;
+		break;
             }
+
+            if (fabs(m_best_fitness - 0.49747) < 0.0001)
+		break;
 
             // remove all after an iteration
             boost::filesystem::path path_to_remove(eap::run_directory);
