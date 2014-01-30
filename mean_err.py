@@ -43,7 +43,6 @@ def main():
         fit_agg += best
         print '**'
         gen_agg += (gen+1)*ga_gens[options.tc_id]
-
     fit_agg /= int(options.runs)
     gen_agg /= int(options.runs)
     result = math.fabs(ex_result_fit - fit_agg)
