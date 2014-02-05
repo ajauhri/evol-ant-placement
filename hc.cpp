@@ -88,9 +88,8 @@ void hc::run(unsigned int run_id)
                 q++;
 
             if (q > m_converged_iterations)
-            {
                 break;
-            }
+            
             // remove all after an iteration
             boost::filesystem::path path_to_remove(eap::run_directory);
             for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it)

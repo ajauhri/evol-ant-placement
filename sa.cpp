@@ -137,12 +137,7 @@ void sa::run(unsigned int run_id)
                 q = 0;
 
             if (q > m_converged_iterations)
-            {
-		break;
-            }
-
-            if (fabs(m_best_fitness - 0.49747) < 0.0001)
-		break;
+		        break;
 
             // remove all after an iteration
             boost::filesystem::path path_to_remove(eap::run_directory);
