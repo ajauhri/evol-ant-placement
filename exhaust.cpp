@@ -27,6 +27,7 @@ void exhaust::run(unsigned int run_id)
         std::vector<position_ptr> placements;
         std::cout<<"***creating individuals\n";
         recur_placements(placements, 0);
+        std::cout<<"pop size"<<m_pop.size()<<"\n";
         evaluate();
 
         std::sort(m_pop.begin(), m_pop.end(), eap::gain_fitness_sort);

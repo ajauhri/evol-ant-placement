@@ -6,3 +6,20 @@
 # --tack-fds=yes list of open file descriptors open on exit. Currently showing 4 fds open (stdout, stdin, stderr and one more). Not sure about the 4th one
 
 For reference look here (http://explainshell.com/explain?cmd=valgrind+--tool%3Dmemcheck+--leak-check%3Dyes+--show-reachable%3Dyes+--track-fds%3Dyes) 
+
+
+>>> def cal(F, c_max, c_min):
+...     f_c = (F * c_max)
+...     sum_c = f_c - abs(c_min)
+...     delta_c = abs(c_min - sum_c)
+...     print delta_c
+
+>>> cal(0.02, 27.372, -30.968)
+0.54744
+>>> cal(0.02, 65.168, -95.88)
+1.30336
+>>> cal(0.02, 75.902, -81.006)
+1.51804
+>>> cal(0.02, 28.464, -163.098)
+0.56928
+
