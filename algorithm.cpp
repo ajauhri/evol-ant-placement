@@ -475,7 +475,6 @@ float algorithm::compare(const evaluation_ptr &p_first,
             pattern_ptr p_p2 = p_second->m_radiation[i];
             //why do we need to check for matching frequency?
             if (p_p1->m_frequency != p_p2->m_frequency) throw eap::InvalidStateException("frequencies don't match");
-            std::cout<<"num_polar="<<num_polar();
             for (unsigned int j=0; j<num_polar(); ++j)
             {
                 diff += powf(fabs(p_p1->m_db_gain[j] - p_p2->m_db_gain[j]), m_exp_weight);
