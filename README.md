@@ -1,5 +1,6 @@
 evol-ant-placement 
 ====
+[Paper](http://abhinavjauhri.com/publications/eap.pdf)
 
 Dependendcies
 ----
@@ -23,3 +24,4 @@ Run `make` to create executable called `evol_ant`
 Run executable. For instance - `evol_ant -i luas/tc1_ga.lua -r 1`
 
 Input NEC (\*.nec) and output (\*.out) files are stored under `runs` folder. Best hypothesis for each run are stored under the `results` folder. 
+
