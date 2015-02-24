@@ -1,8 +1,6 @@
 library(gridExtra)
 library(lattice)
 tc <- read.csv("tc1_ex.csv")
-
-g <- expand.grid(x = 1:10, y = 5:15, gr = 1:2)
 p1 <- wireframe(tc$f1 ~ tc$x + tc$y, data=tc, scales=list(draw=F), drape=T, zlab='f(x,y)')
 p2 <- wireframe(tc$f2 ~ tc$x + tc$y, data=tc,  scales=list(draw=F), drape=T, zlab='f(x,y)', screen=list(x=-60))
 grid.arrange(p1,p2, ncol=2)
