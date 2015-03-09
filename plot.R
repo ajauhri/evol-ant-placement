@@ -1,6 +1,6 @@
 library(gridExtra)
 library(lattice)
-tc <- read.csv("tc1_ex.csv")
+tc <- read.csv("tc2_ex.csv")
 p1 <- wireframe(tc$f1 ~ tc$x + tc$y, data=tc, scales=list(draw=F), drape=T, zlab='f(x,y)')
 p2 <- wireframe(tc$f2 ~ tc$x + tc$y, data=tc,  scales=list(draw=F), drape=T, zlab='f(x,y)', screen=list(x=-60))
 grid.arrange(p1,p2, ncol=2)
@@ -13,3 +13,13 @@ grid.arrange(p5,p6, ncol=2)
 p7 <- wireframe(tc$f1 ~ tc$x + tc$y, data=tc,  scales=list(draw=F), drape=T, zlab='f(x,y)', screen=list(z=-10,x=120,y=-10))
 p8 <- wireframe(tc$f2 ~ tc$x + tc$y, data=tc,  scales=list(draw=F), drape=T, zlab='f(x,y)', screen=list(z=-10,x=120,y=-10))
 grid.arrange(p7,p8, ncol=2)
+wireframe(tc$f ~ tc$f1 + tc$f2, data=tc,  scales=list(draw=F), drape=T, zlab='f', screen=list(z=-10,x=120,y=-10))
+l <- length(tc$f1)
+pareto <- logical(length=l)
+f1.sort <- sort(tc$f1)
+f2.sort <- tc$f2[order(tc$f1)]
+for(i in 1:l) {
+    pareto[i] <- all(f2.sort[1:i] >= f2.sort[i])
+}
+#plot(tc$f1, tc$f2, xlim=c(0.985, 1), ylim=c(0,1))
+#plot(f1.sort[pareto], f2.sort[pareto], xlim=c(0.985, 1), ylim=c(0.0,1))
