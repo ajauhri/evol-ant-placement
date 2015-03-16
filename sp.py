@@ -46,6 +46,7 @@ def main():
                             evals = (i+1) * es_gens[tc]
                             if len(df[(df[0] <= evals) & (abs(df[1] - h_star[tc-1]) <= e)]) > 0:
                                 count += 1
+                        # condition needs to be removed 
                         else:
                             count += 1
 
@@ -55,23 +56,25 @@ def main():
                     a_p.append(a_p[-1])
                 else:
                     a_p.append(count/10)
-                a_e.append((i+1) * es_gens[tc])
-            print a_e
-            xnew = np.linspace(min(a_e), max(a_e), 30)
+                if a is 'ga':
+                    a_e.append((i+1) * ga_gens[tc])
+                else:
+                    a_e.append((i+1) * es_gens[tc])
+            #print a, a_e, max(i*es_gens[tc], i*ga_gens[tc])
+            xnew = np.linspace(0, max(i*es_gens[tc], i*ga_gens[tc]), 10)
             a_p = spline(a_e, a_p, xnew, order=1)
             y.append(a_p)
             x.append(xnew)
-        plt.plot(x[0],y[0],'b-D')#, markersize=8)
-        plt.plot(x[1],y[1],'r-s')#, markersize=8)
-        plt.plot(x[2],y[2],'g-*')#, markersize=8)
-        plt.plot(x[3],y[3],'c-v')#, markersize=8)
+        plt.plot(x[0],y[0],'b-D')
+        plt.plot(x[1],y[1],'r-s')
+        plt.plot(x[2],y[2],'g-*')
+        plt.plot(x[3],y[3],'c-v')
         plt.legend(['AP-ES','AP-GA','AP-SA','AP-HC'], loc=0)
         plt.xlabel('Evaluations', fontsize=18)
         plt.ylabel('Success probability', fontsize=18)
-        plt.savefig('tc%d_sp.eps' % tc, format='eps', dpi=1000)
-        plt.ylim((0,1.02))
         plt.title('Test Case %d' % tc)
-        plt.show()
+        plt.ylim((0,1.02))
+        plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_sp.eps' % tc, format='eps', dpi=1000)
         plt.clf()
 
 if __name__ == "__main__":
