@@ -6,6 +6,7 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 import math
+import scipy.interpolate
 def tc1(fname, ant):
     res = np.loadtxt(open(fname, 'r'), delimiter=',', skiprows=1, usecols=range(9))
     b = np.ascontiguousarray(res[:,ant[0]:ant[0]+3]).view(np.dtype((np.void, res.dtype.itemsize * 3)))
@@ -31,11 +32,28 @@ def tc1(fname, ant):
     f = np.array(f)
     a1 = np.array(a1)
     a2 = np.array(a2)
-    fig = plt.figure()
-    #ax.scatter(a1, a2, f)
-    ax = fig.gca(projection='3d')
-    surf = ax.plot_trisurf(a1, a2, f, cmap=cm.brg, linewidth=0.01)
-    fig.colorbar(surf)
+    #fig = plt.figure()
+    #ax = fig.gca(projection='3d')
+    #ax.set_xlabel("Allowable Placements of Antenna 1", fontsize=8)
+    #ax.set_ylabel("Allowable Placements of Antenna 2", fontsize=8)
+    #ax.set_zlabel("Fitness", fontsize=8)
+    #surf = ax.plot_trisurf(a1, a2, f, cmap=cm.brg, linewidth=0.01)
+    #fig.colorbar(surf)
+    #ax.view_init(elev=70., azim=-57)
+    #plt.savefig('/home/ajauhri/quals/paper/FIG/tc1_ss.png', format='png')#, dpi=1000)
+    #plt.show()
+    xi, yi = np.linspace(a1.min(), a2.max(), 100), np.linspace(a2.min(), a1.max(), 100)
+    xi, yi = np.meshgrid(xi, yi)
+
+    # Interpolate
+    rbf = scipy.interpolate.Rbf(a1, a2, f, function='linear')
+    zi = rbf(xi, yi)
+
+    plt.imshow(zi, vmin=f.min(), vmax=f.max(), origin='lower',
+           extent=[a1.min(), a1.max(), a2.min(), a2.max()])
+    plt.colorbar()
+    plt.show()
+    plt.clf()
 
 def tc2(fname, ant):
     res = np.loadtxt(open(fname, 'r'), delimiter=',', skiprows=1, usecols=range(12))
@@ -65,8 +83,12 @@ def tc2(fname, ant):
     a3 = np.array(a3)
     fig = plt.figure()
     ax = fig.gca(projection='3d')
+    #ax.set_ylabel("Allowable placements for Ant #2")
+    #ax.set_zlabel("Fitness")
     surf = ax.plot_trisurf(a12, a3, f, cmap=cm.brg, linewidth=0.01)
     fig.colorbar(surf)
+    plt.show()
+    plt.clf()
 
 def tc4(fname, ant):
     res = np.loadtxt(open(fname, 'r'), delimiter=',', skiprows=1, usecols=range(15))
@@ -103,10 +125,11 @@ def tc4(fname, ant):
     ax = fig.gca(projection='3d')
     surf = ax.plot_trisurf(a123, a4, f, cmap=cm.brg, linewidth=0.01)
     fig.colorbar(surf)
+    plt.clf()
 
 tc1("tc1_ex.csv", [3,6])
-tc2("tc2_ex.csv", [3,6,9])
-tc2("tc3_ex.csv", [3,6,9])
-tc4("tc4_ex.csv", [3,6,9,12])
-plt.show()
+#tc2("tc2_ex.csv", [3,6,9])
+#tc2("tc3_ex.csv", [3,6,9])
+#tc4("tc4_ex.csv", [3,6,9,12])
+#plt.show()
 

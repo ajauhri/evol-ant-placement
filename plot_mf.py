@@ -10,6 +10,7 @@ from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 import matplotlib
 from scipy.interpolate import spline
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import math
 
 params = {'legend.linewidth': 10}
@@ -26,7 +27,7 @@ evals = [[i for i in range(50, int(ss[0]/2), int(0.025*ss[0]/2))],
 def main():
     algo = ['es', 'ga', 'sa', 'hc']
     h_star = [0.498641, 0.496877, 0.49747, 0.49926]
-    for tc in xrange(3, 4, 1):
+    for tc in xrange(1, 5, 1):
         x = []
         y = []
         for a in algo:
@@ -68,25 +69,29 @@ def main():
                     a_mf.append(np.sum(fitness)/len(fitness))
                 l_f = fitness 
             y.append(a_mf)
-            e = map(lambda x: int(100*x/ss[tc-1]), evals[tc-1])
+            e = map(lambda x: 100*x/ss[tc-1], evals[tc-1]) 
             x.append(e)
         mx = max(map(max, y))
         mn = min(map(min, y))
-        yt = np.arange(mn-0.001, mx+0.01, 0.002)
+        yt = np.arange(mn-0.0015, mx+0.001, 0.003)
         yt = np.insert(yt, 1, h_star[tc-1])
         ax = plt.subplot()
+        plt.gca().xaxis.grid(True)
+        plt.gca().yaxis.grid(True)
         ax.set_yticks(yt)
-        ax.set_ylim((mn-0.001,mx+0.001))
+        #ax.set_xticks(e)
+        #ax.xaxis.set_major_formatter(FormatStrFormatter('%d\%'))
+        ax.set_ylim((mn-0.002,mx+0.001))
         for label in (ax.get_xticklabels() + ax.get_yticklabels()):
             label.set_fontname('Arial')
-            label.set_fontsize(9)
+            label.set_fontsize(11)
         ax.get_yticklabels()[1].set_color('m')
         ax.plot(x[0],y[0],'b-D')
         ax.plot(x[1],y[1],'r-s')
         ax.plot(x[2],y[2],'g-*')
         ax.plot(x[3],y[3],'c-v')
         #plt.yscale('symlog')
-        plt.legend(['AP-ES','AP-GA','AP-SA','AP-HC'], loc=0)
+        plt.legend(['ES','GA','SA','HC'], loc=0)
         plt.xlabel('Fitness Evaluations(%)', fontsize=13)
         plt.ylabel('Mean Best Fitness', fontsize=13)
         plt.axhline(y=h_star[tc-1], linestyle='dashed', linewidth=1, color='m')

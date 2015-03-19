@@ -1,13 +1,10 @@
-import matplotlib.pyplot
+import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import sys
 import re
 
-fig = matplotlib.pyplot.figure()
-ax = fig.add_subplot(111, projection='3d')
-
-def plot_platform(fname):
+def plot_platform(fname, ax):
     f = file(fname, 'r')
     start = []
     end = []
@@ -19,11 +16,13 @@ def plot_platform(fname):
     f.close()
 
 def main(id):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
     ant = [2,3,3,4]
     f = file("luas/tc%d_ex.lua" % id, 'r')
     lines = f.readlines()
     plt_f = re.findall("\"([^\"]+)\"", lines[0])
-    plot_platform(plt_f[0])
+    plot_platform(plt_f[0], ax)
     colors = ['r','g','b','y',]
     curr_color = -1
     x_p = []
@@ -43,7 +42,7 @@ def main(id):
             z_p[curr_color].append(p[2])
     assert len(x_p) == len(y_p) == len(z_p)
     for i in range(ant[id-1]):
-        ax.plot(x_p[i], y_p[i], z_p[i], "o", color = colors[i], label="Antenna %d"%(i+1))
+        ax.plot(x_p[i], y_p[i], z_p[i], "o", color = colors[i], label="Allowable placements for antenna %d"%(i+1))
     f.close()
     ax.set_xlabel("x")
     ax.set_ylabel("y")
@@ -51,6 +50,10 @@ def main(id):
     #ax.set_title("Test Case %d" % id)
     labels = map(lambda x: "Antenna %d" % x, range(1,ant[id-1]+1))
     ax.legend(loc=0, numpoints=1)
-    matplotlib.pyplot.savefig('/home/ajauhri/quals/paper/FIG/tc_%d_figure.eps' % id, format='eps', dpi=1000)
+    plt.savefig('/home/ajauhri/quals/paper/FIG/tc_%d_figure.eps' % id, format='eps', dpi=1000)
+    plt.clf()
     #matplotlib.pyplot.show()
-main(int(sys.argv[1]))
+main(1)
+main(2)
+main(3)
+main(4)
