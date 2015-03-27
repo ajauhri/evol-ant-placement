@@ -4,7 +4,7 @@ import numpy as np
 import sys
 import re
 
-def plot_platform(fname, ax):
+def plot_platform(fname, ax, id):
     f = file(fname, 'r')
     start = []
     end = []
@@ -13,6 +13,8 @@ def plot_platform(fname, ax):
             start = map(float, line.split()[3:6])
             end = map(float, line.split()[6:9])
             ax.plot([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], color='black')
+    #ax.set_axis_off()
+    plt.savefig('/home/ajauhri/quals/paper/FIG/tc_%d_platform.eps' % id, format='eps', dpi=1000)
     f.close()
 
 def main(id):
@@ -22,7 +24,7 @@ def main(id):
     f = file("luas/tc%d_ex.lua" % id, 'r')
     lines = f.readlines()
     plt_f = re.findall("\"([^\"]+)\"", lines[0])
-    plot_platform(plt_f[0], ax)
+    plot_platform(plt_f[0], ax, id)
     colors = ['r','g','b','y',]
     curr_color = -1
     x_p = []
@@ -41,19 +43,25 @@ def main(id):
             y_p[curr_color].append(p[1])
             z_p[curr_color].append(p[2])
     assert len(x_p) == len(y_p) == len(z_p)
-    for i in range(ant[id-1]):
+    if id == 11:
+        tc_id = 1
+    else:
+        tc_id = id
+    for i in range(ant[tc_id-1]):
         ax.plot(x_p[i], y_p[i], z_p[i], "o", color = colors[i], label="Allowable placements for antenna %d"%(i+1))
     f.close()
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_zlabel("z")
     #ax.set_title("Test Case %d" % id)
-    labels = map(lambda x: "Antenna %d" % x, range(1,ant[id-1]+1))
-    ax.legend(loc=0, numpoints=1)
+    labels = map(lambda x: "Antenna %d" % x, range(1,ant[tc_id-1]+1))
+    leg = ax.legend(loc=0, numpoints=1)
+    #leg.get_frame().set_linewidth(0.0)
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc_%d_figure.eps' % id, format='eps', dpi=1000)
+    #plt.show()
     plt.clf()
-    #matplotlib.pyplot.show()
 main(1)
-main(2)
-main(3)
-main(4)
+#main(11)
+#main(2)
+#main(3)
+#main(4)
