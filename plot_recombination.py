@@ -16,44 +16,29 @@ def plot_platform(fname, ax, id):
     ax.set_axis_off()
     f.close()
 
-def plot2(id):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+def get_second_plot(id):
     f = file("luas/tc%d_ex.lua" % id, 'r')
     lines = f.readlines()
-    plt_f = re.findall("\"([^\"]+)\"", lines[0])
-    plot_platform(plt_f[0], ax, id)
     colors = ['r','g','b','y',]
     x_p = []
     y_p = []
     z_p = []
-    ant_count = 0
+    ant_count = -1
     for line in lines[1:]:
         if "add_antenna" in line:
-            if ant_count == 1:
-                break
+            x_p.append([])
+            y_p.append([])
+            z_p.append([])
             ant_count += 1
         elif "add_point" in line:
             p = re.findall("\(([^\"]+)\)", line)
             p = map(float, p[0].split(','))
-            x_p.append(p[0])
-            y_p.append(p[1])
-            z_p.append(p[2])
+            x_p[ant_count].append(p[0])
+            y_p[ant_count].append(p[1])
+            z_p[ant_count].append(p[2])
     assert len(x_p) == len(y_p) == len(z_p)
-    ax.plot(x_p, y_p, z_p, "o", color = colors[0], label="Allowable placements for antenna 1")
-    ax.plot([x_p[47]], [y_p[47]], [z_p[47]], "*", markersize=9, color = colors[2], label="New placement for antenna 1")
     f.close()
-    ax.set_xlabel("x")
-    ax.set_ylabel("y")
-    ax.set_zlabel("z")
-    #ax.set_title("Test Case %d" % id)
-    labels = map(lambda x: "Antenna %d" % x, range(1,2))
-    leg = ax.legend(bbox_to_anchor=(1,0.72), numpoints=1, prop={'size':9})
-    leg.get_frame().set_linewidth(0.0)
-    plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_mut2.eps' % id, format='eps', dpi=1000)
-    #plt.show()
-    plt.clf()
-    return ([x_p[47]], [y_p[47]], [z_p[47]])
+    return (([x_p[0][47]], [y_p[0][47]], [z_p[0][47]]), ([x_p[1][35]], [y_p[1][35]], [z_p[1][35]]))
 
 def plot1(id):
     fig = plt.figure()
@@ -95,13 +80,12 @@ def plot1(id):
     labels = map(lambda x: "Antenna %d" % x, range(1,ant[tc_id-1]+1))
     leg = ax.legend(bbox_to_anchor=(1,0.72), numpoints=1, prop={'size':9})
     leg.get_frame().set_linewidth(0.0)
-    plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_mut1.eps' % tc_id, format='eps', dpi=1000)
+    plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_reco1.eps' % tc_id, format='eps', dpi=1000)
     #plt.show()
     plt.clf()
-    return (x_p[1], y_p[1], z_p[1])
+    return ((x_p[0], y_p[0], z_p[0]), (x_p[1], y_p[1], z_p[1]))
 
-def plot3(new, orig):
-    colors = ['r','g','b','y',]
+def plot(new, v, c):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     f = file("luas/tc1_ex.lua", 'r')
@@ -109,9 +93,8 @@ def plot3(new, orig):
     plt_f = re.findall("\"([^\"]+)\"", lines[0])
     plot_platform(plt_f[0], ax, id)
     f.close()
-    plot_platform(plt_f[0], ax, 1)
-    ax.plot(new[0], new[1], new[2], "o", markersize=9, color = colors[0], label="Placement for antenna 1")
-    ax.plot(orig[0], orig[1], orig[2], "o", markersize=9, color = colors[1], label="Placement for antenna 2")
+    ax.plot(new[0][0], new[0][1], new[0][2], "o", markersize=9, color = c[0], label="Placement for antenna 1")
+    ax.plot(new[1][0], new[1][1], new[1][2], "o", markersize=9, color = c[1], label="Placement for antenna 2")
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_zlabel("z")
@@ -119,9 +102,11 @@ def plot3(new, orig):
     labels = map(lambda x: "Antenna %d" % x, range(1,3))
     leg = ax.legend(bbox_to_anchor=(1,0.72), numpoints=1, prop={'size':9})
     leg.get_frame().set_linewidth(0.0)
-    plt.savefig('/home/ajauhri/quals/paper/FIG/tc1_mut3.eps', format='eps', dpi=1000)
+    plt.savefig('/home/ajauhri/quals/paper/FIG/tc1_reco%d.eps' % v, format='eps', dpi=1000)
     plt.clf()
 
 orig = plot1(11)
-new = plot2(1)
-plot3(new, orig)
+new = get_second_plot(1)
+plot(new, 2, ['b','y'])
+plot((orig[0], new[1]), 3, ['r','y'])
+plot((new[0], orig[1]), 4, ['b','g'])
