@@ -57,6 +57,7 @@ def main():
                             #print fname, a, l, fitness[-1]
                         else:
                             fitness.append(df.sort([0]).iloc[0,0])
+                    # if file doesn't exist, optimal found
                     elif len(fitness):
                         fitness.append(fitness[-1])
                 if not len(fitness): 
@@ -67,6 +68,7 @@ def main():
                         for i in [i for i in range(len(l_f)) if l_f[i] < fitness[i] ]:
                             fitness[i] = l_f[i]
                     a_mf.append(np.sum(fitness)/len(fitness))
+                    print tc, a, sum(fitness)/len(fitness)
                 l_f = fitness 
             y.append(a_mf)
             e = map(lambda x: 100*x/ss[tc-1], evals[tc-1]) 
@@ -97,7 +99,7 @@ def main():
         plt.axhline(y=h_star[tc-1], linestyle='dashed', linewidth=1, color='m')
         #plt.title('Test Case %d' % tc, fontsize=16)
         plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_mf.eps' % tc, format='eps', dpi=1000)
-        plt.show()
+        #plt.show()
         plt.clf()
 
 if __name__ == "__main__":

@@ -15,67 +15,67 @@ params = {'legend.linewidth': 10}
 plt.rcParams.update(params)
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
-ga_gens = {1:500, 2:3600, 3:8500, 4:1500 }
-es_gens = {1:480, 2:3850, 3:8400, 4:1540 }
-e = 0.000009
+gens = {'ga': {1:500, 2:3600, 3:8500, 4:1500 }, 'es': {1:480, 2:3850, 3:8400, 4:1540 }}
+ss = [7056, 50625,126025,20736]
+evals = [[i for i in range(50, int(ss[0]/2), int(0.025*ss[0]/2))], 
+         [i for i in range(100, int(ss[1]/2), int(0.025*ss[1]/2))],
+         [i for i in range(200, int(ss[2]/2), int(0.025*ss[2]/2))],
+         [i for i in range(150, int(ss[3]/2), int(0.025*ss[3]/2))]]
+
+e = 0.00001
 def main():
     algo = ['es', 'ga', 'sa', 'hc']
     h_star = [0.498641, 0.496877, 0.49747, 0.49926]
+    results = {'es': [], 'ga':[],'sa':[],'hc':[]}
     for tc in xrange(1, 5, 1):
-        x = []
-        y = []
         for a in algo:
             a_p = [0]
             a_e = [0]
-            for i in range(8):
-                count = 0
-                for r in range(10):
-                    if a in ['es', 'ga']:
+            count = 0
+            runs = 0
+            for r in range(10):
+                if a in ['es', 'ga']:
+                    i = 0
+                    while True:
                         fname = "tc%d/tc%d_%s_r%d_o%d_pop.csv" % (tc,tc,a, r, i)
-                        if os.path.isfile(fname):
+                        if gens[a][tc]*i < evals[tc-1][-1] and os.path.isfile(fname):
                             with open(fname) as f:
                                 fitness = float(f.readline().split(',')[0])
                                 if abs(fitness - h_star[tc-1]) <= e:
                                     count += 1
-                        else:
-                            count += 1  
-                    else:
-                        fname = "tc%d/tc%d_%s_r%d_iters.csv" % (tc,tc,a, r)
-                        if os.path.isfile(fname):
-                            df = pd.read_csv(fname, header=None, index_col=False)
-                            evals = (i+1) * es_gens[tc]
-                            if len(df[(df[0] <= evals) & (abs(df[1] - h_star[tc-1]) <= e)]) > 0:
+                                    runs += 1
+                                    break
+                                i += 1
+                                if gens[a][tc]*i >= evals[tc-1][-1]:
+                                    runs += 1
+                                    break
+                else:
+                    fname = "tc%d/tc%d_%s_r%d_iters.csv" % (tc,tc,a, r)
+                    if os.path.isfile(fname):
+                        runs += 1
+                        df = pd.read_csv(fname, header=None, index_col=False)
+                        fitness = df[df[0] <= evals[tc-1][-1]].sort([1]).iloc[0,1]
+                        if abs(fitness - h_star[tc-1]) <= e:
                                 count += 1
-                        # condition needs to be removed 
-                        else:
-                            count += 1
-
-                #print a, tc, (i+1)*es_gens[tc], count 
-                if i >= 1 and count/10 < a_p[-1]:
-                    print 'warning'
-                    a_p.append(a_p[-1])
-                else:
-                    a_p.append(count/10)
-                if a is 'ga':
-                    a_e.append((i+1) * ga_gens[tc])
-                else:
-                    a_e.append((i+1) * es_gens[tc])
-            #print a, a_e, max(i*es_gens[tc], i*ga_gens[tc])
-            xnew = np.linspace(0, max(i*es_gens[tc], i*ga_gens[tc]), 10)
-            a_p = spline(a_e, a_p, xnew, order=1)
-            y.append(a_p)
-            x.append(xnew)
-        plt.plot(x[0],y[0],'b-D')
-        plt.plot(x[1],y[1],'r-s')
-        plt.plot(x[2],y[2],'g-*')
-        plt.plot(x[3],y[3],'c-v')
-        plt.legend(['AP-ES','AP-GA','AP-SA','AP-HC'], loc=0)
-        plt.xlabel('Evaluations', fontsize=18)
-        plt.ylabel('Success probability', fontsize=18)
-        plt.title('Test Case %d' % tc)
-        plt.ylim((0,1.02))
-        plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_sp.eps' % tc, format='eps', dpi=1000)
-        plt.clf()
+            results[a].append(count*100/runs)
+    width = 0.15
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ind = np.arange(4)
+    c = ['red','black','blue','yellow']
+    for i in xrange(len(algo)):
+        ax.bar(ind+(i*width), results[algo[i]], width, color=c[i])
+    ax.set_xlim(-width,len(ind)+width)
+    ax.set_ylim(0,110)
+    ax.yaxis.grid()
+    ax.set_ylabel('Success Rates in %')
+    plt.legend(['ES','GA','SA','HC'], loc='upper right')
+    xticks = ['Test case ' + str(i) for i in range(1,5)]
+    ax.set_xticks(ind+width)
+    xtickNames = ax.set_xticklabels(xticks)
+    plt.setp(xtickNames, rotation=30, fontsize=9)
+    plt.savefig('/home/ajauhri/quals/paper/FIG/tc_sp.eps', format='eps', dpi=1000)
+    plt.show() 
 
 if __name__ == "__main__":
     main()

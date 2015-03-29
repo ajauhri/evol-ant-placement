@@ -126,6 +126,7 @@ def tc4(fname, ant):
     ax = fig.gca(projection='3d')
     surf = ax.plot_trisurf(a123, a4, f, cmap=cm.brg, linewidth=0.01)
     fig.colorbar(surf)
+    plt.show()
     plt.clf()
 
 tc1("tc1_ex.csv", [3,6])
