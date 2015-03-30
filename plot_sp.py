@@ -27,12 +27,16 @@ def main():
     algo = ['es', 'ga', 'sa', 'hc']
     h_star = [0.498641, 0.496877, 0.49747, 0.49926]
     results = {'es': [], 'ga':[],'sa':[],'hc':[]}
+    best_fitness = {'es': [], 'ga':[],'sa':[],'hc':[]}
+    mean_fitness = {'es': [], 'ga':[],'sa':[],'hc':[]}
+    std_fitness = {'es': [], 'ga':[],'sa':[],'hc':[]}
     for tc in xrange(1, 5, 1):
         for a in algo:
             a_p = [0]
             a_e = [0]
             count = 0
             runs = 0
+            best_fitness[a].append([])
             for r in range(10):
                 if a in ['es', 'ga']:
                     i = 0
@@ -42,11 +46,13 @@ def main():
                             with open(fname) as f:
                                 fitness = float(f.readline().split(',')[0])
                                 if abs(fitness - h_star[tc-1]) <= e:
+                                    best_fitness[a][-1].append(fitness)
                                     count += 1
                                     runs += 1
                                     break
                                 i += 1
                                 if gens[a][tc]*i >= evals[tc-1][-1]:
+                                    best_fitness[a][-1].append(fitness)
                                     runs += 1
                                     break
                 else:
@@ -55,9 +61,17 @@ def main():
                         runs += 1
                         df = pd.read_csv(fname, header=None, index_col=False)
                         fitness = df[df[0] <= evals[tc-1][-1]].sort([1]).iloc[0,1]
+                        best_fitness[a][-1].append(fitness)
                         if abs(fitness - h_star[tc-1]) <= e:
                                 count += 1
             results[a].append(count*100/runs)
+            mean_fitness[a].append(np.mean(best_fitness[a][-1]))
+            std_fitness[a].append(np.std(best_fitness[a][-1]))
+            assert (len(best_fitness[a][-1]) == 5 or len(best_fitness[a][-1]) == 10)
+    print mean_fitness 
+    print std_fitness
+
+    # plot success rates
     width = 0.15
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -76,6 +90,27 @@ def main():
     plt.setp(xtickNames, rotation=30, fontsize=9)
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc_sp.eps', format='eps', dpi=1000)
     plt.show() 
+
+    # plot success rates
+    width = 0.15
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ind = np.arange(4)
+    c = ['red','black','blue','yellow']
+    for i in xrange(len(algo)):
+        ax.bar(ind+(i*width), mean_fitness[algo[i]], width, color=c[i])
+    ax.set_xlim(-width,len(ind)+width)
+    ax.set_ylim(0,110)
+    ax.yaxis.grid()
+    ax.set_ylabel('Success Rates in %')
+    plt.legend(['ES','GA','SA','HC'], loc='upper right')
+    xticks = ['Test case ' + str(i) for i in range(1,5)]
+    ax.set_xticks(ind+width)
+    xtickNames = ax.set_xticklabels(xticks)
+    plt.setp(xtickNames, rotation=30, fontsize=9)
+    plt.savefig('/home/ajauhri/quals/paper/FIG/tc_sp.eps', format='eps', dpi=1000)
+    plt.show() 
+
 
 if __name__ == "__main__":
     main()
