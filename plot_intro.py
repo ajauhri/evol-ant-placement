@@ -17,7 +17,7 @@ def plot_platform(fname, ax, id):
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_platform.eps' % id, format='eps', dpi=1000)
     f.close()
 
-def main(id):
+def main(id, label_prefix):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ant = [2,3,3,4]
@@ -48,7 +48,7 @@ def main(id):
     else:
         tc_id = id
     for i in range(ant[tc_id-1]):
-        ax.plot(x_p[i], y_p[i], z_p[i], "o", color = colors[i], label="Allowable placements for antenna %d"%(i+1))
+        ax.plot(x_p[i], y_p[i], z_p[i], "o", color = colors[i], label=label_prefix + " %d"%(i+1))
     f.close()
     ax.set_xlabel("x")
     ax.set_ylabel("y")
@@ -60,5 +60,5 @@ def main(id):
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_intro.eps' % id, format='eps', dpi=1000)
     plt.show()
     plt.clf()
-main(1)
-main(11)
+main(1, "Allowable placements for antenna")
+main(11, "Best placement for antenna")

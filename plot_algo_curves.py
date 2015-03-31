@@ -48,7 +48,6 @@ def main():
                     f = open(file, 'r')
                     line = f.readline()
                     fitness = float(line.split(",")[0])
-                    print fitness
                     
                     x_i.append((o+1))
                     y_i.append(fitness)
@@ -89,7 +88,6 @@ def main():
                 for l in xrange(0, len(lines)):
                     iter = float(lines[l].split(",")[0])
                     fitness = float(lines[l].split(",")[1])
-                    print fitness
                     
                     x_i.append(iter)
                     y_i.append(fitness)
@@ -97,43 +95,47 @@ def main():
         x.append(np.array(x_i))
         
 
-    print x[2] 
     fig = plt.figure()
-    #fig.subplots_adjust(hspace=.5)
     ax = fig.add_subplot(111)
     plt.xticks(rotation=30)
     ax.plot(x[0],y[0],'k-s', markersize=4)
-    ax.set_xlabel('evaluations (x'+str(ga_gens[options.tc_id])+')', fontsize=10)
-    ax.set_ylabel('best fitness', fontsize=10)
-    ax.set_title("GA", fontsize=10)
+    #ax.set_xlabel('iteration (x'+str(ga_gens[options.tc_id])+')', fontsize=10)
+    ax.set_xlabel('iteration (generation)', fontsize=15)
+    ax.set_ylabel('best fitness', fontsize=15)
+    plt.setp(ax.get_yticklabels(), visible=False)
+    plt.setp(ax.get_xticklabels(), visible=False)
     fig.savefig('/home/ajauhri/quals/paper/FIG/algo_ga.eps', format='eps', dpi=1000)
     plt.clf()
     
     ax = fig.add_subplot(111)
     plt.xticks(rotation=30)
     ax.plot(x[1],y[1],'k-s', markersize=4)
-    ax.set_xlabel('evaluations (x'+str(es_gens[options.tc_id])+')', fontsize=10)
-    ax.set_ylabel('best fitness', fontsize=10)
-    ax.set_title("ES", fontsize=10)
-    ax.set_xticks([1,2,3,4])
+    #ax.set_xlabel('iteration (x'+str(es_gens[options.tc_id])+')', fontsize=15)
+    ax.set_xlabel('iteration (generation)', fontsize=15)
+    ax.set_ylabel('best fitness', fontsize=15)
+    plt.setp(ax.get_yticklabels(), visible=False)
+    plt.setp(ax.get_xticklabels(), visible=False)
+    #ax.set_xticks([1,2,3,4])
     fig.savefig('/home/ajauhri/quals/paper/FIG/algo_es.eps', format='eps', dpi=1000)
     plt.clf()
 
     ax = fig.add_subplot(111)
     plt.xticks(rotation=30)
     ax.plot(x[2],y[2],'k-s', markersize=4)
-    ax.set_xlabel('evaluations', fontsize=10)
-    ax.set_ylabel('fitness', fontsize=10)
-    ax.set_title("SA", fontsize=10)
+    ax.set_xlabel('iteration', fontsize=15)
+    ax.set_ylabel('fitness', fontsize=15)
+    plt.setp(ax.get_yticklabels(), visible=False)
+    plt.setp(ax.get_xticklabels(), visible=False)
     fig.savefig('/home/ajauhri/quals/paper/FIG/algo_sa.eps', format='eps', dpi=1000)
     plt.clf()
 
     ax = fig.add_subplot(111)
     plt.xticks(rotation=30)
     ax.plot(x[3],y[3],'k-s', markersize=4)
-    ax.set_xlabel('evaluations', fontsize=10)
-    ax.set_ylabel('fitness', fontsize=10)
-    ax.set_title("HC", fontsize=10)
+    ax.set_xlabel('iteration', fontsize=15)
+    ax.set_ylabel('fitness', fontsize=15)
+    plt.setp(ax.get_yticklabels(), visible=False)
+    plt.setp(ax.get_xticklabels(), visible=False)
     fig.savefig('/home/ajauhri/quals/paper/FIG/algo_hc.eps', format='eps', dpi=1000)
 
     plt.tight_layout()
