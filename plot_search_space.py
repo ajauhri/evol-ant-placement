@@ -43,17 +43,18 @@ def tc1(fname, ant):
     ax.view_init(elev=70., azim=-57)
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc1_ss.png', format='png')#, dpi=1000)
     #plt.show()
-    #xi, yi = np.linspace(a1.min(), a2.max(), 100), np.linspace(a2.min(), a1.max(), 100)
-    #xi, yi = np.meshgrid(xi, yi)
+    plt.clf()
+    xi, yi = np.linspace(a1.min(), a2.max(), 100), np.linspace(a2.min(), a1.max(), 100)
+    xi, yi = np.meshgrid(xi, yi)
 
-    # Interpolate
-    #rbf = scipy.interpolate.Rbf(a1, a2, f, function='linear')
-    #zi = rbf(xi, yi)
+    #Interpolate
+    rbf = scipy.interpolate.Rbf(a1, a2, f, function='linear')
+    zi = rbf(xi, yi)
 
-    #plt.imshow(zi, vmin=f.min(), vmax=f.max(), origin='lower',
-    #       extent=[a1.min(), a1.max(), a2.min(), a2.max()])
-    #plt.colorbar()
-    #plt.show()
+    plt.imshow(zi, vmin=f.min(), vmax=f.max(), origin='lower',
+           extent=[a1.min(), a1.max(), a2.min(), a2.max()])
+    plt.colorbar()
+    plt.show()
     plt.clf()
 
 def tc2(fname, ant):
@@ -128,10 +129,23 @@ def tc4(fname, ant):
     fig.colorbar(surf)
     plt.show()
     plt.clf()
+    # search space plot
+    xi, yi = np.linspace(a123.min(), a4.max(), 100), np.linspace(a4.min(), a123.max(), 100)
+    xi, yi = np.meshgrid(xi, yi)
 
-tc1("tc1_ex.csv", [3,6])
+    #Interpolate
+    rbf = scipy.interpolate.Rbf(a123, a4, f, function='linear')
+    zi = rbf(xi, yi)
+
+    plt.imshow(zi, vmin=f.min(), vmax=f.max(), origin='lower',
+           extent=[a123.min(), a123.max(), a4.min(), a4.max()])
+    plt.colorbar()
+    plt.show()
+
+
+#tc1("tc1_ex.csv", [3,6])
 #tc2("tc2_ex.csv", [3,6,9])
 #tc2("tc3_ex.csv", [3,6,9])
-#tc4("tc4_ex.csv", [3,6,9,12])
+tc4("tc4_ex.csv", [3,6,9,12])
 #plt.show()
 
