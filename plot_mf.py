@@ -30,8 +30,10 @@ def main():
     for tc in xrange(1, 5, 1):
         x = []
         y = []
+        y_sd = []
         for a in algo:
             a_mf = []
+            a_sd = []
             l_f = []
             for e in evals[tc-1]:
                 fitness = []
@@ -62,42 +64,45 @@ def main():
                         fitness.append(fitness[-1])
                 if not len(fitness): 
                     a_mf.append(a_mf[-1])
+                    a_sd.append(a_sd[-1])
                 else:
                     if len(a_mf) and a_mf[-1] < np.sum(fitness)/len(fitness):
                         print 'warning', a
                         for i in [i for i in range(len(l_f)) if l_f[i] < fitness[i] ]:
                             fitness[i] = l_f[i]
-                    a_mf.append(np.sum(fitness)/len(fitness))
-                    print tc, a, sum(fitness)/len(fitness)
+                    a_mf.append(np.mean(fitness))
+                    a_sd.append(np.std(fitness))
+                    #print a, np.std(fitness)
                 l_f = fitness 
             y.append(a_mf)
+            y_sd.append(a_sd)
             e = map(lambda x: 100*x/ss[tc-1], evals[tc-1]) 
             x.append(e)
         mx = max(map(max, y))
         mn = min(map(min, y))
         yt = np.arange(mn-0.0015, mx+0.001, 0.003)
         yt = np.insert(yt, 1, h_star[tc-1])
-        ax = plt.subplot()
         plt.gca().xaxis.grid(True)
         plt.gca().yaxis.grid(True)
+        ax = plt.subplot()
         ax.set_yticks(yt)
-        #ax.set_xticks(e)
-        #ax.xaxis.set_major_formatter(FormatStrFormatter('%d\%'))
         ax.set_ylim((mn-0.002,mx+0.001))
         for label in (ax.get_xticklabels() + ax.get_yticklabels()):
             label.set_fontname('Arial')
             label.set_fontsize(11)
         ax.get_yticklabels()[1].set_color('m')
         ax.plot(x[0],y[0],'b-D')
+        #ax.errorbar(x[0],y[0],y_sd[0])#,'b-D')
+        #ax.errorbar(x[1],y[1],y_sd[1])#,'b-D')
+        #ax.errorbar(x[2],y[2],y_sd[2])#,'b-D')
+        #ax.errorbar(x[3],y[3],y_sd[3])#,'b-D')
         ax.plot(x[1],y[1],'r-s')
         ax.plot(x[2],y[2],'g-*')
         ax.plot(x[3],y[3],'c-v')
-        #plt.yscale('symlog')
         plt.legend(['ES','GA','SA','HC'], loc=0)
         plt.xlabel('Fitness Evaluations(%)', fontsize=13)
         plt.ylabel('Mean Best Fitness', fontsize=13)
         plt.axhline(y=h_star[tc-1], linestyle='dashed', linewidth=1, color='m')
-        #plt.title('Test Case %d' % tc, fontsize=16)
         plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_mf.eps' % tc, format='eps', dpi=1000)
         #plt.show()
         plt.clf()
