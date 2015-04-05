@@ -66,20 +66,10 @@ def main():
                         if abs(fitness - h_star[tc-1]) <= e:
                                 count += 1
             results[a].append(count*100/runs)
-            #mean_fitness[a].append(np.mean(best_fitness[a][-1]))
-            mean_fitness[a].append(best_fitness[a][-1])
-            #std_fitness[a].append(np.std(best_fitness[a][-1]))
-            #assert (len(best_fitness[a][-1]) == 5 or len(best_fitness[a][-1]) == 10)
-    print mean_fitness['es'][0]
-    print mean_fitness['sa'][0]
-    print mean_fitness['ga'][0]
-    #bp = boxplot([mean_fitness['es'][0], mean_fitness['ga'][0], mean_fitness['sa'][0], mean_fitness['hc'][0]], positions = [1,2,3,4], widths = 0.2) 
-    for i in range(0,4):
-        bp = boxplot([mean_fitness['es'][i], mean_fitness['ga'][i], mean_fitness['sa'][i], mean_fitness['hc'][i]], positions = [1,2,3,4], widths = 0.2) 
-        plt.show()
+            mean_fitness[a].append(np.mean(best_fitness[a][-1]))
+            std_fitness[a].append(np.std(best_fitness[a][-1]))
+            assert (len(best_fitness[a][-1]) == 5 or len(best_fitness[a][-1]) == 10)
     # plot success rates
-    #print mean_fitness['sa']
-    '''
     width = 0.15
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -101,8 +91,8 @@ def main():
     plt.setp(xtickNames, rotation=30, fontsize=9)
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc_sp.eps', format='eps', dpi=1000)
     plt.clf()
-
-    # plot success rates
+    
+    # plot mean fitness with std dev.
     fig = plt.figure()
     ax = fig.add_subplot(111)
     for i in xrange(len(algo)):
@@ -117,9 +107,7 @@ def main():
     xtickNames = ax.set_xticklabels(xticks)
     plt.setp(xtickNames, rotation=30, fontsize=9)
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc_mfwerr.eps', format='eps', dpi=1000)
-    #plt.show() 
-    '''
-
+    plt.show() 
 
 if __name__ == "__main__":
     main()
