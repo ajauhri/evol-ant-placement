@@ -43,8 +43,8 @@ def main(id, label_prefix):
             y_p[curr_color].append(p[1])
             z_p[curr_color].append(p[2])
     assert len(x_p) == len(y_p) == len(z_p)
-    if id == 11:
-        tc_id = 1
+    if id == 11 or id == 22 or id == 33 or id == 44:
+        tc_id = int(id/11)
     else:
         tc_id = id
     for i in range(ant[tc_id-1]):
@@ -62,3 +62,6 @@ def main(id, label_prefix):
     plt.clf()
 main(1, "Allowable placements for antenna")
 main(11, "Best placement for antenna")
+main(22, "Best placement for antenna")
+main(33, "Best placement for antenna")
+main(44, "Best placement for antenna")
