@@ -13,14 +13,12 @@ def plot_platform(fname, ax, id):
             start = map(float, line.split()[3:6])
             end = map(float, line.split()[6:9])
             ax.plot([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], color='black')
-            print "add_point(%.5f, %.5f, %.5f)" % (start[0],start[1],start[2])
-            print "add_point(%.5f, %.5f, %.5f)" % (end[0],end[1],end[2])
     f.close()
 
 def main(id):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ant = [2,3,3,4,3]
+    ant = [2,3,3,4,2]
     f = file("luas/tc%d_ex.lua" % id, 'r')
     lines = f.readlines()
     plt_f = re.findall("\"([^\"]+)\"", lines[0])
