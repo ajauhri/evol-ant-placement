@@ -172,7 +172,7 @@ add_point(  0.609600,  -0.203200,   0.000000)
 params = {
     mu = 1200,
     lambda = 8400,
-    generations = 10,
+    generations = 8,
     mutation = 0.1,
     exp_weight = 2,
     algorithm = "ES",
