@@ -170,7 +170,7 @@ add_point(  0.609600,   0.000000,   0.000000)
 add_point(  0.609600,  -0.101600,   0.000000)
 add_point(  0.609600,  -0.203200,   0.000000)
 params = {
-    iterations = 88000,
+    iterations = 63020,
     mutation = 0.1,
     convergence_factor = 0.1,
     exp_weight = 2,

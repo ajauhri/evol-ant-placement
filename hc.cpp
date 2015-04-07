@@ -84,12 +84,12 @@ void hc::run(unsigned int run_id)
                 std::cout<<"***iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
                 q = 0;
             }
-            else
+            /*else
                 q++;
 
             if (q > m_converged_iterations)
                 break;
-            
+            */ 
             // remove all after an iteration
             boost::filesystem::path path_to_remove(eap::run_directory);
             for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it)
