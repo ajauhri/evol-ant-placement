@@ -12,6 +12,7 @@ import matplotlib
 from scipy.interpolate import spline
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import math
+from pylab import boxplot
 
 params = {'legend.linewidth': 10}
 plt.rcParams.update(params)
@@ -24,9 +25,10 @@ evals = [[i for i in range(50, int(ss[0]/2), int(0.025*ss[0]/2))],
          [i for i in range(100, int(ss[1]/2), int(0.025*ss[1]/2))],
          [i for i in range(200, int(ss[2]/2), int(0.025*ss[2]/2))],
          [i for i in range(150, int(ss[3]/2), int(0.025*ss[3]/2))]]
-def main():
-    algo = ['es', 'ga', 'sa', 'hc']
-    h_star = [0.498641, 0.496877, 0.49747, 0.49926]
+
+algo = ['es', 'ga', 'sa', 'hc']
+h_star = [0.498641, 0.496877, 0.49747, 0.49926]
+def plot_mf():
     for tc in xrange(1, 5, 1):
         x = []
         y = []
@@ -49,6 +51,7 @@ def main():
                         i = int(e/es_gens[tc]) 
                         l = e - i * es_gens[tc]
                         fname = "tc%d/tc%d_%s_r%d_o%d_pop.csv" % (tc,tc,a, r, i)
+                        print tc,i
                     else:
                         fname = "tc%d/tc%d_%s_r%d_iters.csv" % (tc,tc,a, r)
                         l = e
@@ -62,6 +65,7 @@ def main():
                     # if file doesn't exist, optimal found
                     elif len(fitness):
                         fitness.append(fitness[-1])
+                # end for all runs
                 if not len(fitness): 
                     a_mf.append(a_mf[-1])
                     a_sd.append(a_sd[-1])
@@ -104,8 +108,65 @@ def main():
         plt.ylabel('Mean Best Fitness', fontsize=13)
         plt.axhline(y=h_star[tc-1], linestyle='dashed', linewidth=1, color='m')
         plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_mf.eps' % tc, format='eps', dpi=1000)
-        #plt.show()
+        plt.show()
         plt.clf()
 
+def main():
+    algo = ['es', 'ga', 'sa', 'hc']
+    for tc in xrange(1, 5, 1):
+        all = []
+        for a in algo:
+            e_arr = []
+            f_arr  = []
+            for r in range(10):
+                best_f = 1
+                best_e = -1
+                for e in evals[tc-1]:
+                    if a == 'ga':
+                        i = int(e/ga_gens[tc]) 
+                        l = i * ga_gens[tc]
+                        fname = "tc%d/tc%d_%s_r%d_o%d_pop.csv" % (tc,tc,a, r, i)
+                    elif a == 'es':
+                        i = int(e/es_gens[tc]) 
+                        l = i * es_gens[tc]
+                        fname = "tc%d/tc%d_%s_r%d_o%d_pop.csv" % (tc,tc,a, r, i)
+                    else:
+                        fname = "tc%d/tc%d_%s_r%d_iters.csv" % (tc,tc,a, r)
+                        l = e
+                    if os.path.isfile(fname):
+                        df = pd.read_csv(fname, header=None, index_col=False)
+                        if a in ['hc', 'sa']:
+                            fitness = df[df[0] <= e].sort([1]).iloc[0,1]
+                            if fitness < best_f:
+                                best_f = fitness
+                                best_e = df[df[0] <= e].sort([1]).iloc[0,0]
+                            if abs(fitness - h_star[tc-1]) <= 0.00001:
+                                best_f = fitness 
+                                best_e = df[df[0] <= e].sort([1]).iloc[0,0]
+                                break
+                        else:
+                            fitness = df.sort([0]).iloc[0,0]
+                            if fitness < best_f:
+                                best_f = fitness
+                                best_e = l
+                            if abs(fitness - h_star[tc-1]) <= 0.00001:
+                                #print tc,a,r,'here', l
+                                best_f = fitness 
+                                best_e = l
+                                break
+                    # if file doesn't exist, optimal found
+                    else:
+                        break 
+                if best_e >= 0: 
+                    e_arr.append(100*best_e/ss[tc-1]) 
+                if best_f < 1: 
+                    f_arr.append(best_f)
+            print "%s & %.2f & %.2f & %.5f & %.5f \\\\" % (a.upper(), np.mean(e_arr), np.std(e_arr), np.mean(f_arr), np.std(f_arr))
+            #print tc,a, e_arr
+            all.append(e_arr)
+        #boxplot(all, positions=[0.5,1,1.5,2], widths=0.2)
+        #plt.show()
+
 if __name__ == "__main__":
+    #plot_mf()
     main()

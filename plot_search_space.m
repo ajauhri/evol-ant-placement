@@ -1,5 +1,5 @@
 clear all;
-tc_id = '2';
+tc_id = '4';
 filename = strcat('/home/ajauhri/evol-ant-placement/tc',tc_id,'.csv');
 delimiter = ',';
 
@@ -23,7 +23,7 @@ foo = fit([X,Y],Z, 'cubicinterp');
 [m,i] = min(Z);
 plot(foo, 'Style', 'Contour'); hold on;
 colorbar;
-plot(X(i),Y(i),'o','MarkerSize',10,'MarkerFaceColor','red', 'MarkerEdgeColor','black');
+plot(X(i),Y(i),'d', 'MarkerSize',12,'MarkerFaceColor', 'black', 'MarkerEdgeColor','blue');
 hold on;
 %hold off;
 if tc_id == '1'
@@ -42,7 +42,8 @@ if tc_id == '4'
     xlabel('Allowable placements for antennas 1,2,3');
     ylabel('Allowable placements for antenna 4');
 end
-%saveas(gca, strcat('/home/ajauhri/quals/paper/FIG/tc',tc_id,'_contour'), 'epsc');
+saveas(gca, strcat('/home/ajauhri/quals/paper/FIG/tc',tc_id,'_contour'), 'epsc');
+%{
 for i=[1:1:9]
     filename = '/home/ajauhri/evol-ant-placement/run';
     filename = strcat(filename, int2str(i));
@@ -61,3 +62,5 @@ for i=[1:1:9]
     delete(pts)
 end
 pts = plot(A,B,'o','MarkerSize',4,'MarkerFaceColor','black', 'MarkerEdgeColor','black');
+
+%}

@@ -64,7 +64,7 @@ def main():
                         fitness = df[df[0] <= evals[tc-1][-1]].sort([1]).iloc[0,1]
                         best_fitness[a][-1].append(fitness)
                         if abs(fitness - h_star[tc-1]) <= e:
-                                count += 1
+                            count += 1
             results[a].append(count*100/runs)
             mean_fitness[a].append(np.mean(best_fitness[a][-1]))
             std_fitness[a].append(np.std(best_fitness[a][-1]))
@@ -90,6 +90,7 @@ def main():
     xtickNames = ax.set_xticklabels(xticks)
     plt.setp(xtickNames, rotation=30, fontsize=9)
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc_sp.eps', format='eps', dpi=1000)
+    #plt.show()
     plt.clf()
     
     # plot mean fitness with std dev.
@@ -107,7 +108,7 @@ def main():
     xtickNames = ax.set_xticklabels(xticks)
     plt.setp(xtickNames, rotation=30, fontsize=9)
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc_mfwerr.eps', format='eps', dpi=1000)
-    plt.show() 
+    #plt.show() 
 
 if __name__ == "__main__":
     main()
