@@ -130,7 +130,7 @@ void ga::evaluate_gen(unsigned int gen_id)
     {
         //run_simulation(gen_id);
         std::ifstream infile;
-        infile.open("tc1_ex.csv");
+        infile.open("tc2_ex.csv");
  
         boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
         for (unsigned int i_pop=0; i_pop<m_pop.size(); ++i_pop)

@@ -119,7 +119,7 @@ add_point( -0.101600,   0.203200,   0.203200)
 add_point(  0.000000,   0.203200,   0.203200)
 params = {
     pop = 3600,
-    generations = 10,
+    generations = 8,
     elitism = 360,
     tournament_size = 360,
     mutation = 0.1,

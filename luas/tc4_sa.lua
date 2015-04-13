@@ -52,7 +52,7 @@ add_point(  0.406400,  -0.508000,   0.000000)
 add_point(  0.406400,  -0.609600,   0.000000)
 add_point(  0.508000,  -0.609600,   0.000000)
 params = {
-    iterations = 14500,
+    iterations = 10400,
     cooling_factor = 0.995,
     convergence_factor = 0.1,
     mutation = 0.1,

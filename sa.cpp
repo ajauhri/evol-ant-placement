@@ -110,7 +110,7 @@ void sa::run(unsigned int run_id)
                     outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z <<",";
                 outfile << "\n";
 
-                std::cout<<"***fitness improved iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
+                //std::cout<<"***fitness improved iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
 
             }
             else if (p_child->m_fitness > m_p_parent->m_fitness)
@@ -118,13 +118,13 @@ void sa::run(unsigned int run_id)
                 float delta_fitness = (p_child->m_fitness - m_p_parent->m_fitness);
                 if (eap::rand01() < exp((-1.0 * delta_fitness) / temperature))
                 {
-                    std::cout<<"SA GOT BAD " << exp((-1.0 * delta_fitness) / temperature)<<"\n";
+                    //std::cout<<"SA GOT BAD " << exp((-1.0 * delta_fitness) / temperature)<<"\n";
                     swap(m_p_parent, p_child);
                     outfile << i << "," << m_p_parent->m_fitness << "," << m_p_parent->m_gain_fitness << "," << m_p_parent->m_coupling_fitness << ",";
                     for (position_ptr p_pos : m_p_parent->m_positions)
                         outfile << p_pos->m_x << "," << p_pos->m_y << "," << p_pos->m_z <<",";
                     outfile << "\n";
-                    std::cout<<"***fitness got bad iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
+                    //std::cout<<"***fitness got bad iter="<<i<<", best ind "<<m_p_parent->m_fitness<<"\n";
                     outfile.flush();
                 }
             }
@@ -135,10 +135,10 @@ void sa::run(unsigned int run_id)
                 q++;
             else
                 q = 0;
-
+            /*
             if (q > m_converged_iterations)
                 break;
-
+            */
             // remove all after an iteration
             boost::filesystem::path path_to_remove(eap::run_directory);
             for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it)
@@ -161,7 +161,7 @@ void sa::evaluate(unsigned int id, individual_ptr &p_ind)
         //run_simulation(id);
         boost::format nec_output(eap::run_directory + "iter%09da%02d.out");
         std::ifstream infile;
-        infile.open("tc1_ex.csv");
+        infile.open("tc2_ex.csv");
         /*
         for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
         {
