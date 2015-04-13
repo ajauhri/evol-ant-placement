@@ -4,6 +4,7 @@
 #include<individual.hpp>
 #include<evaluation.hpp>
 #include<string>
+#include <sstream>
 #include<vector>
 
 /**
@@ -62,6 +63,7 @@ class algorithm
         unsigned int read_radiation(const std::string, const evaluation_ptr &);
         float read_coupling(const std::string, unsigned int);
         float cal_fitness(individual_ptr&);
+        std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
 
     public:
         algorithm(std::string);
@@ -91,6 +93,16 @@ inline float algorithm::cal_fitness(individual_ptr &ind)
 inline unsigned int algorithm::num_polar(void)
 {
     return m_step_theta * m_step_phi;
+}
+
+inline std::vector<std::string> &algorithm::split(const std::string &s, char delim, std::vector<std::string> &elems) 
+{
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
 }
 
 #endif

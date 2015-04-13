@@ -95,7 +95,7 @@ void ga::run(unsigned int run_id)
         std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
         std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
         save_population(m_pop, run_id, m_generations - 1);
-        save_best_nec(m_pop[0], run_id, m_generations - 1);
+        //save_best_nec(m_pop[0], run_id, m_generations - 1);
     }
     catch (...)
     {
@@ -128,10 +128,14 @@ void ga::evaluate_gen(unsigned int gen_id)
 {
     try
     {
-        run_simulation(gen_id);
+        //run_simulation(gen_id);
+        std::ifstream infile;
+        infile.open("tc1_ex.csv");
+ 
         boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
         for (unsigned int i_pop=0; i_pop<m_pop.size(); ++i_pop)
         {
+            /*
             for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
             {
                 evaluation_ptr p_eval(new evaluation);
@@ -147,7 +151,24 @@ void ga::evaluate_gen(unsigned int gen_id)
             m_pop[i_pop]->m_coupling_fitness += std::abs(m_min_coup);
             m_pop[i_pop]->m_coupling_fitness /= m_max_coup;
             m_pop[i_pop]->m_fitness = cal_fitness(m_pop[i_pop]);
+            */
+           std::ostringstream pos_str;
+           pos_str << ",";
+           for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
+               pos_str << m_pop[i_pop]->m_positions[i_ant]->m_x << "," << m_pop[i_pop]->m_positions[i_ant]->m_y << "," << m_pop[i_pop]->m_positions[i_ant]->m_z << ",";
+            std::string line;
+            while (std::getline(infile, line) && line.find(pos_str.str()) == std::string::npos);
+            std::vector<std::string> vals;
+            split(line, ',', vals);
+            m_pop[i_pop]->m_coupling_fitness = std::stof(vals[2]);
+            m_pop[i_pop]->m_gain_fitness = std::stof(vals[1]);
+            m_pop[i_pop]->m_fitness = std::stof(vals[0]);
+            pos_str.clear();
+            pos_str.str("");
+            line.clear();
+            infile.seekg(0);
         }
+        infile.close();
     }
     catch (...)
     {
@@ -195,7 +216,7 @@ void ga::select()
         // pick m individuals from population and mutate one bit
         for (unsigned int i=0; i<(m_mutation*m_population_size); ++i)
         {
-            int ind_id = eap::rand(0, m_population_size-1);
+            int ind_id = eap::rand(m_elitism, m_population_size-1);
             simple_mutation(new_pop[ind_id]);
         }
  

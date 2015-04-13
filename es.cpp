@@ -76,7 +76,7 @@ void es::run(unsigned int run_id)
             evaluate_gen(i);
             std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
             save_population(m_pop, run_id, i);
-            save_best_nec(m_pop[0], run_id, i);
+            //save_best_nec(m_pop[0], run_id, i);
             std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
             survivor_selection();
         }
@@ -151,10 +151,15 @@ void es::evaluate_gen(unsigned int gen_id)
 {
     try
     {
-        run_simulation(gen_id);
+        //run_simulation(gen_id);
+        std::ifstream infile;
+        infile.open("tc1_ex.csv");
+ 
+
         boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
         for (unsigned int i_pop=0; i_pop<m_pop.size(); ++i_pop)
         {
+            /*
             for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
             {
                 evaluation_ptr p_eval(new evaluation);
@@ -172,8 +177,23 @@ void es::evaluate_gen(unsigned int gen_id)
             //normalize coupling fitness
             m_pop[i_pop]->m_coupling_fitness += std::abs(m_min_coup);
             m_pop[i_pop]->m_coupling_fitness /= m_max_coup;
-
             m_pop[i_pop]->m_fitness = cal_fitness(m_pop[i_pop]);
+            */
+            std::ostringstream pos_str;
+            pos_str << ",";
+            for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
+                pos_str << m_pop[i_pop]->m_positions[i_ant]->m_x << "," << m_pop[i_pop]->m_positions[i_ant]->m_y << "," << m_pop[i_pop]->m_positions[i_ant]->m_z << ",";
+            std::string line;
+            while (std::getline(infile, line) && line.find(pos_str.str()) == std::string::npos);
+            std::vector<std::string> vals;
+            split(line, ',', vals);
+            m_pop[i_pop]->m_coupling_fitness = std::stof(vals[2]);
+            m_pop[i_pop]->m_gain_fitness = std::stof(vals[1]);
+            m_pop[i_pop]->m_fitness = std::stof(vals[0]);
+            pos_str.clear();
+            pos_str.str("");
+            line.clear();
+            infile.seekg(0);
         }
     }
     catch (...)

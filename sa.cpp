@@ -67,7 +67,8 @@ void sa::run(unsigned int run_id)
     {
         if (run_id == 0) 
         {
-            compute_temp();
+            //compute_temp();
+            m_init_temp = 0.27;
             std::cout<<"***init computed temperature = "<<m_init_temp<<"\n";
         }
         std::vector<position_ptr> placements;
@@ -157,8 +158,11 @@ void sa::evaluate(unsigned int id, individual_ptr &p_ind)
 {
     try
     {
-        run_simulation(id);
+        //run_simulation(id);
         boost::format nec_output(eap::run_directory + "iter%09da%02d.out");
+        std::ifstream infile;
+        infile.open("tc1_ex.csv");
+        /*
         for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
         {
             evaluation_ptr p_eval(new evaluation);
@@ -179,6 +183,23 @@ void sa::evaluate(unsigned int id, individual_ptr &p_ind)
         p_ind->m_coupling_fitness /= m_max_coup;
 
         p_ind->m_fitness = cal_fitness(p_ind);
+        */
+        std::ostringstream pos_str;
+        pos_str << ",";
+        for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
+            pos_str << p_ind->m_positions[i_ant]->m_x << "," << p_ind->m_positions[i_ant]->m_y << "," << p_ind->m_positions[i_ant]->m_z << ",";
+        std::string line;
+        while (std::getline(infile, line) && line.find(pos_str.str()) == std::string::npos);
+        std::vector<std::string> vals;
+        split(line, ',', vals);
+        p_ind->m_coupling_fitness = std::stof(vals[2]);
+        p_ind->m_gain_fitness = std::stof(vals[1]);
+        p_ind->m_fitness = std::stof(vals[0]);
+        pos_str.clear();
+        pos_str.str("");
+        line.clear();
+        infile.close();
+
     }
     catch (...)
     {

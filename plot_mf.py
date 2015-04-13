@@ -29,7 +29,7 @@ evals = [[i for i in range(50, int(ss[0]/2), int(0.025*ss[0]/2))],
 algo = ['es', 'ga', 'sa', 'hc']
 h_star = [0.498641, 0.496877, 0.49747, 0.49926]
 def plot_mf():
-    for tc in xrange(1, 5, 1):
+    for tc in xrange(1, 2, 1):
         x = []
         y = []
         y_sd = []
@@ -39,7 +39,7 @@ def plot_mf():
             l_f = []
             for e in evals[tc-1]:
                 fitness = []
-                for r in range(10):
+                for r in range(20):
                     if a == 'ga':
                         i = int(e/ga_gens[tc]) 
                         l = e - i * ga_gens[tc]
@@ -51,7 +51,6 @@ def plot_mf():
                         i = int(e/es_gens[tc]) 
                         l = e - i * es_gens[tc]
                         fname = "tc%d/tc%d_%s_r%d_o%d_pop.csv" % (tc,tc,a, r, i)
-                        print tc,i
                     else:
                         fname = "tc%d/tc%d_%s_r%d_iters.csv" % (tc,tc,a, r)
                         l = e
@@ -113,12 +112,12 @@ def plot_mf():
 
 def main():
     algo = ['es', 'ga', 'sa', 'hc']
-    for tc in xrange(1, 5, 1):
+    for tc in xrange(1, 2, 1):
         all = []
         for a in algo:
             e_arr = []
             f_arr  = []
-            for r in range(10):
+            for r in range(20):
                 best_f = 1
                 best_e = -1
                 for e in evals[tc-1]:

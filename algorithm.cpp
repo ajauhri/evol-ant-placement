@@ -794,8 +794,6 @@ std::vector<position_ptr> algorithm::mutate_pos_once(std::vector<position_ptr> &
     }
 }
 
-
-
 algorithm::~algorithm(void)
 {
     m_ant_configs.clear();
