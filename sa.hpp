@@ -1,6 +1,7 @@
 #ifndef SA_HPP_INCLUDED
 #define SA_HPP_INCLUDED
 #include<algorithm.hpp>
+#include<map>
 	
 class sa :
 	public algorithm
@@ -15,6 +16,12 @@ private:
     individual_ptr m_p_parent;
     float m_best_fitness;
     float m_temp_pop_factor;
+
+    /* for faster iterations */
+    std::map<std::string, int> map;
+    std::map<int, float> tot;
+    std::map<int, float> coup;
+    std::map<int, float> rad;
     
     /* Computing initial temp data
     For description of these variables, refer to algorithm described in http://cs.stackexchange.com/questions/11126/initial-temperature-in-simulated-annealing-algorithm  */

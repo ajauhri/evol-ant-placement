@@ -131,34 +131,34 @@ void ga::evaluate_gen(unsigned int gen_id)
     {
         //run_simulation(gen_id);
         std::ifstream infile;
-        infile.open("tc3_ex.csv");
-	unsigned int count = 0;
-	std::map<std::string, int> map;
-	std::map<int, float> tot;
-	std::map<int, float> coup;
-	std::map<int, float> rad;
-	std::string line;
-	while (std::getline(infile, line))
-	{
-		std::vector<std::string> vals;
- 		split(line,',',vals);
-                std::string temp = ",";
-		for (std::vector<int>::size_type i = 3; i != vals.size(); i++) 
-			temp += vals[i] + ",";
-		tot.insert(std::pair<int,float>(count, std::stof(vals[0])));
-		rad.insert(std::pair<int,float>(count, std::stof(vals[1])));
-		coup.insert(std::pair<int,float>(count, std::stof(vals[2])));
-		map.insert(std::pair<std::string,int>(temp,count++));
-	}
+        infile.open("tc4_ex.csv");
+        unsigned int count = 0;
+        std::map<std::string, int> map;
+        std::map<int, float> tot;
+        std::map<int, float> coup;
+        std::map<int, float> rad;
+        std::string line;
+        while (std::getline(infile, line))
+        {
+            std::vector<std::string> vals;
+            split(line,',',vals);
+            std::string temp = ",";
+            for (std::vector<int>::size_type i = 3; i != vals.size(); i++) 
+                temp += vals[i] + ",";
+            tot.insert(std::pair<int,float>(count, std::stof(vals[0])));
+            rad.insert(std::pair<int,float>(count, std::stof(vals[1])));
+            coup.insert(std::pair<int,float>(count, std::stof(vals[2])));
+            map.insert(std::pair<std::string,int>(temp,count++));
+        }
         infile.close();
- 
+
         for (unsigned int i_pop=0; i_pop<m_pop.size(); ++i_pop)
         {
-           std::ostringstream pos_str;
-           pos_str << ",";
-           for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
-               pos_str << m_pop[i_pop]->m_positions[i_ant]->m_x << "," << m_pop[i_pop]->m_positions[i_ant]->m_y << "," << m_pop[i_pop]->m_positions[i_ant]->m_z << ",";
-	    int key = map.find(pos_str.str())->second;
+            std::ostringstream pos_str;
+            pos_str << ",";
+            for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
+                pos_str << m_pop[i_pop]->m_positions[i_ant]->m_x << "," << m_pop[i_pop]->m_positions[i_ant]->m_y << "," << m_pop[i_pop]->m_positions[i_ant]->m_z << ",";
+            int key = map.find(pos_str.str())->second;
             m_pop[i_pop]->m_coupling_fitness = coup.find(key)->second;
             m_pop[i_pop]->m_gain_fitness = rad.find(key)->second;
             m_pop[i_pop]->m_fitness = tot.find(key)->second;
@@ -215,7 +215,7 @@ void ga::select()
             int ind_id = eap::rand(m_elitism, m_population_size-1);
             simple_mutation(new_pop[ind_id]);
         }
- 
+
 
         if (new_pop.size() != m_population_size) throw eap::InvalidStateException("GA: population size don't match");
         std::cout<<"***done with creating next generation\n";

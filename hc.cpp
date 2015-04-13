@@ -45,6 +45,25 @@ void hc::run(unsigned int run_id)
     std::ofstream outfile;
     try
     {
+        std::ifstream infile;
+        infile.open("tc4_ex.csv");
+        unsigned int count = 0;
+        std::string line;
+        while (std::getline(infile, line))
+        {
+            std::vector<std::string> vals;
+            split(line,',',vals);
+            std::string temp = ",";
+            for (std::vector<int>::size_type i = 3; i != vals.size(); i++) 
+                temp += vals[i] + ",";
+            tot.insert(std::pair<int,float>(count, std::stof(vals[0])));
+            rad.insert(std::pair<int,float>(count, std::stof(vals[1])));
+            coup.insert(std::pair<int,float>(count, std::stof(vals[2])));
+            map.insert(std::pair<std::string,int>(temp,count++));
+        }
+        infile.close();
+
+
         std::vector<position_ptr> placements;
         outfile.open(eap::results_directory + boost::filesystem::basename(m_lua_file) + "_r" + std::to_string(run_id) + "_iters.csv");
         boost::format nec_input(eap::run_directory + "iter%09d");
@@ -110,43 +129,17 @@ void hc::evaluate(unsigned int id, individual_ptr &p_ind)
 {
     try
     {
-        //run_simulation(id);
-        std::ifstream infile;
-        infile.open("tc3_ex.csv");
-        boost::format nec_output(eap::run_directory + "iter%09da%02d.out");
-        /*
-           for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
-           {
-           evaluation_ptr p_eval(new evaluation);
-           p_ind->m_evals.push_back(p_eval);
-           unsigned int read = read_radiation(str(nec_output % id % i_ant), p_eval);
-           if (read != (num_polar() * m_step_freq))
-           throw eap::InvalidStateException("HC:Problem with output in " + str(nec_output % id % i_ant));
-           p_ind->m_one_ant_on_fitness.push_back(compare(m_free_inds[i_ant]->m_evals[0], p_ind->m_evals[i_ant]));
-           p_ind->m_gain_fitness += p_ind->m_one_ant_on_fitness[i_ant];
-           }
-           p_ind->m_gain_fitness /= m_max_gain;
-           p_ind->m_coupling_fitness = read_coupling(str(nec_output % id % m_ant_configs.size()), m_ant_configs.size());
-        //normalizing fitness
-        p_ind->m_coupling_fitness += std::abs(m_min_coup);
-        p_ind->m_coupling_fitness /= m_max_coup;
-        p_ind->m_fitness = cal_fitness(p_ind);
-        */
         std::ostringstream pos_str;
         pos_str << ",";
         for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
             pos_str << p_ind->m_positions[i_ant]->m_x << "," << p_ind->m_positions[i_ant]->m_y << "," << p_ind->m_positions[i_ant]->m_z << ",";
-        std::string line;
-        while (std::getline(infile, line) && line.find(pos_str.str()) == std::string::npos);
-        std::vector<std::string> vals;
-        split(line, ',', vals);
-        p_ind->m_coupling_fitness = std::stof(vals[2]);
-        p_ind->m_gain_fitness = std::stof(vals[1]);
-        p_ind->m_fitness = std::stof(vals[0]);
+        int key = map.find(pos_str.str())->second;
+        p_ind->m_coupling_fitness = coup.find(key)->second;
+        p_ind->m_gain_fitness = rad.find(key)->second;
+        p_ind->m_fitness = tot.find(key)->second;
         pos_str.clear();
         pos_str.str("");
-        line.clear();
-        infile.close();
+
     }
     catch (...)
     {

@@ -39,7 +39,7 @@ def plot_mf():
             l_f = []
             for e in evals[tc-1]:
                 fitness = []
-                for r in range(20):
+                for r in range(1000):
                     if a == 'ga':
                         i = int(e/ga_gens[tc]) 
                         l = e - i * ga_gens[tc]
@@ -167,5 +167,5 @@ def main():
         #plt.show()
 
 if __name__ == "__main__":
-    #plot_mf()
-    main()
+    plot_mf()
+    #main()

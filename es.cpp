@@ -153,7 +153,7 @@ void es::evaluate_gen(unsigned int gen_id)
     {
         //run_simulation(gen_id);
         std::ifstream infile;
-        infile.open("tc3_ex.csv");
+        infile.open("tc4_ex.csv");
  	unsigned int count = 0;
 	std::map<std::string, int> map;
 	std::map<int, float> tot;
