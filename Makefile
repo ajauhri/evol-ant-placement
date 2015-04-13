@@ -1,7 +1,7 @@
 PROJ = evol_ant
-CC = g++
+CC = g++-4.8
 
-CFLAGS = -c -pedantic -ansi -Wall -std=c++11 -I. -I/usr/include/lua
+CFLAGS = -c -pedantic -ansi -Wall -std=c++11 -I. -I/usr/include/lua5.2
 LDFLAGS = -g -L/usr/lib/x86_64-linux-gnu
 LIBS = -lboost_program_options -lboost_system -lboost_filesystem -llua5.2
 OBJS = $(patsubst %.cpp,obj/%.o,$(wildcard *.cpp))

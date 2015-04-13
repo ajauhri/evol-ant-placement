@@ -1,6 +1,7 @@
 #include<iostream>
 #include<vector>
 #include<boost/algorithm/string.hpp>
+#include<boost/algorithm/string/join.hpp>
 #include<boost/format.hpp>
 #include<boost/filesystem.hpp>
 #include<boost/make_shared.hpp>
@@ -84,7 +85,7 @@ void ga::run(unsigned int run_id)
         {
             std::sort(m_pop.begin(), m_pop.end(), eap::fitness_sort);
             save_population(m_pop, run_id, i-1);
-            save_best_nec(m_pop[0], run_id, i-1);
+            //save_best_nec(m_pop[0], run_id, i-1);
 
             std::cout<<"best "<<m_pop[0]->m_fitness<<"\n";
             select();
@@ -130,45 +131,40 @@ void ga::evaluate_gen(unsigned int gen_id)
     {
         //run_simulation(gen_id);
         std::ifstream infile;
-        infile.open("tc2_ex.csv");
+        infile.open("tc3_ex.csv");
+	unsigned int count = 0;
+	std::map<std::string, int> map;
+	std::map<int, float> tot;
+	std::map<int, float> coup;
+	std::map<int, float> rad;
+	std::string line;
+	while (std::getline(infile, line))
+	{
+		std::vector<std::string> vals;
+ 		split(line,',',vals);
+                std::string temp = ",";
+		for (std::vector<int>::size_type i = 3; i != vals.size(); i++) 
+			temp += vals[i] + ",";
+		tot.insert(std::pair<int,float>(count, std::stof(vals[0])));
+		rad.insert(std::pair<int,float>(count, std::stof(vals[1])));
+		coup.insert(std::pair<int,float>(count, std::stof(vals[2])));
+		map.insert(std::pair<std::string,int>(temp,count++));
+	}
+        infile.close();
  
-        boost::format nec_output(eap::run_directory + "gen%04d/ind%09da%02d.out");
         for (unsigned int i_pop=0; i_pop<m_pop.size(); ++i_pop)
         {
-            /*
-            for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
-            {
-                evaluation_ptr p_eval(new evaluation);
-                m_pop[i_pop]->m_evals.push_back(p_eval);
-                unsigned int read = read_radiation(str(nec_output % gen_id % i_pop % i_ant), p_eval);
-                if (read != (num_polar() * m_step_freq))
-                    throw eap::InvalidStateException("Problem with output in " + str(nec_output % gen_id % i_pop % i_ant));
-                m_pop[i_pop]->m_one_ant_on_fitness.push_back(compare(m_free_inds[i_ant]->m_evals[0], m_pop[i_pop]->m_evals[i_ant]));
-                m_pop[i_pop]->m_gain_fitness += m_pop[i_pop]->m_one_ant_on_fitness[i_ant];
-            }
-            m_pop[i_pop]->m_gain_fitness /= m_max_gain;
-            m_pop[i_pop]->m_coupling_fitness = read_coupling(str(nec_output % gen_id % i_pop % m_ant_configs.size()), m_ant_configs.size());
-            m_pop[i_pop]->m_coupling_fitness += std::abs(m_min_coup);
-            m_pop[i_pop]->m_coupling_fitness /= m_max_coup;
-            m_pop[i_pop]->m_fitness = cal_fitness(m_pop[i_pop]);
-            */
            std::ostringstream pos_str;
            pos_str << ",";
            for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
                pos_str << m_pop[i_pop]->m_positions[i_ant]->m_x << "," << m_pop[i_pop]->m_positions[i_ant]->m_y << "," << m_pop[i_pop]->m_positions[i_ant]->m_z << ",";
-            std::string line;
-            while (std::getline(infile, line) && line.find(pos_str.str()) == std::string::npos);
-            std::vector<std::string> vals;
-            split(line, ',', vals);
-            m_pop[i_pop]->m_coupling_fitness = std::stof(vals[2]);
-            m_pop[i_pop]->m_gain_fitness = std::stof(vals[1]);
-            m_pop[i_pop]->m_fitness = std::stof(vals[0]);
+	    int key = map.find(pos_str.str())->second;
+            m_pop[i_pop]->m_coupling_fitness = coup.find(key)->second;
+            m_pop[i_pop]->m_gain_fitness = rad.find(key)->second;
+            m_pop[i_pop]->m_fitness = tot.find(key)->second;
             pos_str.clear();
             pos_str.str("");
-            line.clear();
-            infile.seekg(0);
         }
-        infile.close();
     }
     catch (...)
     {

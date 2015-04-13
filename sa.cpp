@@ -161,7 +161,7 @@ void sa::evaluate(unsigned int id, individual_ptr &p_ind)
         //run_simulation(id);
         boost::format nec_output(eap::run_directory + "iter%09da%02d.out");
         std::ifstream infile;
-        infile.open("tc2_ex.csv");
+        infile.open("tc3_ex.csv");
         /*
         for (unsigned int i_ant=0; i_ant<m_ant_configs.size(); ++i_ant)
         {

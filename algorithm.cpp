@@ -499,7 +499,7 @@ individual_ptr algorithm::create_individual(std::string path, std::vector<positi
 
         individual_ptr p_ind(new individual);
         p_ind->m_positions = placements;
-
+	/*
         // create radiation file
         for (unsigned int j=0; j<m_ant_configs.size(); ++j)
         {
@@ -531,6 +531,7 @@ individual_ptr algorithm::create_individual(std::string path, std::vector<positi
             count += m_ant_configs[k]->m_wires.size();
         }
         write_coupling(outfile, start_ids);
+        */
         return p_ind;
     }
     catch (...)
