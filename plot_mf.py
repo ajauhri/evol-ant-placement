@@ -19,7 +19,7 @@ plt.rcParams.update(params)
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 ga_gens = {1:500, 2:3600, 3:8500, 4:1500 }
-es_gens = {1:480, 2:3850, 3:8400, 4:1540 }
+es_gens = {1:490, 2:3850, 3:8400, 4:1540 }
 ss = [7056, 50625,126025,20736]
 evals = [[i for i in range(50, int(ss[0]/2), int(0.025*ss[0]/2))], 
          [i for i in range(100, int(ss[1]/2), int(0.025*ss[1]/2))],
@@ -29,7 +29,7 @@ evals = [[i for i in range(50, int(ss[0]/2), int(0.025*ss[0]/2))],
 algo = ['es', 'ga', 'sa', 'hc']
 h_star = [0.498641, 0.496877, 0.49747, 0.49926]
 def plot_mf():
-    for tc in xrange(1, 2, 1):
+    for tc in xrange(2, 3, 1):
         x = []
         y = []
         y_sd = []
@@ -112,12 +112,12 @@ def plot_mf():
 
 def main():
     algo = ['es', 'ga', 'sa', 'hc']
-    for tc in xrange(1, 2, 1):
+    for tc in xrange(2, 3, 1):
         all = []
         for a in algo:
             e_arr = []
             f_arr  = []
-            for r in range(20):
+            for r in range(1000):
                 best_f = 1
                 best_e = -1
                 for e in evals[tc-1]:

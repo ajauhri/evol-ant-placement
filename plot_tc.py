@@ -18,12 +18,12 @@ def plot_platform(fname, ax, id):
 def main(id):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ant = [2,3,3,4,2]
+    ant = [2,3,3,4,10]
     f = file("luas/tc%d_ex.lua" % id, 'r')
     lines = f.readlines()
     plt_f = re.findall("\"([^\"]+)\"", lines[0])
     plot_platform(plt_f[0], ax, id)
-    colors = ['r','g','b','y',]
+    colors = ['r','g','b','y','c','m','k','w','b','g']
     curr_color = -1
     x_p = []
     y_p = []
@@ -46,7 +46,7 @@ def main(id):
     else:
         tc_id = id
     for i in range(ant[tc_id-1]):
-        ax.plot(x_p[i], y_p[i], z_p[i], "o", color = colors[i], label="Allowable placements for antenna %d"%(i+1))
+        ax.plot(x_p[i], y_p[i], z_p[i], "o", color = colors[i])#, label="Allowable placements for antenna %d"%(i+1))
     f.close()
     ax.set_xlabel("x")
     ax.set_ylabel("y")
