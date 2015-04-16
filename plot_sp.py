@@ -25,7 +25,7 @@ evals = [[i for i in range(50, int(ss[0]/2), int(0.025*ss[0]/2))],
 
 e = 0.00001
 def main():
-    algo = ['es', 'ga', 'sa', 'hc']
+    algo = ['es', 'sa', 'ga', 'hc']
     h_star = [0.498641, 0.496877, 0.49747, 0.49926]
     results = {'es': [], 'ga':[],'sa':[],'hc':[]}
     best_fitness = {'es': [], 'ga':[],'sa':[],'hc':[]}
@@ -38,7 +38,7 @@ def main():
             count = 0
             runs = 0
             best_fitness[a].append([])
-            for r in range(10):
+            for r in range(1000):
                 if a in ['es', 'ga']:
                     i = 0
                     while True:
@@ -68,7 +68,7 @@ def main():
             results[a].append(count*100/runs)
             mean_fitness[a].append(np.mean(best_fitness[a][-1]))
             std_fitness[a].append(np.std(best_fitness[a][-1]))
-            assert (len(best_fitness[a][-1]) == 5 or len(best_fitness[a][-1]) == 10)
+            assert len(best_fitness[a][-1]) == 1000
     # plot success rates
     width = 0.15
     fig = plt.figure()
@@ -84,7 +84,7 @@ def main():
     ax.set_ylim(0,110)
     ax.yaxis.grid()
     ax.set_ylabel('Success Rates in %')
-    plt.legend(['ES','GA','SA','HC'], bbox_to_anchor=(1.05,1))
+    plt.legend(['ES','SA','GA','HC'], bbox_to_anchor=(1.05,1))
     xticks = ['Test case ' + str(i) for i in range(1,5)]
     ax.set_xticks(ind+width)
     xtickNames = ax.set_xticklabels(xticks)
@@ -94,6 +94,7 @@ def main():
     plt.clf()
     
     # plot mean fitness with std dev.
+    '''
     fig = plt.figure()
     ax = fig.add_subplot(111)
     for i in xrange(len(algo)):
@@ -108,6 +109,7 @@ def main():
     xtickNames = ax.set_xticklabels(xticks)
     plt.setp(xtickNames, rotation=30, fontsize=9)
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc_mfwerr.eps', format='eps', dpi=1000)
+    '''
     #plt.show() 
 
 if __name__ == "__main__":

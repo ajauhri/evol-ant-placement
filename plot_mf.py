@@ -29,7 +29,7 @@ evals = [[i for i in range(50, int(ss[0]/2), int(0.025*ss[0]/2))],
 algo = ['es', 'ga', 'sa', 'hc']
 h_star = [0.498641, 0.496877, 0.49747, 0.49926]
 def plot_mf():
-    for tc in xrange(2, 3, 1):
+    for tc in xrange(3, 4, 1):
         x = []
         y = []
         y_sd = []
@@ -112,7 +112,7 @@ def plot_mf():
 
 def main():
     algo = ['es', 'ga', 'sa', 'hc']
-    for tc in xrange(2, 3, 1):
+    for tc in xrange(3, 4, 1):
         all = []
         for a in algo:
             e_arr = []

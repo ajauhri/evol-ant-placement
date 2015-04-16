@@ -66,7 +66,7 @@ void sa::run(unsigned int run_id)
     try
     {
         std::ifstream infile;
-        infile.open("tc4_ex.csv");
+        infile.open("tc2_ex.csv");
         unsigned int count = 0;
         std::string line;
         while (std::getline(infile, line))
@@ -86,8 +86,8 @@ void sa::run(unsigned int run_id)
 
         if (run_id == 0) 
         {
-            //compute_temp();
-            m_init_temp = 0.27;
+            compute_temp();
+            //m_init_temp = 0.27;
             std::cout<<"***init computed temperature = "<<m_init_temp<<"\n";
         }
         std::vector<position_ptr> placements;
@@ -271,10 +271,11 @@ void sa::compute_temp()
     boost::filesystem::remove_all(eap::run_directory);
     boost::filesystem::create_directory(eap::run_directory);
 
+   while (1)
+    {
     float num = 0.0f;
     float deno = 0.0f;
-    while (1)
-    {
+
         for (transition_ptr p_s : m_S)
         {
             num += exp(-(p_s->m_max->m_fitness) / m_init_temp);
@@ -286,6 +287,7 @@ void sa::compute_temp()
             break;
         else 
         {
+            std::cout<<num/deno<<"*\n";
             m_init_temp = m_init_temp * pow((log(num/deno) / log(m_accept_prob)), 1/m_p);
             std::cout<<"updating init temp= "<<m_init_temp<<"\n";
         }

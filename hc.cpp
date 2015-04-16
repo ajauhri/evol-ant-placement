@@ -46,7 +46,7 @@ void hc::run(unsigned int run_id)
     try
     {
         std::ifstream infile;
-        infile.open("tc4_ex.csv");
+        infile.open("tc5_ex.csv");
         unsigned int count = 0;
         std::string line;
         while (std::getline(infile, line))
