@@ -40,8 +40,8 @@ def plot2(id):
             y_p.append(p[1])
             z_p.append(p[2])
     assert len(x_p) == len(y_p) == len(z_p)
-    ax.plot(x_p, y_p, z_p, "o", color = colors[0], label="Allowable placements for antenna 1")
-    ax.plot([x_p[47]], [y_p[47]], [z_p[47]], "*", markersize=9, color = colors[2], label="New placement for antenna 1")
+    ax.plot(x_p, y_p, z_p, "o", color = colors[0], label="Allowable placements for antenna B")
+    ax.plot([x_p[47]], [y_p[47]], [z_p[47]], "*", markersize=9, color = colors[2], label="New placement for antenna B")
     f.close()
     ax.set_xlabel("x")
     ax.set_ylabel("y")
@@ -51,7 +51,7 @@ def plot2(id):
     leg = ax.legend(bbox_to_anchor=(1,0.72), numpoints=1, prop={'size':9})
     leg.get_frame().set_linewidth(0.0)
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_mut2.eps' % id, format='eps', dpi=1000)
-    #plt.show()
+    plt.show()
     plt.clf()
     return ([x_p[47]], [y_p[47]], [z_p[47]])
 
@@ -85,8 +85,8 @@ def plot1(id):
         tc_id = 1
     else:
         tc_id = id
-    ax.plot(x_p[0], y_p[0], z_p[0], "o", markersize=9,color = colors[0], label="Placement for antenna 1")
-    ax.plot(x_p[1], y_p[1], z_p[1], "o", markersize=9, color = colors[1], label="Placement for antenna 2")
+    ax.plot(x_p[1], y_p[1], z_p[1], "o", markersize=9, color = colors[1], label="Placement for antenna A")
+    ax.plot(x_p[0], y_p[0], z_p[0], "o", markersize=9,color = colors[0], label="Placement for antenna B")
     f.close()
     ax.set_xlabel("x")
     ax.set_ylabel("y")
@@ -96,7 +96,7 @@ def plot1(id):
     leg = ax.legend(bbox_to_anchor=(1,0.72), numpoints=1, prop={'size':9})
     leg.get_frame().set_linewidth(0.0)
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc%d_mut1.eps' % tc_id, format='eps', dpi=1000)
-    #plt.show()
+    plt.show()
     plt.clf()
     return (x_p[1], y_p[1], z_p[1])
 
@@ -110,8 +110,8 @@ def plot3(new, orig):
     plot_platform(plt_f[0], ax, id)
     f.close()
     plot_platform(plt_f[0], ax, 1)
-    ax.plot(new[0], new[1], new[2], "o", markersize=9, color = colors[0], label="Placement for antenna 1")
-    ax.plot(orig[0], orig[1], orig[2], "o", markersize=9, color = colors[1], label="Placement for antenna 2")
+    ax.plot(orig[0], orig[1], orig[2], "o", markersize=9, color = colors[1], label="Placement for antenna A")
+    ax.plot(new[0], new[1], new[2], "o", markersize=9, color = colors[0], label="Placement for antenna B")
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_zlabel("z")

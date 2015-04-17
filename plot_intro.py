@@ -47,8 +47,9 @@ def main(id, label_prefix):
         tc_id = int(id/11)
     else:
         tc_id = id
-    for i in range(ant[tc_id-1]):
-        ax.plot(x_p[i], y_p[i], z_p[i], "o", color = colors[i], label=label_prefix + " %d"%(i+1))
+    ant_label = [' B',' A']
+    for i in reversed(range(ant[tc_id-1])):
+        ax.plot(x_p[i], y_p[i], z_p[i], "o", color = colors[i], label=label_prefix + ant_label[i])
     f.close()
     ax.set_xlabel("x")
     ax.set_ylabel("y")
@@ -62,6 +63,6 @@ def main(id, label_prefix):
     plt.clf()
 main(1, "Allowable placements for antenna")
 main(11, "Best placement for antenna")
-main(22, "Best placement for antenna")
-main(33, "Best placement for antenna")
-main(44, "Best placement for antenna")
+#main(22, "Best placement for antenna")
+#main(33, "Best placement for antenna")
+#main(44, "Best placement for antenna")

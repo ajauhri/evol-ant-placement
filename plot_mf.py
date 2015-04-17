@@ -26,10 +26,10 @@ evals = [[i for i in range(50, int(ss[0]/2), int(0.025*ss[0]/2))],
          [i for i in range(200, int(ss[2]/2), int(0.025*ss[2]/2))],
          [i for i in range(150, int(ss[3]/2), int(0.025*ss[3]/2))]]
 
-algo = ['es', 'ga', 'sa', 'hc']
+algo = ['es', 'sa', 'ga', 'hc']
 h_star = [0.498641, 0.496877, 0.49747, 0.49926]
 def plot_mf():
-    for tc in xrange(3, 4, 1):
+    for tc in xrange(1, 5, 1):
         x = []
         y = []
         y_sd = []
@@ -102,7 +102,7 @@ def plot_mf():
         ax.plot(x[1],y[1],'r-s')
         ax.plot(x[2],y[2],'g-*')
         ax.plot(x[3],y[3],'c-v')
-        plt.legend(['ES','GA','SA','HC'], loc=0)
+        plt.legend(['ES','SA','GA','HC'], loc=0)
         plt.xlabel('Fitness Evaluations(%)', fontsize=13)
         plt.ylabel('Mean Best Fitness', fontsize=13)
         plt.axhline(y=h_star[tc-1], linestyle='dashed', linewidth=1, color='m')
@@ -111,8 +111,8 @@ def plot_mf():
         plt.clf()
 
 def main():
-    algo = ['es', 'ga', 'sa', 'hc']
-    for tc in xrange(3, 4, 1):
+    algo = ['es', 'sa', 'ga', 'hc']
+    for tc in xrange(1, 5, 1):
         all = []
         for a in algo:
             e_arr = []
@@ -168,4 +168,4 @@ def main():
 
 if __name__ == "__main__":
     plot_mf()
-    #main()
+    main()

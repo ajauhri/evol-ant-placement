@@ -70,8 +70,8 @@ def plot1(id):
         tc_id = 1
     else:
         tc_id = id
-    ax.plot(x_p[0], y_p[0], z_p[0], "o", markersize=9,color = colors[0], label="Placement for antenna 1")
-    ax.plot(x_p[1], y_p[1], z_p[1], "o", markersize=9, color = colors[1], label="Placement for antenna 2")
+    ax.plot(x_p[1], y_p[1], z_p[1], "o", markersize=9, color = colors[1], label="Placement for antenna A")
+    ax.plot(x_p[0], y_p[0], z_p[0], "o", markersize=9,color = colors[0], label="Placement for antenna B")
     f.close()
     ax.set_xlabel("x")
     ax.set_ylabel("y")
@@ -93,8 +93,8 @@ def plot(new, v, c):
     plt_f = re.findall("\"([^\"]+)\"", lines[0])
     plot_platform(plt_f[0], ax, id)
     f.close()
-    ax.plot(new[0][0], new[0][1], new[0][2], "o", markersize=9, color = c[0], label="Placement for antenna 1")
-    ax.plot(new[1][0], new[1][1], new[1][2], "o", markersize=9, color = c[1], label="Placement for antenna 2")
+    ax.plot(new[1][0], new[1][1], new[1][2], "o", markersize=9, color = c[1], label="Placement for antenna A")
+    ax.plot(new[0][0], new[0][1], new[0][2], "o", markersize=9, color = c[0], label="Placement for antenna B")
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_zlabel("z")

@@ -274,10 +274,10 @@ def tc5(ant):
             run_fd.write("%d,%d\n" % (run_plot[i][0], run_plot[i][1]))
         run_fd.close()
     '''
-#tc1([3,6], "tc1/tc1_ga_r889_o%d_pop.csv", 'g')
+tc1([3,6], "tc1/tc1_ga_r889_o%d_pop.csv", 'g')
 #tc1([3,6], "tc1/tc1_es_r893_o%d_pop.csv", 'g')
 #tc1([3,6], "tc1/tc1_sa_r92_iters.csv", 'i')
-tc1([3,6], "tc1/tc1_hc_r900_iters.csv", 'i')
+#tc1([3,6], "tc1/tc1_hc_r900_iters.csv", 'i')
 #tc2([3,6,9])
 #tc3([3,6,9])
 #tc4([3,6,9,12])
