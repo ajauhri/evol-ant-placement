@@ -30,7 +30,7 @@ evals = [[i for i in range(int(0.001*ss[0]), int(ss[0]/2), int(0.025*ss[0]/2))],
 algo = ['es', 'sa', 'ga', 'hc']
 h_star = [0.498641, 0.496877, 0.49747, 0.49926, 0.499751]
 def plot_mf():
-    for tc in xrange(1, 6, 1):
+    for tc in xrange(4, 5, 1):
         x = []
         y = []
         y_sd = []
@@ -84,7 +84,10 @@ def plot_mf():
             x.append(e)
         mx = max(map(max, y))
         mn = min(map(min, y))
-        yt = np.arange(mn-0.0015, mx+0.001, 0.003)
+        if tc == 4:
+            yt = np.arange(mn-0.003, mx, 0.009)
+        else:
+            yt = np.arange(mn-0.0015, mx+0.001, 0.003)
         yt = np.insert(yt, 1, h_star[tc-1])
         xt = np.arange(0, 60, 10, dtype=np.float64)
         xt[0] = 0.1
@@ -100,10 +103,6 @@ def plot_mf():
             label.set_fontsize(11)
         ax.get_yticklabels()[1].set_color('m')
         ax.plot(x[0],y[0],'b-D')
-        #ax.errorbar(x[0],y[0],y_sd[0])#,'b-D')
-        #ax.errorbar(x[1],y[1],y_sd[1])#,'b-D')
-        #ax.errorbar(x[2],y[2],y_sd[2])#,'b-D')
-        #ax.errorbar(x[3],y[3],y_sd[3])#,'b-D')
         ax.plot(x[1],y[1],'r-s')
         ax.plot(x[2],y[2],'g-*')
         ax.plot(x[3],y[3],'c-v')
@@ -117,7 +116,7 @@ def plot_mf():
 
 def main():
     algo = ['es', 'sa', 'ga', 'hc']
-    for tc in xrange(5, 6, 1):
+    for tc in xrange(1, 2, 1):
         all = []
         for a in algo:
             e_arr = []
@@ -172,5 +171,5 @@ def main():
         #plt.show()
 
 if __name__ == "__main__":
-    plot_mf()
-    #ain()
+    #plot_mf()
+    main()
