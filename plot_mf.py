@@ -18,18 +18,19 @@ params = {'legend.linewidth': 10}
 plt.rcParams.update(params)
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
-ga_gens = {1:500, 2:3600, 3:8500, 4:1500 }
-es_gens = {1:490, 2:3850, 3:8400, 4:1540 }
-ss = [7056, 50625,126025,20736]
-evals = [[i for i in range(50, int(ss[0]/2), int(0.025*ss[0]/2))], 
-         [i for i in range(100, int(ss[1]/2), int(0.025*ss[1]/2))],
-         [i for i in range(200, int(ss[2]/2), int(0.025*ss[2]/2))],
-         [i for i in range(150, int(ss[3]/2), int(0.025*ss[3]/2))]]
+ga_gens = {1:500, 2:3600, 3:8500, 4:1500, 5:4200 }
+es_gens = {1:490, 2:3850, 3:8400, 4:1540, 5:4200 }
+ss = [7056, 50625,126025,20736,59049]
+evals = [[i for i in range(int(0.001*ss[0]), int(ss[0]/2), int(0.025*ss[0]/2))], 
+         [i for i in range(int(0.001*ss[1]), int(ss[1]/2), int(0.025*ss[1]/2))],
+         [i for i in range(int(0.001*ss[2]), int(ss[2]/2), int(0.025*ss[2]/2))],
+         [i for i in range(int(0.001*ss[3]), int(ss[3]/2), int(0.025*ss[3]/2))],
+         [i for i in range(int(0.001*ss[4]), int(ss[4]/2), int(0.025*ss[4]/2))]]
 
 algo = ['es', 'sa', 'ga', 'hc']
-h_star = [0.498641, 0.496877, 0.49747, 0.49926]
+h_star = [0.498641, 0.496877, 0.49747, 0.49926, 0.499751]
 def plot_mf():
-    for tc in xrange(1, 5, 1):
+    for tc in xrange(1, 6, 1):
         x = []
         y = []
         y_sd = []
@@ -75,20 +76,24 @@ def plot_mf():
                             fitness[i] = l_f[i]
                     a_mf.append(np.mean(fitness))
                     a_sd.append(np.std(fitness))
-                    #print a, np.std(fitness)
                 l_f = fitness 
             y.append(a_mf)
             y_sd.append(a_sd)
             e = map(lambda x: 100*x/ss[tc-1], evals[tc-1]) 
+            #print e
             x.append(e)
         mx = max(map(max, y))
         mn = min(map(min, y))
         yt = np.arange(mn-0.0015, mx+0.001, 0.003)
         yt = np.insert(yt, 1, h_star[tc-1])
+        xt = np.arange(0, 60, 10, dtype=np.float64)
+        xt[0] = 0.1
         plt.gca().xaxis.grid(True)
         plt.gca().yaxis.grid(True)
         ax = plt.subplot()
         ax.set_yticks(yt)
+        ax.set_xticks(xt)
+        ax.set_xlim([0.1,50.0])
         ax.set_ylim((mn-0.002,mx+0.001))
         for label in (ax.get_xticklabels() + ax.get_yticklabels()):
             label.set_fontname('Arial')
@@ -112,7 +117,7 @@ def plot_mf():
 
 def main():
     algo = ['es', 'sa', 'ga', 'hc']
-    for tc in xrange(1, 5, 1):
+    for tc in xrange(5, 6, 1):
         all = []
         for a in algo:
             e_arr = []
@@ -168,4 +173,4 @@ def main():
 
 if __name__ == "__main__":
     plot_mf()
-    main()
+    #ain()

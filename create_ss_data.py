@@ -303,8 +303,8 @@ def tc5(ant):
     save_tc(a12345, a678910, f, 'tc5.csv')
 
 #tc1([3,6], "tc1/tc1_ga_r889_o%d_pop.csv", 'g')
-#tc1([3,6], "tc1/tc1_es_r893_o%d_pop.csv", 'g')
-tc1([3,6], "tc1/tc1_sa_r92_iters.csv", 'i')
+tc1([3,6], "tc1/tc1_es_r893_o%d_pop.csv", 'g')
+#tc1([3,6], "tc1/tc1_sa_r92_iters.csv", 'i')
 #tc1([3,6], "tc1/tc1_hc_r900_iters.csv", 'i')
 #tc2([3,6,9], "tc2/tc2_ga_r889_o%d_pop.csv", 'g')
 #tc3([3,6,9], 'tc3/tc3_sa_r434_iters.csv', 'i')
