@@ -111,7 +111,7 @@ def plot3(new, orig):
     f.close()
     plot_platform(plt_f[0], ax, 1)
     ax.plot(orig[0], orig[1], orig[2], "o", markersize=9, color = colors[1], label="Placement for antenna A")
-    ax.plot(new[0], new[1], new[2], "o", markersize=9, color = colors[0], label="Placement for antenna B")
+    ax.plot(new[0], new[1], new[2], "o", markersize=9, color = colors[2], label="Placement for antenna B")
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_zlabel("z")

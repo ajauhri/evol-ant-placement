@@ -28,32 +28,33 @@ plot(X(i),Y(i),'*', 'MarkerSize',12,'MarkerFaceColor', 'white', 'MarkerEdgeColor
 hold on;
 %hold off;
 if tc_id == '1'
-    xlabel('Allowable placements for antenna 1');
-    ylabel('Allowable placements for antenna 2');
+    xlabel('Allowable placements for antenna A');
+    ylabel('Allowable placements for antenna B');
 end
 if tc_id == '2'
-    xlabel('Allowable placements for antennas 2,3');
-    ylabel('Allowable placements for antenna 1');
+    xlabel('Allowable placements for antennas B,C');
+    ylabel('Allowable placements for antenna A');
 end
 if tc_id == '3'
-    xlabel('Allowable placements for antennas 1,2');
-    ylabel('Allowable placements for antenna 3');
+    xlabel('Allowable placements for antennas A,B');
+    ylabel('Allowable placements for antenna C');
 end
 if tc_id == '4'
-    xlabel('Allowable placements for antennas 1,2,3');
-    ylabel('Allowable placements for antenna 4');
+    xlabel('Allowable placements for antennas A,B,C');
+    ylabel('Allowable placements for antenna D');
 end
 if tc_id == '5'
     xlabel('Allowable placements for antennas 1,2,3,4,5,6,7,8');
     ylabel('Allowable placements for antenna 9,10');
 end
 saveas(gca, strcat('/home/ajauhri/quals/paper/FIG/tc',tc_id,'_contour'), 'epsc');
-writerObj = VideoWriter('/home/ajauhri/quals/pres/animation/ga.avi');
-writerObj.FrameRate = 2;
-open(writerObj);
-for i=[1:1:9]
-    filename = '/home/ajauhri/evol-ant-placement/run';
-    filename = strcat(filename, int2str(i));
+%{
+%writerObj = VideoWriter(strcat('/home/ajauhri/quals/pres/animation/es',tc_id,'.avi'));
+%writerObj.FrameRate = 2;
+%open(writerObj);
+%for i=[1:1:9]
+    filename = '/home/ajauhri/evol-ant-placement/run0';
+    %filename = strcat(filename, int2str(i));
     if exist(filename, 'file') ~= 2
         break;
     end
@@ -64,11 +65,16 @@ for i=[1:1:9]
     fclose(fileID);
     A = dataArray{:, 1};
     B = dataArray{:, 2};
-    pts = plot(A,B,'o','MarkerSize',6,'MarkerFaceColor','white', 'MarkerEdgeColor','black');
-    frame = getframe;
-    writeVideo(writerObj, frame);
-    delete(pts)
+    for j=[1:1:size(A, 1)]
+    pts = plot(A(j),B(j),'o','MarkerSize',6,'MarkerFaceColor','white', 'MarkerEdgeColor','black');
+    pause(.005);
 end
-close(writerObj);
-pts = plot(A,B,'o','MarkerSize',7,'MarkerFaceColor','white', 'MarkerEdgeColor','black');
-saveas(gca, strcat('/home/ajauhri/quals/paper/FIG/tc',tc_id,'_ga_anim'), 'epsc');
+    frame = getframe;
+    %writeVideo(writerObj, frame);
+    %pause(.3)
+    %delete(pts)
+%end
+%close(writerObj);
+%pts = plot(A,B,'o','MarkerSize',7,'MarkerFaceColor','white', 'MarkerEdgeColor','black');
+%saveas(gca, strcat('/home/ajauhri/quals/paper/FIG/tc',tc_id,'_ga_anim'), 'epsc');
+%}

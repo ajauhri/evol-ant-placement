@@ -41,12 +41,13 @@ def main(id):
             y_p[curr_color].append(p[1])
             z_p[curr_color].append(p[2])
     assert len(x_p) == len(y_p) == len(z_p)
+    ant_lab = ['A', 'B', 'C', 'D']
     if id == 11:
         tc_id = 1
     else:
         tc_id = id
     for i in range(ant[tc_id-1]):
-        ax.plot(x_p[i], y_p[i], z_p[i], "o", color = colors[i])#, label="Allowable placements for antenna %d"%(i+1))
+        ax.plot(x_p[i], y_p[i], z_p[i], "o", color = colors[i], label="Allowable placements for antenna " + ant_lab[i])
     f.close()
     ax.set_xlabel("x")
     ax.set_ylabel("y")
@@ -60,5 +61,5 @@ def main(id):
 #main(1)
 #main(2)
 #main(3)
-#main(4)
-main(5)
+main(4)
+#main(5)

@@ -14,11 +14,6 @@ For reference look here (http://explainshell.com/explain?cmd=valgrind+--tool%3Dm
 ...     sum_c = f_c - abs(c_min)
 ...     delta_c = abs(c_min - sum_c)
 ...     print delta_c
-#Errata
->>> def cal(F, c_max, c_min):
-...     f_c = (F * c_max)
-...     sum_c = f_c - abs(c_min)
-...     print delta_c
 
 
 >>> cal(0.02, 27.372, -30.968)
@@ -30,3 +25,4 @@ For reference look here (http://explainshell.com/explain?cmd=valgrind+--tool%3Dm
 >>> cal(0.02, 28.464, -163.098)
 0.56928
 
+(0.002*3.61123e+08/(4140*2))^(0.5)

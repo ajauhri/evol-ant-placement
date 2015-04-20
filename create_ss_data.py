@@ -42,6 +42,7 @@ def tc1(ant, dname, t):
     a1 = np.array(a1)
     a2 = np.array(a2)
     save_tc(a1,a2,f,'tc1.csv')
+
     if t == 'i':
         gens = 1
         end_col = (len(ant)+1)*3 + 1
@@ -71,11 +72,10 @@ def tc1(ant, dname, t):
         for i in range(len(run_plot)):
             run_fd.write("%d,%d\n" % (run_plot[i][0], run_plot[i][1]))
         run_fd.close()
-    '''
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    ax.set_xlabel("Allowable Placements of Antenna 1", fontsize=8)
-    ax.set_ylabel("Allowable Placements of Antenna 2", fontsize=8)
+    ax.set_xlabel("Allowable Placements of Antenna A", fontsize=8)
+    ax.set_ylabel("Allowable Placements of Antenna B", fontsize=8)
     ax.set_zlabel("Fitness", fontsize=8)
     surf = ax.plot_trisurf(a1, a2, f, cmap=cm.brg, linewidth=0.01)
     cbar = fig.colorbar(surf)
@@ -83,9 +83,8 @@ def tc1(ant, dname, t):
     ax.view_init(elev=70., azim=-57)
     plt.savefig('/home/ajauhri/quals/paper/FIG/tc1_ss.png', format='png')#, dpi=1000)
     plt.clf()
-    '''
  
-def tc2(ant):
+def tc2(ant, dname, t):
     res = np.loadtxt(open("tc2"+"_ex.csv", 'r'), delimiter=',', skiprows=0, usecols=range(12))
     b = np.ascontiguousarray(res[:,ant[0]:ant[0]+3]).view(np.dtype((np.void, res.dtype.itemsize * 3)))
     _, a1_idx = np.unique(b, return_index=True)
@@ -98,6 +97,11 @@ def tc2(ant):
     a2_uniq_count = len(a2_idx)
     a3_uniq_count = len(a3_idx)
     sorted_idx = np.lexsort((res[:,ant[2]], res[:,ant[2]+1], res[:,ant[2]+2], res[:,ant[1]], res[:,ant[1]+1], res[:,ant[1]+2], res[:,ant[0]], res[:,ant[0]+1], res[:,ant[0]+2]))
+    dist = []
+    '''
+    for i in res:
+        print np.linalg.norm(i[3:6]), i[3:6]
+    '''
     a23 = []
     a1 = []
     f = []
@@ -113,8 +117,39 @@ def tc2(ant):
     a1 = np.array(a1)
     save_tc(a23,a1,f,'tc2.csv')
 
-def tc3(ant):
-    res = np.loadtxt(open("tc3"+"_ex.csv", 'r'), delimiter=',', skiprows=0, usecols=range(12))
+    if t == 'i':
+        gens = 1
+        end_col = (len(ant)+1)*3 + 1
+        start_col = 4
+    else:
+        gens = 10
+        end_col = (len(ant)+1)*3 
+        start_col = 3
+    '''
+    for r in range(gens):
+        if t == 'g':
+            rfname = dname % (r) 
+        elif t == 'i':
+            rfname = dname
+        print rfname
+        if not os.path.isfile(rfname):
+            break
+        run = np.loadtxt(open(rfname, 'r'), delimiter=',', usecols=range(end_col))
+        occurs = []
+        for i in run:
+            ind = int(np.where((res[:,3:12] == i[start_col:end_col]).all(axis=1))[0])
+            occurs.append(np.where((sorted_idx == ind))[0][0])
+        run_plot = np.empty((len(occurs),2))
+        run_plot[:,0] = a23[occurs]
+        run_plot[:,1] = a1[occurs]
+        run_fd = open('run' + str(r), 'w')
+        for i in range(len(run_plot)):
+            run_fd.write("%d,%d\n" % (run_plot[i][0], run_plot[i][1]))
+        run_fd.close()
+        '''
+
+def tc3(ant, dname, t):
+    res = np.loadtxt(open("tc3_ex.csv", 'r'), delimiter=',', skiprows=0, usecols=range(12))
     b = np.ascontiguousarray(res[:,ant[0]:ant[0]+3]).view(np.dtype((np.void, res.dtype.itemsize * 3)))
     _, a1_idx = np.unique(b, return_index=True)
     b = np.ascontiguousarray(res[:,ant[1]:ant[1]+3]).view(np.dtype((np.void, res.dtype.itemsize * 3)))
@@ -140,16 +175,28 @@ def tc3(ant):
     a12 = np.array(a12)
     a3 = np.array(a3)
     save_tc(a12,a3,f,'tc3.csv')
-    for r in range(10):
-        rfname = "tc3/tc3_es_r2_o%d_pop.csv" % (r)
-        #rfname = "tc3/tc3_hc_r91_iters.csv"
+
+    if t == 'i':
+        gens = 1
+        end_col = (len(ant)+1)*3 + 1
+        start_col = 4
+    else:
+        gens = 10
+        end_col = (len(ant)+1)*3 
+        start_col = 3
+
+    for r in range(gens):
+        if t == 'g':
+            rfname = dname % (r) 
+        elif t == 'i':
+            rfname = dname
         print rfname
         if not os.path.isfile(rfname):
             break
-        run = np.loadtxt(open(rfname, 'r'), delimiter=',', usecols=range(12))
+        run = np.loadtxt(open(rfname, 'r'), delimiter=',', usecols=range(end_col))
         occurs = []
         for i in run:
-            ind = int(np.where((res[:,3:12] == i[3:12]).all(axis=1))[0])
+            ind = int(np.where((res[:,3:12] == i[start_col:end_col]).all(axis=1))[0])
             occurs.append(np.where((sorted_idx == ind))[0][0])
         run_plot = np.empty((len(occurs),2))
         run_plot[:,0] = a12[occurs]
@@ -158,7 +205,7 @@ def tc3(ant):
         for i in range(len(run_plot)):
             run_fd.write("%d,%d\n" % (run_plot[i][0], run_plot[i][1]))
         run_fd.close()
-   
+
 def tc4(ant):
     res = np.loadtxt(open("tc4"+"_ex.csv", 'r'), delimiter=',', skiprows=1, usecols=range(15))
     b = np.ascontiguousarray(res[:,ant[0]:ant[0]+3]).view(np.dtype((np.void, res.dtype.itemsize * 3)))
@@ -254,32 +301,13 @@ def tc5(ant):
     a12345 = np.array(a12345)
     a678910 = np.array(a678910)
     save_tc(a12345, a678910, f, 'tc5.csv')
-    '''
-    for r in range(10):
-        rfname = "tc4/tc4_ga_r2_o%d_pop.csv" % (r)
-        if not os.path.isfile(rfname):
-            break
-        run = np.loadtxt(open(rfname, 'r'), delimiter=',', usecols=range(15))
-        run_ind = []
-        for i in run:
-            ind = int(np.where((res[:,3:15] == i[3:15]).all(axis=1))[0])
-            run_ind.append(ind)
-        run_ind = np.unique(run_ind)
-        run_plot = np.empty((len(run_ind),2))
-        occurs = np.intersect1d(sorted_idx, run_ind)
-        run_plot[:,0] = a123[occurs]
-        run_plot[:,1] = a4[occurs]
-        run_fd = open('run' + str(r), 'w')
-        for i in range(len(run_plot)):
-            run_fd.write("%d,%d\n" % (run_plot[i][0], run_plot[i][1]))
-        run_fd.close()
-    '''
-tc1([3,6], "tc1/tc1_ga_r889_o%d_pop.csv", 'g')
+
+#tc1([3,6], "tc1/tc1_ga_r889_o%d_pop.csv", 'g')
 #tc1([3,6], "tc1/tc1_es_r893_o%d_pop.csv", 'g')
-#tc1([3,6], "tc1/tc1_sa_r92_iters.csv", 'i')
+tc1([3,6], "tc1/tc1_sa_r92_iters.csv", 'i')
 #tc1([3,6], "tc1/tc1_hc_r900_iters.csv", 'i')
-#tc2([3,6,9])
-#tc3([3,6,9])
+#tc2([3,6,9], "tc2/tc2_ga_r889_o%d_pop.csv", 'g')
+#tc3([3,6,9], 'tc3/tc3_sa_r434_iters.csv', 'i')
 #tc4([3,6,9,12])
 #tc5([3,6,9,12,15,18,21,24,27,30])
 #plt.show()
