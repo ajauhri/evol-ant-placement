@@ -30,7 +30,7 @@ evals = [[i for i in range(int(0.001*ss[0]), int(ss[0]/2), int(0.025*ss[0]/2))],
 algo = ['es', 'sa', 'ga', 'hc']
 h_star = [0.498641, 0.496877, 0.49747, 0.49926, 0.499751]
 def plot_mf():
-    for tc in xrange(4, 5, 1):
+    for tc in xrange(2, 3, 1):
         x = []
         y = []
         y_sd = []
@@ -86,6 +86,8 @@ def plot_mf():
         mn = min(map(min, y))
         if tc == 4:
             yt = np.arange(mn-0.003, mx, 0.009)
+        elif tc == 2:
+            yt = np.arange(mn-0.002, mx, 0.006)
         else:
             yt = np.arange(mn-0.0015, mx+0.001, 0.003)
         yt = np.insert(yt, 1, h_star[tc-1])
@@ -171,5 +173,5 @@ def main():
         #plt.show()
 
 if __name__ == "__main__":
-    #plot_mf()
-    main()
+    plot_mf()
+    #main()

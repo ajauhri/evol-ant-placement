@@ -44,10 +44,11 @@ if tc_id == '4'
     ylabel('Allowable placements for antenna D');
 end
 if tc_id == '5'
-    xlabel('Allowable placements for antennas 1,2,3,4,5,6,7,8');
-    ylabel('Allowable placements for antenna 9,10');
+    xlabel('Allowable placements for antennas A,B,C,D,E,F,G,H');
+    ylabel('Allowable placements for antenna I,J');
 end
 saveas(gca, strcat('/home/ajauhri/quals/paper/FIG/tc',tc_id,'_contour'), 'epsc');
+%{
 writerObj = VideoWriter(strcat('/home/ajauhri/quals/pres/animation/es',tc_id,'.avi'));
 writerObj.FrameRate = 2;
 open(writerObj);
@@ -73,3 +74,4 @@ end
 close(writerObj);
 pts = plot(A,B,'o','MarkerSize',6,'MarkerFaceColor','white', 'MarkerEdgeColor','black');
 saveas(gca, strcat('/home/ajauhri/quals/paper/FIG/tc',tc_id,'_es_anim'), 'epsc');
+%}
